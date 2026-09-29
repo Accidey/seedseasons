@@ -1,0 +1,47 @@
+modLoader = "javafml"
+loaderVersion = "${loader_version_range}"
+license = "${mod_license}"
+
+[[mods]]
+modId = "${mod_id}"
+version = "${mod_version}"
+displayName = "${mod_name}"
+authors = "xulai"
+description = '''
+Reads which seasons a crop can grow in from a config file instead of datapack tags, and writes the item in your hand into that file with a command.
+把作物的可种植季节从数据包标签改为读取配置文件，并提供把主手物品直接写进配置的指令。
+'''
+
+[[mixins]]
+config = "seedseasons.mixins.json"
+
+[[mixins]]
+config = "seedseasons.jade.mixins.json"
+
+[[dependencies.${mod_id}]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${neo_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "sereneseasons"
+type = "required"
+versionRange = "${sereneseasons_version_range}"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "jade"
+type = "optional"
+versionRange = "[15.10.0,)"
+ordering = "AFTER"
+side = "CLIENT"

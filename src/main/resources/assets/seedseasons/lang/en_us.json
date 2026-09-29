@@ -1,0 +1,21 @@
+{
+  "seedseasons.configuration.seedSeasons": "Seed seasons",
+  "seedseasons.tooltip.growth_days": "Matures in %s days",
+  "seedseasons.tooltip.bone_meal": "Crop fertilizing: %s per crop per day, at least one stage each (+%s%% growth)",
+  "seedseasons.tooltip.bone_meal_warning": "Over-fertilizing withers the crop",
+  "seedseasons.tooltip.bone_meal_disabled": "Crops do not accept bone meal with the current settings",
+  "seedseasons.message.over_fertilized": "Over-fertilized, %s withered",
+  "seedseasons.message.out_of_season_fertilizer": "Out of season, fertilizing %s is blocked by Serene Seasons (the bone meal is still used up)",
+  "seedseasons.message.water_refilled": "Water source refilled (%s units)",
+  "commands.seedseasons.added": "Added %s to the seed seasons list: %s",
+  "commands.seedseasons.removed": "Removed %s from the seed seasons list",
+  "commands.seedseasons.not_listed": "%s is not in the seed seasons list",
+  "commands.seedseasons.growth_set": "Set the maturation time of %s to %s days",
+  "commands.seedseasons.growth_removed": "Removed the maturation time of %s, the default applies again",
+  "commands.seedseasons.growth_not_listed": "%s has no custom maturation time",
+  "commands.seedseasons.no_item": "Hold the seed or crop item you want to use in your main hand",
+  "commands.seedseasons.no_season": "No valid season given, valid seasons are spring, summer, autumn and winter",
+  "commands.seedseasons.no_block": "%s does not place a block, so only its tooltip will change",
+  "commands.seedseasons.not_saved": "The config file is not ready, nothing was written",
+  "commands.seedseasons.player_only": "This command can only be used by a player"
+}

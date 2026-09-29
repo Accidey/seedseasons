@@ -1,0 +1,21 @@
+{
+  "seedseasons.configuration.seedSeasons": "种子季节",
+  "seedseasons.tooltip.growth_days": "成熟需要 %s 天",
+  "seedseasons.tooltip.bone_meal": "作物施肥：每株每天 %s 次，每次至少长一级（+%s%% 进度）",
+  "seedseasons.tooltip.bone_meal_warning": "超量施肥会让作物枯死",
+  "seedseasons.tooltip.bone_meal_disabled": "当前设置下作物不接受骨粉",
+  "seedseasons.message.over_fertilized": "施肥过量，%s 枯死了",
+  "seedseasons.message.out_of_season_fertilizer": "非当季，%s 的施肥会被四季拦下（骨粉照样消耗）",
+  "seedseasons.message.water_refilled": "水源已补满（%s 格）",
+  "commands.seedseasons.added": "已把 %s 写入种子季节列表：%s",
+  "commands.seedseasons.removed": "已把 %s 从种子季节列表移除",
+  "commands.seedseasons.not_listed": "%s 不在种子季节列表里",
+  "commands.seedseasons.growth_set": "已把 %s 的成熟天数设为 %s 天",
+  "commands.seedseasons.growth_removed": "已移除 %s 的成熟天数设置，改用默认值",
+  "commands.seedseasons.growth_not_listed": "%s 没有单独设置成熟天数",
+  "commands.seedseasons.no_item": "请把要操作的种子、作物拿在主手",
+  "commands.seedseasons.no_season": "没有识别到有效季节，可用：spring、summer、autumn、winter",
+  "commands.seedseasons.no_block": "%s 不会种出方块，只会改变物品提示",
+  "commands.seedseasons.not_saved": "配置文件尚未就绪，这次没有写入",
+  "commands.seedseasons.player_only": "该指令只能由玩家执行"
+}

@@ -1,0 +1,12 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.xulai.seedseasons.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "JadeCropProgressMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

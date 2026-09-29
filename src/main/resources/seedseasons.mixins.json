@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.xulai.seedseasons.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "BoneMealItemMixin",
+    "FarmBlockMixin",
+    "ModFertilityMixin",
+    "ServerLevelMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
