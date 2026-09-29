@@ -141,9 +141,11 @@ public final class SeedSeasonsConfig {
         OVER_MATURE_DAYS = builder
                 .comment(
                         "",
-                        " 成熟后多少天不收获会枯死（直接消失），0 表示不因过熟枯死。",
+                        " 成熟后满这么多天仍未收获就枯死（直接消失），0 表示不因过熟枯死。",
+                        " 判定只在每天 6 点结算时做一次，所以「第 N 天 6 点成熟」的作物会在第 N+1 天 6 点（正好 24 小时后）枯死；浇水只解除缺水计时，不会救回过熟。",
                         "",
-                        " Days a crop may stay mature without being harvested before it withers and vanishes, 0 disables it.")
+                        " Days a crop may stay mature without being harvested before it withers and vanishes, 0 disables it.",
+                        " The check runs once at each 6 AM settlement, so a crop maturing at day N 6 AM withers at day N+1 6 AM, exactly 24 hours later; watering clears the thirst timer only and does not save it from over-maturity.")
                 .defineInRange("overMatureDays", 1.0D, 0.0D, 1000.0D);
 
         GROWTH_DAY_VARIANCE = builder
@@ -194,9 +196,11 @@ public final class SeedSeasonsConfig {
                 .comment(
                         "",
                         " 是否启用作物耗水：耕地需要水源供水，种了作物的田会持续把水喝掉。",
+                        " 只要田里有作物就耗水，包括已经成熟还没收的；缺水一样会让成熟作物枯死。",
                         " 关闭后耕地回到原版行为（水源无限），作物不会缺水。",
                         "",
                         " Whether planted crops consume water from a nearby water source.",
+                        " Any crop in the plot drains water, mature and unharvested ones included, and thirst kills them just the same.",
                         " When disabled, farmland behaves like vanilla with unlimited water and crops never dry out.")
                 .define("enableCropWater", true);
 

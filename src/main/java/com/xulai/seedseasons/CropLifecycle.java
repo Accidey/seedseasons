@@ -255,18 +255,6 @@ public final class CropLifecycle {
         int current = state.getValue(age);
         String blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
 
-        if (current >= max) {
-            long overMature = (long) (SeedSeasonsConfig.overMatureDays() * TICKS_PER_DAY);
-            if (record.matureSince() > 0L && overMature > 0L && now - record.matureSince() > overMature) {
-                settlement.withered++;
-                removed.add(pos);
-                level.destroyBlock(pos, false);
-                return true;
-            }
-            settlement.mature++;
-            return false;
-        }
-
         BlockPos farmlandPos = pos.below();
         if (SeedSeasonsConfig.enableCropWater() && level.getBlockState(farmlandPos).getBlock() instanceof FarmBlock) {
             BlockPos sourcePos = WaterNetwork.servingSource(level, farmlandPos);
@@ -286,6 +274,18 @@ public final class CropLifecycle {
                 DRAINED.add(sourcePos);
             }
             record.setDrySince(now);
+        }
+
+        if (current >= max) {
+            long overMature = (long) (SeedSeasonsConfig.overMatureDays() * TICKS_PER_DAY);
+            if (record.matureSince() > 0L && overMature > 0L && now - record.matureSince() >= overMature) {
+                settlement.withered++;
+                removed.add(pos);
+                level.destroyBlock(pos, false);
+                return true;
+            }
+            settlement.mature++;
+            return false;
         }
 
         boolean fertile = ModFertility.isCropFertile(blockId, level, pos);
