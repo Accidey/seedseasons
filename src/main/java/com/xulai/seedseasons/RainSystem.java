@@ -37,6 +37,8 @@ public final class RainSystem {
     private static final double TICKS_PER_DAY = 24000.0D;
     private static final long HANDLING_INTERVAL = 100L;
     private static final int CANDIDATE_LIMIT = 4096;
+    private static final int SAMPLES_PER_CHUNK = 2;
+    private static final int BASIN_REACH = 8;
     private static final String BETTER_DAYS = "betterdays";
     private static final String BETTER_DAYS_CONFIG = "betterdays-common.toml";
 
@@ -231,7 +233,7 @@ public final class RainSystem {
                 continue;
             }
             BlockState current = chunk.getBlockState(pos);
-            if (!current.isAir() || !current.getFluidState().isEmpty() || !chunk.getBlockState(pos.below()).getFluidState().isEmpty()) {
+            if ((!current.isAir() && !current.canBeReplaced()) || !current.getFluidState().isEmpty() || !chunk.getBlockState(pos.below()).getFluidState().isEmpty()) {
                 iterator.remove();
                 continue;
             }
@@ -264,32 +266,58 @@ public final class RainSystem {
 
     private static void sampleColumn(ServerLevel level, LevelChunk chunk, RainState state) {
         RandomSource random = level.getRandom();
-        int x = chunk.getPos().getMinBlockX() + random.nextInt(16);
-        int z = chunk.getPos().getMinBlockZ() + random.nextInt(16);
-        int surface = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, x & 15, z & 15);
-        BlockPos pos = new BlockPos(x, surface, z);
-        if (state.puddles.containsKey(pos) || state.puddles.size() >= CANDIDATE_LIMIT) {
-            return;
+        for (int attempt = 0; attempt < SAMPLES_PER_CHUNK; attempt++) {
+            if (state.puddles.size() >= CANDIDATE_LIMIT) {
+                return;
+            }
+            int x = chunk.getPos().getMinBlockX() + random.nextInt(16);
+            int z = chunk.getPos().getMinBlockZ() + random.nextInt(16);
+            int surface = surfaceAt(level, x, z);
+            if (surface == Integer.MIN_VALUE) {
+                continue;
+            }
+            BlockPos pos = new BlockPos(x, surface, z);
+            if (state.puddles.containsKey(pos)) {
+                continue;
+            }
+            BlockState at = level.getBlockState(pos);
+            if (!at.isAir() && !at.canBeReplaced()) {
+                continue;
+            }
+            if (!at.getFluidState().isEmpty() || !level.getFluidState(pos.below()).isEmpty()) {
+                continue;
+            }
+            if (!level.isRainingAt(pos) || !enclosed(level, pos)) {
+                continue;
+            }
+            state.puddles.put(pos, 0.0D);
         }
-        BlockState at = chunk.getBlockState(pos);
-        if (!at.isAir() || !at.getFluidState().isEmpty() || !chunk.getBlockState(pos.below()).getFluidState().isEmpty()) {
-            return;
-        }
-        if (!level.isRainingAt(pos)) {
-            return;
-        }
+    }
+
+    private static int surfaceAt(ServerLevel level, int x, int z) {
+        LevelChunk chunk = level.getChunkSource().getChunkNow(x >> 4, z >> 4);
+        return chunk == null ? Integer.MIN_VALUE : chunk.getHeight(Heightmap.Types.MOTION_BLOCKING, x & 15, z & 15);
+    }
+
+    private static boolean enclosed(ServerLevel level, BlockPos pos) {
+        int surface = pos.getY();
         for (Direction direction : Direction.Plane.HORIZONTAL) {
-            int nx = pos.getX() + direction.getStepX();
-            int nz = pos.getZ() + direction.getStepZ();
-            LevelChunk neighbor = level.getChunkSource().getChunkNow(nx >> 4, nz >> 4);
-            if (neighbor == null) {
-                return;
+            boolean rising = false;
+            for (int distance = 1; distance <= BASIN_REACH; distance++) {
+                int other = surfaceAt(level, pos.getX() + direction.getStepX() * distance, pos.getZ() + direction.getStepZ() * distance);
+                if (other < surface) {
+                    return false;
+                }
+                if (other > surface) {
+                    rising = true;
+                    break;
+                }
             }
-            if (neighbor.getHeight(Heightmap.Types.WORLD_SURFACE, nx & 15, nz & 15) <= surface) {
-                return;
+            if (!rising) {
+                return false;
             }
         }
-        state.puddles.put(pos, 0.0D);
+        return true;
     }
 
     private static double fillDays(int level) {
