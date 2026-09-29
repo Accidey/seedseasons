@@ -46,7 +46,7 @@
 - 每块**种了作物**的耕地每天扣 1 点水；空着的耕地不消耗。10 块田一天抽干一格水，单块十天。
 - 缺水（水源耗尽，或该田没被任何水源覆盖）：当次结算不推进成长并开始计时；`dryWitherDays` 天后枯死、耕地变回泥土。
 - **水量见底时水方块会被替换成空气**（用 flag 2 写入，不触发邻接更新，避免旁边的水立刻补回来）；玩家重新倒水即视为新水源、水量满格。
-- 每日结算会打一行 INFO 日志（`seedseasons daily crop settlement at day N: X tracked chunk(s) in ...`），用于确认结算是否触发。
+- 每日结算会打 INFO 日志（每个维度一行 + 每个区块一行：`chunk [x, z]: N crop(s) left, M withered this settlement, K stale record(s)`），用于确认结算是否触发、作物是否在死。
 - 补水：拿水桶右键水源即回满（非创造换成空桶）。
 - 豁免是两个**互相独立**的开关，默认都关闭豁免（即一律消耗）：
   - `consumeNaturalWater`（默认 true）：河流、海洋等水构成的生物群系里的水照常被消耗；设为 false 后这些水永不减少（按原版 `#minecraft:is_river`、`#minecraft:is_ocean` 标签判定），鼓励在河边、岸边种植。

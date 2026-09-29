@@ -122,6 +122,7 @@ public final class CropLifecycle {
             if (states.sources().isEmpty()) {
                 continue;
             }
+            int before = states.sources().size();
             List<BlockPos> stale = new ArrayList<>();
             List<BlockPos> removed = new ArrayList<>();
             boolean changed = false;
@@ -143,6 +144,7 @@ public final class CropLifecycle {
             for (BlockPos pos : removed) {
                 states.remove(pos);
             }
+            SeedSeasons.LOGGER.info("  chunk [{}, {}]: {} crop(s) left, {} withered this settlement, {} stale record(s)", chunkPos.x, chunkPos.z, states.sources().size(), before - states.sources().size(), stale.size());
             if (changed || !stale.isEmpty() || !removed.isEmpty()) {
                 chunk.setUnsaved(true);
                 CropStates.sync(chunk);
