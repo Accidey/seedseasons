@@ -188,12 +188,14 @@ public final class SeedSeasonsConfig {
         WATER_PER_SOURCE = builder
                 .comment(
                         "",
-                        " 一格水的水量，等于它同时能养活的耕地数：水源只湿润离它最近的这么多块耕地，其余的会干涸并变回泥土。",
-                        " 每块种了作物的耕地每天抽走 1 点水，空着的耕地不消耗；所以 10 块田正好一天用完一格水，5 块田两天，单块十天。",
+                        " 一格水能滋润的耕地数：只滋润离它最近的这么多块，其余的作物拿不到水。",
+                        " 每天 6 点结算时，只要这些耕地里种着任意一株作物，结算完成长后这格水就会被替换成空气；一块作物都没种时水不消耗。",
+                        " 水被抽走后，到第二天 6 点前没补回来，作物就会枯死、耕地变回泥土（补水就是重新倒一格静止水源）。",
                         " 只有静止的水源方块算数，流动的水不算。",
                         "",
-                        " The amount of water in one source, equal to the number of plots it can keep alive: it only keeps the nearest ones moist, the rest dry out and revert to dirt.",
-                        " Each planted plot drains one unit per MC day while empty plots drain nothing, so ten plots empty one source in a day, five in two days, and a single plot in ten days.",
+                        " How many farmland plots one water source keeps watered: only the nearest ones, crops on the rest get nothing.",
+                        " At each 6 AM settlement, if any of those plots holds a crop, the water block is replaced with air right after the growth is applied; an empty field leaves the water alone.",
+                        " A crop that is not watered again before the next 6 AM withers and its farmland reverts to dirt.",
                         " Only still water source blocks count, flowing water does not.")
                 .defineInRange("waterPerSource", 10, 1, 1000);
 

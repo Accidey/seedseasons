@@ -46,7 +46,7 @@ public final class CropLifecycle {
     private static final Map<ResourceKey<Level>, Long> LAST_DAYS = new HashMap<>();
     private static final Map<ResourceKey<Level>, Set<Long>> CROP_CHUNKS = new HashMap<>();
 
-    private static double drained;
+    private static final Set<BlockPos> DRAINED = new HashSet<>();
 
     private CropLifecycle() {
     }
@@ -126,7 +126,6 @@ public final class CropLifecycle {
                 continue;
             }
             int before = states.sources().size();
-            drained = 0.0D;
             List<BlockPos> stale = new ArrayList<>();
             List<BlockPos> removed = new ArrayList<>();
             boolean changed = false;
@@ -152,12 +151,19 @@ public final class CropLifecycle {
             for (CropState state : states.sources().values()) {
                 total += state.progress();
             }
-            SeedSeasons.LOGGER.info("  chunk [{}, {}]: {} crop(s) left, {} withered this settlement, {} stale record(s), total progress {}, water drained {}", chunkPos.x, chunkPos.z, states.sources().size(), before - states.sources().size(), stale.size(), String.format(Locale.ROOT, "%.3f", total), String.format(Locale.ROOT, "%.0f", drained));
+            SeedSeasons.LOGGER.info("  chunk [{}, {}]: {} crop(s) left, {} withered this settlement, {} stale record(s), total progress {}", chunkPos.x, chunkPos.z, states.sources().size(), before - states.sources().size(), stale.size(), String.format(Locale.ROOT, "%.3f", total));
             if (changed || !stale.isEmpty() || !removed.isEmpty()) {
                 chunk.setUnsaved(true);
                 CropStates.sync(chunk);
             }
         }
+        for (BlockPos pos : DRAINED) {
+            WaterNetwork.drain(level, pos);
+        }
+        if (!DRAINED.isEmpty()) {
+            SeedSeasons.LOGGER.info("  {} water block(s) consumed and removed", DRAINED.size());
+        }
+        DRAINED.clear();
     }
 
     private static boolean step(ServerLevel level, BlockPos pos, BlockState state, IntegerProperty age, CropState record, RandomSource random, List<BlockPos> removed) {
@@ -179,11 +185,10 @@ public final class CropLifecycle {
         BlockPos farmlandPos = pos.below();
         if (SeedSeasonsConfig.enableCropWater() && level.getBlockState(farmlandPos).getBlock() instanceof FarmBlock) {
             BlockPos sourcePos = WaterNetwork.servingSource(level, farmlandPos);
-            WaterSource source = sourcePos == null ? null : WaterNetwork.sourceAt(level, sourcePos);
-            if (source == null || source.level() <= 0.0D) {
+            if (sourcePos == null) {
                 if (record.drySince() <= 0L) {
                     record.setDrySince(now);
-                } else if (SeedSeasonsConfig.dryWitherDays() > 0.0D && now - record.drySince() > SeedSeasonsConfig.dryWitherDays() * TICKS_PER_DAY) {
+                } else if (SeedSeasonsConfig.dryWitherDays() > 0.0D && now - record.drySince() >= SeedSeasonsConfig.dryWitherDays() * TICKS_PER_DAY) {
                     removed.add(pos);
                     level.destroyBlock(pos, false);
                     level.setBlock(farmlandPos, Blocks.DIRT.defaultBlockState(), 3);
@@ -191,10 +196,9 @@ public final class CropLifecycle {
                 return true;
             }
             if (!WaterNetwork.isInfinite(level, sourcePos)) {
-                WaterNetwork.consume(level, sourcePos, 1.0D);
-                drained += 1.0D;
+                DRAINED.add(sourcePos);
             }
-            record.setDrySince(-1L);
+            record.setDrySince(now);
         }
 
         boolean fertile = ModFertility.isCropFertile(blockId, level, pos);

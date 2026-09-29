@@ -96,35 +96,8 @@ public final class SeedSeasonsEvents {
         if (!(event.getLevel() instanceof ServerLevel level)) {
             return;
         }
-        if (event.getItemStack().is(Items.WATER_BUCKET)) {
-            refillWater(level, event);
-            return;
-        }
         if (event.getItemStack().getItem() instanceof BoneMealItem && SeedSeasonsConfig.enableCropLifecycle()) {
             warnOutOfSeason(level, event);
-        }
-    }
-
-    private static void refillWater(ServerLevel level, PlayerInteractEvent.RightClickBlock event) {
-        if (!SeedSeasonsConfig.enableCropWater()) {
-            return;
-        }
-        BlockPos pos = event.getPos();
-        if (!WaterNetwork.refill(level, pos)) {
-            return;
-        }
-
-        event.setCanceled(true);
-        event.setCancellationResult(InteractionResult.SUCCESS);
-        if (!(event.getEntity() instanceof Player player)) {
-            return;
-        }
-        if (!player.getAbilities().instabuild) {
-            player.setItemInHand(event.getHand(), new ItemStack(Items.BUCKET));
-        }
-        WaterSource source = WaterNetwork.sourceAt(level, pos);
-        if (source != null) {
-            player.displayClientMessage(Component.translatable("seedseasons.message.water_refilled", GrowthDays.trim(source.level())), true);
         }
     }
 

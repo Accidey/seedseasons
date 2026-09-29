@@ -45,16 +45,6 @@ public final class WaterNetwork {
         return biome.is(BiomeTags.IS_RIVER) || biome.is(BiomeTags.IS_OCEAN);
     }
 
-    private static boolean isVanillaInfinite(LevelReader level, BlockPos pos) {
-        int adjacent = 0;
-        for (Direction direction : Direction.Plane.HORIZONTAL) {
-            if (isWaterSource(level, pos.relative(direction))) {
-                adjacent++;
-            }
-        }
-        return adjacent >= 2;
-    }
-
     public static BlockPos servingSource(ServerLevel level, BlockPos farmlandPos) {
         BlockPos best = null;
         double bestDistance = Double.MAX_VALUE;
@@ -79,50 +69,27 @@ public final class WaterNetwork {
         if (!isWaterSource(level, waterPos)) {
             return null;
         }
-        LevelChunk chunk = level.getChunkAt(waterPos);
-        WaterStates states = WaterStates.of(chunk);
-        WaterSource source = states.get(waterPos);
-        if (source == null) {
-            source = new WaterSource(SeedSeasonsConfig.waterPerSource());
-            states.put(waterPos, source);
-            chunk.setUnsaved(true);
-        } else if (source.level() > SeedSeasonsConfig.waterPerSource()) {
-            source.setLevel(SeedSeasonsConfig.waterPerSource());
-            chunk.setUnsaved(true);
-        }
-        return source;
+        return WaterStates.of(level.getChunkAt(waterPos)).getOrCreate(waterPos);
     }
 
-    public static void consume(ServerLevel level, BlockPos waterPos, double amount) {
-        WaterSource source = sourceAt(level, waterPos);
-        if (source == null || amount <= 0.0D) {
-            return;
-        }
-        double remaining = source.level() - amount;
-        LevelChunk chunk = level.getChunkAt(waterPos);
-        if (remaining > 0.0D) {
-            source.setLevel(remaining);
-            chunk.setUnsaved(true);
-            return;
-        }
-        WaterStates.of(chunk).remove(waterPos);
-        chunk.setUnsaved(true);
+    public static void drain(ServerLevel level, BlockPos waterPos) {
+        WaterStates.of(level.getChunkAt(waterPos)).remove(waterPos);
         level.setBlock(waterPos, Blocks.AIR.defaultBlockState(), 2);
-    }
-
-    public static boolean refill(ServerLevel level, BlockPos waterPos) {
-        WaterSource source = sourceAt(level, waterPos);
-        if (source == null) {
-            return false;
-        }
-        source.setLevel(SeedSeasonsConfig.waterPerSource());
-        level.getChunkAt(waterPos).setUnsaved(true);
-        return true;
     }
 
     private static boolean isWaterSource(LevelReader level, BlockPos pos) {
         FluidState fluid = level.getFluidState(pos);
         return fluid.is(FluidTags.WATER) && fluid.isSource();
+    }
+
+    private static boolean isVanillaInfinite(LevelReader level, BlockPos pos) {
+        int adjacent = 0;
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            if (isWaterSource(level, pos.relative(direction))) {
+                adjacent++;
+            }
+        }
+        return adjacent >= 2;
     }
 
     private static Set<Long> servedFarmlands(ServerLevel level, BlockPos waterPos, WaterSource source) {
