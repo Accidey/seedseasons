@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -144,7 +145,11 @@ public final class CropLifecycle {
             for (BlockPos pos : removed) {
                 states.remove(pos);
             }
-            SeedSeasons.LOGGER.info("  chunk [{}, {}]: {} crop(s) left, {} withered this settlement, {} stale record(s)", chunkPos.x, chunkPos.z, states.sources().size(), before - states.sources().size(), stale.size());
+            double total = 0.0D;
+            for (CropState state : states.sources().values()) {
+                total += state.progress();
+            }
+            SeedSeasons.LOGGER.info("  chunk [{}, {}]: {} crop(s) left, {} withered this settlement, {} stale record(s), total progress {}", chunkPos.x, chunkPos.z, states.sources().size(), before - states.sources().size(), stale.size(), String.format(Locale.ROOT, "%.3f", total));
             if (changed || !stale.isEmpty() || !removed.isEmpty()) {
                 chunk.setUnsaved(true);
                 CropStates.sync(chunk);
