@@ -46,6 +46,8 @@ public final class CropLifecycle {
     private static final Map<ResourceKey<Level>, Long> LAST_DAYS = new HashMap<>();
     private static final Map<ResourceKey<Level>, Set<Long>> CROP_CHUNKS = new HashMap<>();
 
+    private static double drained;
+
     private CropLifecycle() {
     }
 
@@ -124,6 +126,7 @@ public final class CropLifecycle {
                 continue;
             }
             int before = states.sources().size();
+            drained = 0.0D;
             List<BlockPos> stale = new ArrayList<>();
             List<BlockPos> removed = new ArrayList<>();
             boolean changed = false;
@@ -149,7 +152,7 @@ public final class CropLifecycle {
             for (CropState state : states.sources().values()) {
                 total += state.progress();
             }
-            SeedSeasons.LOGGER.info("  chunk [{}, {}]: {} crop(s) left, {} withered this settlement, {} stale record(s), total progress {}", chunkPos.x, chunkPos.z, states.sources().size(), before - states.sources().size(), stale.size(), String.format(Locale.ROOT, "%.3f", total));
+            SeedSeasons.LOGGER.info("  chunk [{}, {}]: {} crop(s) left, {} withered this settlement, {} stale record(s), total progress {}, water drained {}", chunkPos.x, chunkPos.z, states.sources().size(), before - states.sources().size(), stale.size(), String.format(Locale.ROOT, "%.3f", total), String.format(Locale.ROOT, "%.0f", drained));
             if (changed || !stale.isEmpty() || !removed.isEmpty()) {
                 chunk.setUnsaved(true);
                 CropStates.sync(chunk);
@@ -189,6 +192,7 @@ public final class CropLifecycle {
             }
             if (!WaterNetwork.isInfinite(level, sourcePos)) {
                 WaterNetwork.consume(level, sourcePos, 1.0D);
+                drained += 1.0D;
             }
             record.setDrySince(-1L);
         }
