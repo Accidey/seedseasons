@@ -26,6 +26,7 @@ public final class SeedSeasonsConfig {
     private static final ModConfigSpec.BooleanValue ENABLE_CROP_WATER;
     private static final ModConfigSpec.IntValue WATER_PER_SOURCE;
     private static final ModConfigSpec.BooleanValue CONSUME_NATURAL_WATER;
+    private static final ModConfigSpec.BooleanValue CONSUME_INFINITE_WATER;
     private static final ModConfigSpec.DoubleValue DRY_WITHER_DAYS;
 
     private static volatile ModConfig modConfig;
@@ -208,6 +209,18 @@ public final class SeedSeasonsConfig {
                         " Set it to false to make that water never run out, judged by the vanilla #minecraft:is_river and #minecraft:is_ocean tags, which rewards farming along rivers and coasts.")
                 .define("consumeNaturalWater", true);
 
+        CONSUME_INFINITE_WATER = builder
+                .comment(
+                        "",
+                        " 原版意义上的「无限水」（周围有两格及以上水源、挖掉就会被原版补回来的水）是否也照常被作物消耗。",
+                        " 这一条和上面的生物群系判定互相独立：默认 true，玩家自建的无限水池、天然湖泊一样会被抽干。",
+                        " 设为 false：这类水不再减少（注意它同时也覆盖天然湖泊，因为它们和玩家水池在机制上无法区分）。",
+                        "",
+                        " Whether vanilla-style infinite water (a source that has two or more neighbouring sources and would be refilled by vanilla) is also drained by crops.",
+                        " This is independent of the biome check above: it defaults to true, so player-built infinite pools and natural lakes both run dry.",
+                        " Set it to false to keep that water from ever running out, which also covers lakes because they are mechanically indistinguishable from player pools.")
+                .define("consumeInfiniteWater", true);
+
         DRY_WITHER_DAYS = builder
                 .comment(
                         "",
@@ -274,6 +287,10 @@ public final class SeedSeasonsConfig {
 
     public static boolean consumeNaturalWater() {
         return CONSUME_NATURAL_WATER.get();
+    }
+
+    public static boolean consumeInfiniteWater() {
+        return CONSUME_INFINITE_WATER.get();
     }
 
     public static double dryWitherDays() {

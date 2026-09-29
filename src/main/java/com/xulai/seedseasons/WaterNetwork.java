@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BiomeTags;
@@ -37,11 +38,24 @@ public final class WaterNetwork {
     }
 
     public static boolean isInfinite(ServerLevel level, BlockPos waterPos) {
+        if (!SeedSeasonsConfig.consumeInfiniteWater() && isVanillaInfinite(level, waterPos)) {
+            return true;
+        }
         if (SeedSeasonsConfig.consumeNaturalWater()) {
             return false;
         }
         Holder<Biome> biome = level.getBiome(waterPos);
         return biome.is(BiomeTags.IS_RIVER) || biome.is(BiomeTags.IS_OCEAN);
+    }
+
+    private static boolean isVanillaInfinite(LevelReader level, BlockPos pos) {
+        int adjacent = 0;
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            if (isWaterSource(level, pos.relative(direction))) {
+                adjacent++;
+            }
+        }
+        return adjacent >= 2;
     }
 
     public static BlockPos servingSource(ServerLevel level, BlockPos farmlandPos) {
