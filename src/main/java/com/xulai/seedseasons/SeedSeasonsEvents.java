@@ -76,12 +76,14 @@ public final class SeedSeasonsEvents {
     public static void onServerTick(ServerTickEvent.Post event) {
         SeasonMapping.operate();
         CropLifecycle.dailyTick(event.getServer());
+        RainSystem.serverTick(event.getServer());
     }
 
     @SubscribeEvent
     public static void onChunkLoad(ChunkEvent.Load event) {
         if (event.getChunk() instanceof LevelChunk chunk) {
             CropLifecycle.onChunkLoad(chunk);
+            RainSystem.onChunkLoad(chunk);
         }
     }
 
@@ -89,6 +91,7 @@ public final class SeedSeasonsEvents {
     public static void onChunkUnload(ChunkEvent.Unload event) {
         if (event.getChunk() instanceof LevelChunk chunk) {
             CropLifecycle.onChunkUnload(chunk);
+            RainSystem.onChunkUnload(chunk);
         }
     }
 

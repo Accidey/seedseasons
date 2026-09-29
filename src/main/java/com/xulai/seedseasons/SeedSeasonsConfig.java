@@ -15,7 +15,6 @@ public final class SeedSeasonsConfig {
 
     private static final ModConfigSpec.ConfigValue<List<? extends String>> SEED_SEASONS;
     private static final ModConfigSpec.BooleanValue ENABLE_CROP_LIFECYCLE;
-    private static final ModConfigSpec.DoubleValue DEFAULT_GROWTH_DAYS;
     private static final ModConfigSpec.ConfigValue<List<? extends String>> GROWTH_DAYS;
     private static final ModConfigSpec.DoubleValue WITHER_CHANCE;
     private static final ModConfigSpec.DoubleValue NEAR_MATURE_CHANCE;
@@ -29,6 +28,14 @@ public final class SeedSeasonsConfig {
     private static final ModConfigSpec.BooleanValue CONSUME_NATURAL_WATER;
     private static final ModConfigSpec.BooleanValue CONSUME_INFINITE_WATER;
     private static final ModConfigSpec.DoubleValue DRY_WITHER_DAYS;
+    private static final ModConfigSpec.BooleanValue ENABLE_RAIN_WATER;
+    private static final ModConfigSpec.DoubleValue MIN_RAIN_HOURS;
+    private static final ModConfigSpec.DoubleValue RAIN_CHECK_HOURS;
+    private static final ModConfigSpec.DoubleValue DRIZZLE_FILL_DAYS;
+    private static final ModConfigSpec.DoubleValue LIGHT_RAIN_FILL_DAYS;
+    private static final ModConfigSpec.DoubleValue MODERATE_RAIN_FILL_DAYS;
+    private static final ModConfigSpec.DoubleValue HEAVY_RAIN_FILL_DAYS;
+    private static final ModConfigSpec.DoubleValue TORRENTIAL_FILL_DAYS;
 
     private static volatile ModConfig modConfig;
 
@@ -43,7 +50,7 @@ public final class SeedSeasonsConfig {
                         " 默认留空：数据包照常生效，这里只写你想额外补充或延长季节的作物；列表为空时即不额外施加任何限制。",
                         " 物品按它种下去的方块生效，所以写种子物品或作物方块都可以。",
                         " 同一个 id 写多条时季节会叠加，想减少季节就把该 id 的季节写在一行里。",
-                        " 写错的条目会被单独忽略并在日志里提示，不影响其它条目和作物。",
+                        " 写错的条目会被单独忽略，不影响其它条目和作物。",
                         " 手持物品执行 /seedseasons add <季节...> 写入（对同一作物重复执行会累加季节）、/seedseasons remove 移除整条。",
                         " 保存文件或应用配置界面即生效，不需要重启游戏。",
                         "",
@@ -55,7 +62,7 @@ public final class SeedSeasonsConfig {
                         " Empty by default: the datapack stays in charge, so only list the crops whose seasons you want to add to or extend.",
                         " Items work through the block they plant, so the seed item and the crop block behave the same.",
                         " Entries for the same id stack, so list every wanted season of an id in one entry.",
-                        " Entries that cannot be parsed are ignored individually with a log warning, without affecting the other entries or crops.",
+                        " Entries that cannot be parsed are ignored individually, without affecting the other entries or crops.",
                         " Holding an item, run /seedseasons add <seasons...> to write it here (repeating it for one crop adds up its seasons), or /seedseasons remove to delete the whole entry.",
                         " Saving the file or applying the config screen takes effect live, no restart needed.")
                 .defineListAllowEmpty("seedSeasons", List.of(), () -> "", value -> value instanceof String);
@@ -70,53 +77,28 @@ public final class SeedSeasonsConfig {
                         " When disabled, crops grow by vanilla random ticks again while the season restrictions of Serene Seasons still apply.")
                 .define("enableCropLifecycle", true);
 
-        DEFAULT_GROWTH_DAYS = builder
-                .comment(
-                        "",
-                        " 没有在 growthDays 里单独列出的作物（比如其他模组的作物），成熟所需的天数。",
-                        " 1 天 = 一个完整昼夜循环，所以日夜长短的设置会直接改变现实耗时。",
-                        " 默认 24 天 = 一个季节一熟，和下面默认值的推算口径一致。",
-                        " 例：0.5 表示半天成熟；2 表示两天成熟。",
-                        "",
-                        " Maturation time in MC days for crops that are not listed in growthDays, such as crops from other mods.",
-                        " One day is a full day-night cycle, so the configured day and night length applies directly.",
-                        " The default of 24 days equals one harvest per season, matching how the defaults below are derived.",
-                        " Example: 0.5 means half a day, 2 means two days.")
-                .defineInRange("defaultGrowthDays", 24.0D, 0.01D, 1000.0D);
-
         GROWTH_DAYS = builder
                 .comment(
                         "",
                         " 每行一条：<物品或方块 id> <天数>，天数可以是小数。",
                         " 例：\"minecraft:wheat 2\"、\"minecraft:carrot 0.5\"；写种子物品或作物方块都一样。",
-                        " 默认值按「一个季节一熟、只能种一季的作物两熟」推算：一个季节 = 3 个子季节 × 子季节时长（四季默认 8 天）= 24 天，",
-                        " 所以能跨 2 个及以上季节生长的作物给 24 天（每季收一次），只在 1 个季节生长的作物给 12 天（当季收两次）。",
-                        " 如果改了四季的子季节时长，这里要按同样比例调整。",
-                        " 同一个 id 写多条时以最后一条为准；写错的条目会被单独忽略并在日志里提示。",
+                        " 列表默认留空：没列出的作物按静谧四季实际配置的季节时长自动推算——一个季节 = 3 个子季 × 子季时长，",
+                        " 跨 2 个季节及以上（含全年）的作物按一个季节一熟，只在 1 个季节生长的作物按当季两熟（减半）；",
+                        " 在这里列出的条目会覆盖推算值。改了四季的子季时长后，没列出的作物会自动跟随，列出的要手动调整。",
+                        " 同一个 id 写多条时以最后一条为准；写错的条目会被单独忽略。",
                         " 手持物品执行 /seedseasons growth <天数> 写入、/seedseasons growth remove 移除。",
                         " 只对作物类方块生效：作物、茎、下界疣、可可豆、甜浆果丛及其子类；竹子、藤蔓等保持原版。",
                         "",
                         " One entry per line: <item or block id> <days>, the day count may be fractional.",
                         " Example: \"minecraft:wheat 2\", \"minecraft:carrot 0.5\"; the seed item and the crop block behave the same.",
-                        " The defaults follow one harvest per season, and two for crops limited to a single season: a season is 3 sub-seasons times the sub-season length (8 days by default) = 24 days,",
-                        " so crops that grow in two or more seasons get 24 days and crops limited to one season get 12 days.",
-                        " If you change the Serene Seasons sub-season length, rescale these values the same way.",
-                        " The last entry of an id wins; broken entries are ignored individually with a log warning.",
+                        " The list is empty by default: crops that are not listed derive their days from the season length actually configured in Serene Seasons -",
+                        " a season is 3 sub-seasons times the sub-season length; crops spanning two or more seasons (year-round included) get one harvest per season,",
+                        " crops limited to a single season get two (halved); entries listed here override the derivation. If you change the Serene Seasons sub-season length,",
+                        " unlisted crops follow automatically while listed ones need manual rescaling.",
+                        " The last entry of an id wins; broken entries are ignored individually.",
                         " Holding an item, run /seedseasons growth <days> to write it here, or /seedseasons growth remove to delete it.",
                         " Only crop blocks are affected: crops, stems, nether wart, cocoa, sweet berry bush and their subclasses; bamboo and vines stay vanilla.")
-                .defineListAllowEmpty("growthDays", List.of(
-                        "minecraft:wheat_seeds 24",
-                        "minecraft:carrot 24",
-                        "minecraft:nether_wart 24",
-                        "minecraft:sweet_berries 24",
-                        "minecraft:potato 12",
-                        "minecraft:beetroot_seeds 12",
-                        "minecraft:melon_seeds 12",
-                        "minecraft:pumpkin_seeds 12",
-                        "minecraft:torchflower_seeds 12",
-                        "minecraft:pitcher_pod 12",
-                        "minecraft:cocoa_beans 12"
-                ), () -> "", value -> value instanceof String);
+                .defineListAllowEmpty("growthDays", List.of(), () -> "", value -> value instanceof String);
 
         WITHER_CHANCE = builder
                 .comment(
@@ -186,9 +168,11 @@ public final class SeedSeasonsConfig {
                 .comment(
                         "",
                         " 每次施肥增加的成熟进度比例，0.1 表示一次长 10%。",
-                        " 实际效果取「该进度」与「一个完整生长阶段」中更大的那个：阶段数少的作物（可可豆只有 2 级）按 10% 算不足一级，仍会直接长一级，所以每次有效施肥都看得见变化。",
+                        " 施肥不在当下生效：先记下待结算的层数，在下一次每天 6 点的结算里一次性叠加。",
+                        " 实际效果取「该进度」与「一个完整生长阶段」中更大的那个：阶段数少的作物（可可豆只有 2 级）按 10% 算不足一级，仍会直接长一级，所以每层有效施肥都看得见变化。",
                         "",
                         " Maturity progress added by each accepted bone meal, 0.1 means 10% per use.",
+                        " Bone meal does not apply instantly: uses are queued and all stack at the next 6 AM settlement.",
                         " The actual gain is the larger of that progress and one full growth stage, so crops with few stages (cocoa has only two) still advance a visible stage per use.")
                 .defineInRange("boneMealProgress", 0.1D, 0.01D, 1.0D);
 
@@ -252,6 +236,82 @@ public final class SeedSeasonsConfig {
                         " 0 means the crop only stops growing and never dies of thirst.")
                 .defineInRange("dryWitherDays", 1.0D, 0.0D, 1000.0D);
 
+        ENABLE_RAIN_WATER = builder
+                .comment(
+                        "",
+                        " 是否启用雨天系统：雨强分为毛毛细雨、小雨、中雨、大雨、暴雨五档，随季节与时间随机变化并在聊天框提示；",
+                        " 雨天露天耕地免耗水，雨下满 minRainHours 后露天作物无需水方块也能生长，低洼地表还会逐渐积水成水源。",
+                        "",
+                        " Whether the rain system is enabled: rain intensity has five grades (drizzle, light, moderate, heavy, torrential) that drift with the season and are announced in chat;",
+                        " exposed farmland stops consuming water while it rains, crops grow without water blocks once it has rained for minRainHours, and low ground gradually accumulates water.")
+                .define("enableRainWater", true);
+
+        MIN_RAIN_HOURS = builder
+                .comment(
+                        "",
+                        " 作物靠雨水生长（不需要水方块）时，本次降雨要持续满这么多小时才生效，只对真的淋到雨（不在屋檐树冠下、当地此刻下的是雨不是雪）的作物有效。",
+                        " 这里的小时按天气自身的推进速度算（1 小时 = 1000 tick），不随时间倍速变化；原版一场雨约 12~24 小时，所以默认 12 表示「下到后半段才开始靠雨生长」。",
+                        " 设为 0 表示下雨即生效。",
+                        "",
+                        " How many hours the current rain must have lasted before crops can grow on rain alone, without a water block; this only counts crops that are actually getting wet (not under a roof or leaves, and where the local precipitation is rain rather than snow).",
+                        " These hours run on the weather's own clock (1 hour = 1000 ticks) and ignore any time-speed mod; a vanilla rain lasts about 12-24 of these hours, so the default 12 means crops start feeding off the rain in the second half of a storm.",
+                        " 0 means it takes effect as soon as it rains.")
+                .defineInRange("minRainHours", 12.0D, 0.0D, 24.0D);
+
+        RAIN_CHECK_HOURS = builder
+                .comment(
+                        "",
+                        " 每场雨开始、以及每次雨强变化后，当前档位都会先随机保持 1~5 小时不变。",
+                        " 稳定期过后，每隔这么多小时（1 小时 = 1000 tick，按天气自身的推进速度算）判定一次雨强要不要变化：约一半概率维持、四分之一升一档、四分之一降一档，不会跳档。",
+                        "",
+                        " After each rain start and each intensity change, the current grade is locked for a random 1-5 hours first.",
+                        " After that stable period, the intensity is re-rolled this often, in hours of the weather's own clock (1 hour = 1000 ticks): roughly half the time it stays, a quarter it steps up, a quarter it steps down, never jumping grades.")
+                .defineInRange("rainCheckHours", 1.0D, 0.0D, 100.0D);
+
+        DRIZZLE_FILL_DAYS = builder
+                .comment(
+                        "",
+                        " 下面五项是各雨强填满一个坑需要的连续降雨天数（进度雨停清零，坑必须在单场雨里填满才出水）。",
+                        " 这些天数按天气自己的推进速度计（1 天 = 24000 tick），原版一场雨长 12000~24000 tick，即 0.5~1 天，所以这一组数值的上限就是 1 天。",
+                        " 毛毛细雨：最温柔也最慢，要连续淋满 1 天，只有碰上最长的那场雨才积得满。",
+                        "",
+                        " The next five entries are the continuous rainy days each grade needs to fill a hollow (progress resets when the rain stops, so a hollow must be filled within a single rain).",
+                        " These day counts run on the weather's own clock (1 day = 24000 ticks); a vanilla rain lasts 12000-24000 ticks, that is 0.5-1 day, which is why 1 day is the top of this scale.",
+                        " Drizzle: the gentlest and slowest, a full day of it, so hollows only fill during the longest storms.")
+                .defineInRange("drizzleFillDays", 1.0D, 0.01D, 100.0D);
+
+        LIGHT_RAIN_FILL_DAYS = builder
+                .comment(
+                        "",
+                        " 小雨填满一个坑需要的连续降雨天数（3/4 天）。",
+                        "",
+                        " Continuous rainy days of light rain needed to fill a hollow (three quarters of a day).")
+                .defineInRange("lightRainFillDays", 0.75D, 0.01D, 100.0D);
+
+        MODERATE_RAIN_FILL_DAYS = builder
+                .comment(
+                        "",
+                        " 中雨填满一个坑需要的连续降雨天数（半天，也就是最短的一场雨刚好积满）。",
+                        "",
+                        " Continuous rainy days of moderate rain needed to fill a hollow (half a day, exactly the shortest rain there is).")
+                .defineInRange("moderateRainFillDays", 0.5D, 0.01D, 100.0D);
+
+        HEAVY_RAIN_FILL_DAYS = builder
+                .comment(
+                        "",
+                        " 大雨填满一个坑需要的连续降雨天数（约三分之一场雨）。",
+                        "",
+                        " Continuous rainy days of heavy rain needed to fill a hollow (about a third of a storm).")
+                .defineInRange("heavyRainFillDays", 0.3D, 0.01D, 100.0D);
+
+        TORRENTIAL_FILL_DAYS = builder
+                .comment(
+                        "",
+                        " 暴雨填满一个坑需要的连续降雨天数：0.15 天即可，一场暴雨足以让洼地处处积水。",
+                        "",
+                        " Continuous rainy days of torrential rain needed to fill a hollow: 0.15 of a day, so one storm floods the low ground.")
+                .defineInRange("torrentialFillDays", 0.15D, 0.01D, 100.0D);
+
         SPEC = builder.build();
     }
 
@@ -268,10 +328,6 @@ public final class SeedSeasonsConfig {
 
     public static boolean enableCropLifecycle() {
         return ENABLE_CROP_LIFECYCLE.get();
-    }
-
-    public static double defaultGrowthDays() {
-        return DEFAULT_GROWTH_DAYS.get();
     }
 
     public static double witherChance() {
@@ -320,6 +376,38 @@ public final class SeedSeasonsConfig {
 
     public static double dryWitherDays() {
         return DRY_WITHER_DAYS.get();
+    }
+
+    public static boolean enableRainWater() {
+        return ENABLE_RAIN_WATER.get();
+    }
+
+    public static double minRainHours() {
+        return MIN_RAIN_HOURS.get();
+    }
+
+    public static double rainCheckHours() {
+        return RAIN_CHECK_HOURS.get();
+    }
+
+    public static double drizzleFillDays() {
+        return DRIZZLE_FILL_DAYS.get();
+    }
+
+    public static double lightRainFillDays() {
+        return LIGHT_RAIN_FILL_DAYS.get();
+    }
+
+    public static double moderateRainFillDays() {
+        return MODERATE_RAIN_FILL_DAYS.get();
+    }
+
+    public static double heavyRainFillDays() {
+        return HEAVY_RAIN_FILL_DAYS.get();
+    }
+
+    public static double torrentialFillDays() {
+        return TORRENTIAL_FILL_DAYS.get();
     }
 
     public static boolean saveSeasons(List<String> entries) {

@@ -21,7 +21,7 @@ public final class GrowthDays {
 
     public static double of(String blockId) {
         Double days = byBlock.get(blockId);
-        return days != null ? days : SeedSeasonsConfig.defaultGrowthDays();
+        return days != null ? days : derive(SeasonMapping.externalMaskOf(blockId));
     }
 
     public static double ofItem(Item item) {
@@ -30,13 +30,24 @@ public final class GrowthDays {
         if (days != null) {
             return days;
         }
+        int mask = SeasonMapping.externalMaskOf(itemId);
         if (item instanceof BlockItem blockItem) {
-            days = byBlock.get(BuiltInRegistries.BLOCK.getKey(blockItem.getBlock()).toString());
-            if (days != null) {
-                return days;
+            String blockId = BuiltInRegistries.BLOCK.getKey(blockItem.getBlock()).toString();
+            Double blockDays = byBlock.get(blockId);
+            if (blockDays != null) {
+                return blockDays;
             }
+            mask |= SeasonMapping.externalMaskOf(blockId);
         }
-        return SeedSeasonsConfig.defaultGrowthDays();
+        return derive(mask);
+    }
+
+    private static double derive(int mask) {
+        double seasonDays = SeasonMapping.seasonDays();
+        if (mask == 0) {
+            return seasonDays;
+        }
+        return Integer.bitCount(mask) >= 2 ? seasonDays : seasonDays / 2.0D;
     }
 
     public static boolean set(String itemId, double days) {
@@ -74,22 +85,18 @@ public final class GrowthDays {
                 String[] tokens = trimmed.split("\\s+");
                 ResourceLocation id = ResourceLocation.tryParse(tokens[0]);
                 if (id == null) {
-                    SeedSeasons.LOGGER.warn("Ignoring growth days entry with an invalid id: {}", trimmed);
                     continue;
                 }
                 if (tokens.length < 2) {
-                    SeedSeasons.LOGGER.warn("Ignoring growth days entry without a day count: {}", trimmed);
                     continue;
                 }
                 double days;
                 try {
                     days = Double.parseDouble(tokens[1]);
                 } catch (NumberFormatException exception) {
-                    SeedSeasons.LOGGER.warn("Ignoring growth days entry with an invalid day count: {}", trimmed);
                     continue;
                 }
                 if (days <= 0.0D) {
-                    SeedSeasons.LOGGER.warn("Ignoring growth days entry with a non-positive day count: {}", trimmed);
                     continue;
                 }
                 parsed.put(id.toString(), days);

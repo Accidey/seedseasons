@@ -3,6 +3,7 @@ package com.xulai.seedseasons.mixin;
 import com.xulai.seedseasons.CropLifecycle;
 import com.xulai.seedseasons.SeedSeasonsConfig;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -36,6 +37,13 @@ public abstract class JadeCropProgressMixin {
             component = IThemeHelper.get().success(Component.translatable("tooltip.jade.crop_mature"));
         }
         tooltip.add(Component.translatable("tooltip.jade.crop_growth", component));
+        if (SeedSeasonsConfig.boneMealPerDay() > 0) {
+            int pending = CropLifecycle.pendingBoneMealAt(accessor.getLevel(), accessor.getPosition());
+            if (pending >= 0) {
+                tooltip.add(Component.translatable(pending > 0 ? "seedseasons.jade.fertilized" : "seedseasons.jade.not_fertilized")
+                        .withStyle(pending > 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY));
+            }
+        }
         ci.cancel();
     }
 }

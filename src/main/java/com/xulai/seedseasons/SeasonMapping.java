@@ -31,6 +31,7 @@ public final class SeasonMapping {
     private static volatile Map<Season, Set<String>> plants = Map.of();
     private static volatile Set<String> seasonalIds = Set.of();
     private static volatile Map<String, Integer> tooltipSeasons = Map.of();
+    private static volatile Map<String, Integer> externalMasks = Map.of();
     private static volatile boolean syncPending;
     private static volatile int configVersion;
 
@@ -39,6 +40,14 @@ public final class SeasonMapping {
 
     public static int configVersion() {
         return configVersion;
+    }
+
+    public static int externalMaskOf(String id) {
+        return externalMasks.getOrDefault(id, 0);
+    }
+
+    public static double seasonDays() {
+        return sereneseasons.init.ModConfig.seasons.subSeasonDuration * 3.0D;
     }
 
     public static String[] seasonNames() {
@@ -105,15 +114,12 @@ public final class SeasonMapping {
                 resolvedTooltips.merge(entry.getKey(), mask, (first, second) -> first | second);
                 if (item.get() instanceof BlockItem blockItem) {
                     add(resolvedPlants, resolvedIds, BuiltInRegistries.BLOCK.getKey(blockItem.getBlock()).toString(), mask);
-                } else {
-                    SeedSeasons.LOGGER.warn("Configured id {} is not a block item, only its tooltip will change", entry.getKey());
                 }
                 continue;
             }
 
             Optional<Block> block = BuiltInRegistries.BLOCK.getOptional(id);
             if (block.isEmpty()) {
-                SeedSeasons.LOGGER.warn("Configured id {} is neither an item nor a block, ignored", entry.getKey());
                 continue;
             }
             add(resolvedPlants, resolvedIds, entry.getKey(), mask);
@@ -133,6 +139,7 @@ public final class SeasonMapping {
         winterPlants.addAll(plants.get(Season.WINTER));
         allPlants.addAll(seasonalIds);
         tooltipSeasons.forEach((id, mask) -> seedSeasons.merge(id, mask, (first, second) -> first | second));
+        externalMasks = Map.copyOf(seedSeasons);
     }
 
     public static int addEntry(String itemId, int mask) {
@@ -210,19 +217,13 @@ public final class SeasonMapping {
                 String[] tokens = trimmed.split("\\s+");
                 ResourceLocation id = ResourceLocation.tryParse(tokens[0]);
                 if (id == null) {
-                    SeedSeasons.LOGGER.warn("Ignoring seed seasons entry with an invalid id: {}", trimmed);
                     continue;
                 }
                 int mask = 0;
                 for (int i = 1; i < tokens.length; i++) {
-                    int bit = bitOf(tokens[i].toLowerCase(Locale.ROOT));
-                    if (bit == 0) {
-                        SeedSeasons.LOGGER.warn("Ignoring unknown season '{}' in seed seasons entry: {}", tokens[i], trimmed);
-                    }
-                    mask |= bit;
+                    mask |= bitOf(tokens[i].toLowerCase(Locale.ROOT));
                 }
                 if (mask == 0) {
-                    SeedSeasons.LOGGER.warn("Ignoring seed seasons entry without a valid season: {}", trimmed);
                     continue;
                 }
                 parsed.merge(id.toString(), mask, (first, second) -> first | second);

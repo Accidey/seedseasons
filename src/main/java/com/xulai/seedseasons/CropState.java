@@ -10,6 +10,7 @@ public final class CropState {
     private static final String MATURE_SINCE = "mature";
     private static final String BONE_MEAL_DAY = "meal_day";
     private static final String BONE_MEAL_USES = "meal_uses";
+    private static final String PENDING_BONE_MEAL = "pending";
     private static final String LAST_SEASON = "season";
     private static final String LAST_AGE = "last_age";
     private static final String DRY_SINCE = "dry_since";
@@ -23,6 +24,7 @@ public final class CropState {
     private long matureSince;
     private long boneMealDay;
     private int boneMealUses;
+    private int pendingBoneMeal;
     private int lastSeason;
     private int lastAge;
     private long drySince;
@@ -30,7 +32,7 @@ public final class CropState {
     private String blockId = "";
     private int configVersion;
 
-    public CropState(double progress, long lastUpdate, long totalTicks, long matureSince, long boneMealDay, int boneMealUses, int lastSeason) {
+    public CropState(double progress, long lastUpdate, long totalTicks, long matureSince, long boneMealDay, int boneMealUses, int lastSeason, int pendingBoneMeal) {
         this.progress = progress;
         this.lastUpdate = lastUpdate;
         this.totalTicks = totalTicks;
@@ -38,6 +40,7 @@ public final class CropState {
         this.boneMealDay = boneMealDay;
         this.boneMealUses = boneMealUses;
         this.lastSeason = lastSeason;
+        this.pendingBoneMeal = pendingBoneMeal;
     }
 
     public double progress() {
@@ -86,6 +89,14 @@ public final class CropState {
 
     public void setBoneMealUses(int boneMealUses) {
         this.boneMealUses = boneMealUses;
+    }
+
+    public int pendingBoneMeal() {
+        return pendingBoneMeal;
+    }
+
+    public void setPendingBoneMeal(int pendingBoneMeal) {
+        this.pendingBoneMeal = pendingBoneMeal;
     }
 
     public int lastSeason() {
@@ -149,6 +160,7 @@ public final class CropState {
         this.matureSince = matureSince;
         this.drySince = -1L;
         this.plantedAt = lastUpdate;
+        this.pendingBoneMeal = 0;
     }
 
     public CompoundTag save() {
@@ -159,6 +171,7 @@ public final class CropState {
         tag.putLong(MATURE_SINCE, matureSince);
         tag.putLong(BONE_MEAL_DAY, boneMealDay);
         tag.putInt(BONE_MEAL_USES, boneMealUses);
+        tag.putInt(PENDING_BONE_MEAL, pendingBoneMeal);
         tag.putInt(LAST_SEASON, lastSeason);
         tag.putInt(LAST_AGE, lastAge);
         tag.putLong(DRY_SINCE, drySince);
@@ -176,8 +189,10 @@ public final class CropState {
                 tag.getLong(MATURE_SINCE),
                 tag.getLong(BONE_MEAL_DAY),
                 tag.getInt(BONE_MEAL_USES),
-                tag.getInt(LAST_SEASON));
+                tag.getInt(LAST_SEASON),
+                tag.getInt(PENDING_BONE_MEAL));
         state.setLastAge(tag.getInt(LAST_AGE));
+        state.setPendingBoneMeal(tag.getInt(PENDING_BONE_MEAL));
         state.setDrySince(tag.getLong(DRY_SINCE));
         state.setPlantedAt(tag.getLong(PLANTED_AT));
         state.setBlockId(tag.getString(BLOCK_ID));

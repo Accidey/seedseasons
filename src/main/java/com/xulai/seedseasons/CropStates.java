@@ -28,6 +28,7 @@ public final class CropStates implements INBTSerializable<CompoundTag> {
                     buffer.writeDouble(state.progress());
                     buffer.writeLong(state.lastUpdate());
                     buffer.writeLong(state.totalTicks());
+                    buffer.writeVarInt(state.pendingBoneMeal());
                 });
             },
             buffer -> {
@@ -35,7 +36,7 @@ public final class CropStates implements INBTSerializable<CompoundTag> {
                 int size = buffer.readVarInt();
                 for (int index = 0; index < size; index++) {
                     BlockPos pos = buffer.readBlockPos();
-                    states.put(pos, new CropState(buffer.readDouble(), buffer.readLong(), buffer.readLong(), -1L, -1L, 0, 0));
+                    states.put(pos, new CropState(buffer.readDouble(), buffer.readLong(), buffer.readLong(), -1L, -1L, 0, 0, buffer.readVarInt()));
                 }
                 return states;
             });
