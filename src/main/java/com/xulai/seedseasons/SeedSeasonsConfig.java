@@ -249,34 +249,36 @@ public final class SeedSeasonsConfig {
         MIN_RAIN_HOURS = builder
                 .comment(
                         "",
-                        " 作物靠雨水生长（不需要水方块）时，本次降雨要持续满这么多小时才生效，只对真的淋到雨（不在屋檐树冠下、当地此刻下的是雨不是雪）的作物有效。",
-                        " 这里的小时按天气自身的推进速度算（1 小时 = 1000 tick），不随时间倍速变化；原版一场雨约 12~24 小时，所以默认 12 表示「下到后半段才开始靠雨生长」。",
+                        " 作物靠雨水生长（不需要水方块）时，本次降雨要持续满这么多游戏内小时才生效，只对真的淋到雨的作物有效（不在屋檐树冠下、当地此刻下的是雨而不是雪）。",
+                        " 1 小时 = 1000 tick 的游戏时钟，会随 BetterDays 等模组的时间倍速一起变快变慢；原版一场雨长 12~24 游戏小时，所以默认 12 表示「下到一场雨的后半段才开始靠雨生长」。",
                         " 设为 0 表示下雨即生效。",
                         "",
-                        " How many hours the current rain must have lasted before crops can grow on rain alone, without a water block; this only counts crops that are actually getting wet (not under a roof or leaves, and where the local precipitation is rain rather than snow).",
-                        " These hours run on the weather's own clock (1 hour = 1000 ticks) and ignore any time-speed mod; a vanilla rain lasts about 12-24 of these hours, so the default 12 means crops start feeding off the rain in the second half of a storm.",
+                        " How many in-game hours the current rain must have lasted before crops can grow on rain alone, without a water block; only crops that are actually getting wet count (not under a roof or leaves, and where the local precipitation is rain rather than snow).",
+                        " An hour here is 1000 ticks of the game clock, so it speeds up and slows down with mods like BetterDays; a vanilla storm lasts 12-24 of those hours, so the default 12 means crops feed off the second half of a rain.",
                         " 0 means it takes effect as soon as it rains.")
                 .defineInRange("minRainHours", 12.0D, 0.0D, 24.0D);
 
         RAIN_CHECK_HOURS = builder
                 .comment(
                         "",
-                        " 每场雨开始、以及每次雨强变化后，当前档位都会先随机保持 1~5 小时不变。",
-                        " 稳定期过后，每隔这么多小时（1 小时 = 1000 tick，按天气自身的推进速度算）判定一次雨强要不要变化：约一半概率维持、四分之一升一档、四分之一降一档，不会跳档。",
+                        " 每场雨开始、以及每次雨强变化后，当前档位都会先随机保持 1~5 游戏小时不变。",
+                        " 稳定期过后，每隔这么多游戏小时判定一次雨强要不要变化：约一半概率维持、四分之一升一档、四分之一降一档，不会跳档。",
                         "",
-                        " After each rain start and each intensity change, the current grade is locked for a random 1-5 hours first.",
-                        " After that stable period, the intensity is re-rolled this often, in hours of the weather's own clock (1 hour = 1000 ticks): roughly half the time it stays, a quarter it steps up, a quarter it steps down, never jumping grades.")
+                        " After each rain start and each intensity change, the current grade is locked for a random 1-5 in-game hours first.",
+                        " After that stable period, the intensity is re-rolled this often, in in-game hours: roughly half the time it stays, a quarter it steps up, a quarter it steps down, never jumping grades.")
                 .defineInRange("rainCheckHours", 1.0D, 0.0D, 100.0D);
 
         DRIZZLE_FILL_DAYS = builder
                 .comment(
                         "",
                         " 下面五项是各雨强填满一个坑需要的连续降雨天数（进度雨停清零，坑必须在单场雨里填满才出水）。",
-                        " 这些天数按天气自己的推进速度计（1 天 = 24000 tick），原版一场雨长 12000~24000 tick，即 0.5~1 天，所以这一组数值的上限就是 1 天。",
+                        " 天数按游戏时钟计（1 天 = 一个完整昼夜），而原版一场雨长 12000~24000 tick，即 0.5~1 天，所以这一组数值的上限就是 1 天，再大就永远积不满。",
+                        " 与 BetterDays 一起加载时，本模组会自动把它的 weatherEffect 设为 ALWAYS，让一场雨的长短也跟着游戏时钟，否则倍速越高这两套时钟越对不上。",
                         " 毛毛细雨：最温柔也最慢，要连续淋满 1 天，只有碰上最长的那场雨才积得满。",
                         "",
                         " The next five entries are the continuous rainy days each grade needs to fill a hollow (progress resets when the rain stops, so a hollow must be filled within a single rain).",
-                        " These day counts run on the weather's own clock (1 day = 24000 ticks); a vanilla rain lasts 12000-24000 ticks, that is 0.5-1 day, which is why 1 day is the top of this scale.",
+                        " These day counts follow the game clock (1 day = one full cycle), and a vanilla storm lasts 12000-24000 ticks, that is 0.5-1 day, which is why 1 day is the top of this scale.",
+                        " When BetterDays is present this mod sets its weatherEffect to ALWAYS so that storm length follows the game clock too; otherwise the two clocks drift apart with the time speed.",
                         " Drizzle: the gentlest and slowest, a full day of it, so hollows only fill during the longest storms.")
                 .defineInRange("drizzleFillDays", 1.0D, 0.01D, 100.0D);
 

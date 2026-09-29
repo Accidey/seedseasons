@@ -30,6 +30,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import sereneseasons.init.ModFertility;
@@ -70,6 +71,11 @@ public final class SeedSeasonsEvents {
                                 .executes(SeedSeasonsEvents::setGrowthDays))
                         .then(Commands.literal("remove")
                                 .executes(SeedSeasonsEvents::removeGrowthDays))));
+    }
+
+    @SubscribeEvent
+    public static void onServerAboutToStart(ServerAboutToStartEvent event) {
+        RainSystem.syncWeatherClock();
     }
 
     @SubscribeEvent

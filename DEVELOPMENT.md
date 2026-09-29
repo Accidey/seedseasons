@@ -68,8 +68,9 @@
 视觉与原版雨天完全一致，差异只体现在雨强提示与水的行为上，由新类 `RainSystem` 驱动（纯事件 + tick，无 mixin）。
 
 - **触发来源**：状态机用**权威天气标志** `level.getLevelData().isRaining()` 判定开始/结束，所以自然天气循环、`/weather` 指令、其它模组改天气都会进入雨天系统。不要用 `Level.isRaining()`：它在 1.21.1 读的是渲染渐变值 `rainLevel > 0.2`，服务端每 tick 只 ±0.01（雨后 21 tick 才为真、雨停还拖 80 tick），而且整段天气推进被 `dimensionType().hasSkyLight()` 守卫——没有天空光的维度它恒为 false。本模组同样保留 `hasSkyLight()` 作为门槛（下界/末地不参与）。
-- **时间口径**：雨天系统的所有时长都按**天气自己的推进速度**计量（1 小时 = 1000 tick、1 天 = 24000 tick），**不跟随 BetterDays 的时间倍速**——原版天气计时器本身就是每 tick 递减的（BD 只在睡觉时按倍速同步天气，除非把 `weatherEffect` 改成 `ALWAYS`）。一场原版降雨长 `RAIN_DURATION = 12000~24000` tick，也就是 12~24 小时（0.5~1 天），所以下面凡是「小时 / 天」的数值都必须落在这个区间里才有意义：`minRainHours` 上限 24、`*FillDays` 上限 1。
-  注意这与成长系统的 `minGrowHours`/`dryWitherDays`/`overMatureDays` 口径不同——那些用 `getDayTime()`，是真正的游戏内时钟，会随 BD 倍速变快变慢。
+- **时间口径**：雨天系统的所有时长都按**游戏时钟** `getDayTime()` 计量（1 小时 = 1000 tick、1 天 = 24000 tick），与成长系统的 `minGrowHours`/`dryWitherDays`/`overMatureDays` 同一口径，会随 BetterDays 等模组的时间倍速一起变快变慢。唯一的例外是**处理节奏**：积水推进与找坑每 100 **真实** tick 跑一次（`HANDLING_INTERVAL`，只是 CPU 节流），但推进量取的是这段时间里的游戏时钟增量。
+  一场原版降雨长 `RAIN_DURATION = 12000~24000` tick，即 12~24 游戏小时（0.5~1 天），所以 `minRainHours` 上限 24、`*FillDays` 上限 1 天，数值才有意义。
+- **与 BetterDays 的天气时钟同步**：原版天气计时器按**真实** tick 递减，BetterDays 只在 `weatherEffect` 生效时把它按倍速同步（`WeatherSleepEffect`；`SLEEPING` = 仅在有人睡觉时同步）。我们改用游戏时钟口径后，必须让一场雨的**长短**也跟游戏时钟走，否则倍速越高越对不上（100 倍速实测：等好几个 MC 天都积不出水）。所以 `SeedSeasonsEvents.onServerAboutToStart → RainSystem.syncWeatherClock()`：检测到 `betterdays` 一起加载且 `enableRainWater` 为真时，把它配置文件里的 `weatherEffect` 文本级改写为 `ALWAYS`（只在值不同时写，不动其它内容，异常静默忽略）。BD 用的是自己的 WhiteNoise 配置、不注册进 FML 的 `ModConfig`，所以内存里的值不会即时刷新，**要重启才对 BD 当次会话生效**。
 - **五档雨强**：毛毛细雨、小雨、中雨、大雨、暴雨。开始下雨时按当季概率随机定档，之后在相邻档位间随机升降（不跳档）：每次变化在聊天框提示「雨变大了/雨变小了 - 档名」，雨开始提示「下雨了 - 档名」，雨停不提示；消息（灰色）发给下雨维度里的所有玩家。
 - **季节概率**（初始档位按此加权随机，概率表写死在 `RainSystem.SEASON_WEIGHTS`；四季都能出全部五档，只是权重不同，每行合计 100）：
   - 春：毛毛细雨 25% / 小雨 30% / 中雨 22% / 大雨 15% / 暴雨 8%
@@ -97,13 +98,13 @@
 |---|---|
 | `SeedSeasons` | 模组入口：注册配置、两个附件类型、客户端配置界面 |
 | `SeedSeasonsConfig` | 全部配置项（23 个）与读写；`ModConfigEvent` 触发重载 |
-| `SeedSeasonsEvents` | 游戏事件：指令注册、服务端 tick、区块加载/卸载、方块放置/破坏（即时建档销档）、右键（施肥提示） |
+| `SeedSeasonsEvents` | 游戏事件：指令注册、服务端 tick、区块加载/卸载、方块放置/破坏（即时建档销档）、右键（施肥提示）、服务端启动前（同步 BetterDays 的天气时钟） |
 | `SeasonMapping` | 季节列表解析、并集合并进静谧四季、配置版本号、季节掩码快照与实际季节时长读取、`filter` 公共入口 |
 | `GrowthDays` | 成熟天数列表解析、未列出作物按季节掩码与 SS 实际季节时长动态推算、写入与移除 |
 | `CropLifecycle` | 生命周期核心：每日结算、登记、水耗、枯死、骨粉、客户端进度查询 |
 | `CropState` / `CropStates` | 单株状态（进度、时长、干涸计时、待结算施肥层数等）/ 区块级容器 + 附件注册与同步 |
 | `WaterSource` / `WaterStates` / `WaterNetwork` | 供水配额缓存 / 容器 / 供水判定、抽干水源 |
-| `RainSystem` | 雨天系统：五档雨强状态机（季节概率/随机摆动/聊天提示）、下雨免耗水与雨中生长判定、低洼积水抽查与灌水 |
+| `RainSystem` | 雨天系统：五档雨强状态机（季节概率/随机摆动/聊天提示，全部按 `getDayTime()` 计时）、下雨免耗水与雨中生长判定、低洼积水抽查与灌水、`syncWeatherClock` 纠正 BetterDays 的 `weatherEffect` |
 | `client/CropTooltips` | 作物与骨粉的物品 tooltip |
 | `client/SeedSeasonsClient` | 配置界面入口 |
 
@@ -161,6 +162,7 @@
 10. **作物的发现不能依赖随机刻**：随机刻是按 3/4096 的概率抽格子的，加速时间后一株可能几十天抽不到——只靠随机刻建档会让「同一片田里有的长有的不长」。结算时按区块扫一遍补档（先用 `LevelChunkSection.maybeHas(predicate)` 过调色板，含作物的区块才逐格查），成本是每天每区块一次。
 11. 跟踪「玩家放置/破坏方块」时注意事件触发面：本版本 `BlockEvent.EntityPlaceEvent` 只在 `ItemStack.useOn → CommonHooks.onPlaceItemIntoWorld` 这条链上触发（发射器等自动放置不触发），且事件在方块**已放下之后**才触发——`getPlacedBlock()` 是新状态，`getState()` 是放置前的旧状态；`BlockEvent.BreakEvent` 由 `ServerPlayerGameMode.destroyBlock → CommonHooks.fireBlockBreak` 触发，覆盖玩家收获。所以结算扫描的兜底不能省。
 12. `LevelReader.getHeight`（含 `Level.getHeight`）对未加载区块会同步拉取区块（至少到 HEIGHTMAP 状态）：雨天找坑查四邻柱高度时必须先用 `getChunkNow` 确认邻区块已加载、再走 `chunk.getHeight`，邻区块没加载就放弃该柱，宁可漏一根也不要在 tick 里触发区块加载。
+13. **要纠正别的模组的配置时，只做文本级改写并讲清代价**：BetterDays 用的是自己的 WhiteNoise 配置（`technology.roughness.whitenoise.config.WhiteNoiseConfigSpec`），**没有注册进 FML 的 `ModConfig`**，所以 `ModList.getModContainerById("betterdays")` 拿不到可 refresh 的 ModConfig，反射写它的私有 `EnumValue` 又太脆。可行做法是在 `ServerAboutToStartEvent` 里用正则只替换目标那一行（`(?m)^(\s*key\s*=\s*).*$`，保留缩进与 CRLF、值相同就不写盘、异常静默忽略），并明确它**要重启才对该模组当次会话生效**。玩家配置文件是 CRLF：多行 old_string 的编辑会失败，只能逐行替换，改完用脚本核对 CRLF 数量（`grep | cat -A` 会吞 CR，不能拿来判行尾）。
 
 ### 4.3 构建约束
 
@@ -197,6 +199,6 @@ cd D:\Games\MOD\更好的四季
 - Jade 集成按 15.10.6 的类名/签名编写，升级 Jade 后若方法变动，那份 mixin 会静默失效（`require = 0`），不会崩游戏。
 - 无限水的两个豁免开关互相独立：`consumeInfiniteWater=false` 会把天然湖泊一并豁免（湖泊与玩家水池在机制上无法区分），只想豁免河流/海洋应使用 `consumeNaturalWater=false`。
 - 雨天系统只在有天空光的维度参与（下界/末地被 `dimensionType().hasSkyLight()` 挡在外面，与原版天气推进的守卫一致）；会下雪的地方不算下雨，因此不积水也不免耗水。睡觉跳过雨天会让状态机直接开始或清零。
-- 用 `/weather` 实测时的两个原版前提：**1.21.1 的 `/weather` 写死只作用于主世界**（`source.getServer().overworld()`，在别的维度敲它没效果），且 `duration` 参数单位是 **tick**（`TimeArgument.time(1)`）——`/weather rain 24000` 才是「一整天大雨」，`/weather rain 600` 只有 30 秒，短于此的雨量不足以让 `minRainHours` 生效（免耗水与积水判定仍会照常参与）。
+- 用 `/weather` 实测时的两个原版前提：**1.21.1 的 `/weather` 写死只作用于主世界**（`source.getServer().overworld()`，在别的维度敲它没效果）；`duration` 参数是天气计时器的 tick 数，而 `weatherEffect = ALWAYS` 生效后这个计时器按游戏时钟递减，所以 `/weather rain 12000` 就是「下满 12 游戏小时」（1/3 倍速下约 30 现实分钟，100 倍速下约 6 现实秒）。没开 ALWAYS 时它按真实 tick 递减，倍速越高、换算成游戏小时就越短。
 - 积水候选与进度是内存态：雨停清零、服务器重启清零；区块卸载后其中的坑不推进进度，重新加载后继续。积水出的是普通水源，同样受耗水系统约束。
 - 性能上的既有取舍：随机刻回调先做 `instanceof` 判定再查方块状态属性；水源「服务哪几块耕地」的结果缓存 100 真实 tick；每日结算遍历已加载区块（加载/卸载事件维护），每区块先用 `LevelChunkSection.maybeHas` 过一遍调色板、只有含作物的区块才逐格扫描，不用 `ChunkMap.getChunks()`；雨天找坑每 100 tick 每区块只随机抽 1 根地表柱（heightmap 查询，O(1)），积水进度与候选全部在内存，总量有 4096/维度的写死上限。

@@ -1,5 +1,8 @@
 package com.xulai.seedseasons;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +26,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
 
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLPaths;
+
 import sereneseasons.api.season.Season;
 import sereneseasons.api.season.SeasonHelper;
 
@@ -31,6 +37,8 @@ public final class RainSystem {
     private static final double TICKS_PER_DAY = 24000.0D;
     private static final long HANDLING_INTERVAL = 100L;
     private static final int CANDIDATE_LIMIT = 4096;
+    private static final String BETTER_DAYS = "betterdays";
+    private static final String BETTER_DAYS_CONFIG = "betterdays-common.toml";
 
     private static final int[][] SEASON_WEIGHTS = {
             {25, 30, 22, 15, 8},
@@ -45,6 +53,7 @@ public final class RainSystem {
         long stableUntil;
         long lastRoll;
         long lastHandled;
+        long lastProgressed;
         final Map<BlockPos, Double> puddles = new HashMap<>();
     }
 
@@ -109,19 +118,39 @@ public final class RainSystem {
             return false;
         }
         long required = (long) (SeedSeasonsConfig.minRainHours() * 1000.0D);
-        if (required > 0L && level.getGameTime() - state.startedAt < required) {
+        if (required > 0L && level.getDayTime() - state.startedAt < required) {
             return false;
         }
         return level.isRainingAt(pos);
     }
 
+    public static void syncWeatherClock() {
+        if (!SeedSeasonsConfig.enableRainWater() || !ModList.get().isLoaded(BETTER_DAYS)) {
+            return;
+        }
+        Path file = FMLPaths.CONFIGDIR.relative().resolve(BETTER_DAYS_CONFIG);
+        if (!Files.exists(file)) {
+            return;
+        }
+        try {
+            String text = Files.readString(file);
+            String fixed = text.replaceAll("(?m)^(\\s*weatherEffect\\s*=\\s*).*$", "$1\"ALWAYS\"");
+            if (!fixed.equals(text)) {
+                Files.writeString(file, fixed);
+            }
+        } catch (IOException | RuntimeException exception) {
+            return;
+        }
+    }
+
     private static RainState begin(ServerLevel level) {
         RainState state = new RainState();
-        long now = level.getGameTime();
-        state.startedAt = now;
-        state.stableUntil = now + randomStableTicks(level);
-        state.lastRoll = now;
-        state.lastHandled = now;
+        long day = level.getDayTime();
+        state.startedAt = day;
+        state.stableUntil = day + randomStableTicks(level);
+        state.lastRoll = day;
+        state.lastHandled = level.getGameTime();
+        state.lastProgressed = day;
         state.level = rollLevel(level);
         STATES.put(level.dimension(), state);
         announce(level, "seedseasons.rain.started", state.level);
@@ -129,17 +158,19 @@ public final class RainSystem {
     }
 
     private static void handle(ServerLevel level, RainState state) {
-        long now = level.getGameTime();
-        if (now - state.lastHandled >= HANDLING_INTERVAL) {
-            long elapsed = now - state.lastHandled;
-            state.lastHandled = now;
+        long game = level.getGameTime();
+        long day = level.getDayTime();
+        if (game - state.lastHandled >= HANDLING_INTERVAL) {
+            long elapsed = Math.max(0L, day - state.lastProgressed);
+            state.lastHandled = game;
+            state.lastProgressed = day;
             advancePuddles(level, state, elapsed);
             sampleHollows(level, state);
         }
-        if (now >= state.stableUntil) {
+        if (day >= state.stableUntil) {
             long interval = (long) (SeedSeasonsConfig.rainCheckHours() * 1000.0D);
-            if (interval > 0L && now - state.lastRoll >= interval) {
-                state.lastRoll = now;
+            if (interval > 0L && day - state.lastRoll >= interval) {
+                state.lastRoll = day;
                 reRoll(level, state);
             }
         }
@@ -157,7 +188,7 @@ public final class RainSystem {
         if (next != state.level) {
             boolean heavier = next > state.level;
             state.level = next;
-            state.stableUntil = level.getGameTime() + randomStableTicks(level);
+            state.stableUntil = level.getDayTime() + randomStableTicks(level);
             announce(level, heavier ? "seedseasons.rain.increased" : "seedseasons.rain.decreased", next);
         }
     }
