@@ -321,14 +321,18 @@ public final class CropLifecycle {
         }
 
         settlement.grown++;
-        record.setProgress(Math.min(1.0D, record.progress() + 1.0D / Math.max(1.0D, record.totalTicks() / TICKS_PER_DAY)));
+        double grown = Math.min(1.0D, record.progress() + 1.0D / Math.max(1.0D, record.totalTicks() / TICKS_PER_DAY));
+        if (grown >= 1.0D - 1.0E-9D) {
+            grown = 1.0D;
+        }
+        record.setProgress(grown);
         record.setLastUpdate(now);
-        int target = Math.min(max, (int) (record.progress() * max));
+        int target = Math.min(max, (int) (grown * max));
         if (target > current) {
             level.setBlock(pos, state.setValue(age, target), 3);
             record.setLastAge(target);
         }
-        if (record.progress() >= 1.0D && record.matureSince() <= 0L) {
+        if (grown >= 1.0D && record.matureSince() <= 0L) {
             record.setMatureSince(now);
         }
         return true;
