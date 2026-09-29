@@ -21,6 +21,7 @@ public final class SeedSeasonsConfig {
     private static final ModConfigSpec.DoubleValue NEAR_MATURE_CHANCE;
     private static final ModConfigSpec.DoubleValue OVER_MATURE_DAYS;
     private static final ModConfigSpec.IntValue GROWTH_DAY_VARIANCE;
+    private static final ModConfigSpec.DoubleValue MIN_GROW_HOURS;
     private static final ModConfigSpec.IntValue BONE_MEAL_PER_DAY;
     private static final ModConfigSpec.DoubleValue BONE_MEAL_PROGRESS;
     private static final ModConfigSpec.BooleanValue ENABLE_CROP_WATER;
@@ -155,6 +156,20 @@ public final class SeedSeasonsConfig {
                         " Example: with the default 1, a crop configured as 2 days actually ripens in 1, 2 or 3 days; 0 disables the spread.")
                 .defineInRange("growthDayVariance", 1, 0, 30);
 
+        MIN_GROW_HOURS = builder
+                .comment(
+                        "",
+                        " 作物种下后要满这么多小时，才会在每天 6 点结算时推进成长，免得 5:59 种下、6:00 就白拿一天进度。",
+                        " 时间按游戏内时钟算：默认 12 时，下午 6 点之后种下的作物要等到再下一次 6 点结算才涨。",
+                        " 骨粉不受这条限制，种下就能用。",
+                        " 设为 0 表示种下当天就能参与下一次结算。",
+                        "",
+                        " Hours a crop must have been planted before a 6 AM settlement may advance its growth, so planting at 5:59 AM does not earn a free day.",
+                        " The clock is the in-game one: with the default 12, anything planted after 6 PM waits for the settlement after the next one.",
+                        " Bone meal ignores this rule and works right after planting.",
+                        " 0 lets a crop grow at the very next settlement.")
+                .defineInRange("minGrowHours", 12.0D, 0.0D, 24.0D);
+
         BONE_MEAL_PER_DAY = builder
                 .comment(
                         "",
@@ -269,6 +284,10 @@ public final class SeedSeasonsConfig {
 
     public static int growthDayVariance() {
         return GROWTH_DAY_VARIANCE.get();
+    }
+
+    public static double minGrowHours() {
+        return MIN_GROW_HOURS.get();
     }
 
     public static int boneMealPerDay() {

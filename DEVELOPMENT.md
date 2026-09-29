@@ -34,6 +34,8 @@
 - **结算时机**：每天 `dayTime` 跨过 0（= 早上 6:00）时，对**已加载区块**里的所有作物统一结算一次，每株进度 `+1/成熟天数`。结算前先扫一遍区块、给还没建档的作物补档（**不依赖随机刻**：随机刻只提前建档并跳过原版成长，抽不到也不影响当天结算）。
 - **成熟天数**：`growthDays` 按作物配置（默认值按季节推算：一个季节 = 3 子季 × 8 天 = 24 天 → 单季作物 12 天两熟、跨 2 季及以上 24 天一熟）；未列出的用 `defaultGrowthDays`（默认 24）。每株种下时按 `growthDayVariance`（默认 ±1 天）roll 出各自总时长，所以同批作物不会同日成熟。改配置后已种下的作物会在下次登记时按新配置重算时长（保留进度）。
 - **进度是 0~1 的连续值**，方块年龄 = `floor(进度 × 最大年龄)`。
+- **种植门槛**：`minGrowHours`（默认 12，按游戏内时钟算，0 = 关闭）——种下不满这么多小时的作物，结算时只跳过涨进度，避免 5:59 种下、6:00 白拿一天。种植/收获会**即时**建档与销档，所以门槛计时从真正种下那一刻开始，不是从结算时刻开始。骨粉不受门槛限制。
+- **即时更新**：玩家种下作物 → `BlockEvent.EntityPlaceEvent` 立刻建档（记下种植时刻与作物 id）；玩家破坏作物 → `BlockEvent.BreakEvent` 立刻删档。因此「收获后补种」拿到的是全新纪录，不会继承上一株的进度（踩过的坑：旧只靠 `lastAge` 判断，收获后没随机刻就会被旧进度直接催熟）。记录里还存了作物 id，同格换成另一种作物（起始 age 相同）也会重置。
 - **非当季**：每天结算时若不合时令，按 `witherChance` 枯死（直接消失，同四季的「摧毁」）。
 - **快成熟换季**：进度 ≥ 75%（写死）且换季后不合时令时，按 `nearMatureChance` 直接催熟；判定与枯死一样只发生在每天结算那一刻，不是换季瞬间。
 - **过熟**：成熟后 `overMatureDays` 天未收获则枯死（0 = 关闭）。
@@ -46,7 +48,7 @@
 - 每块**种了作物**的耕地每天扣 1 点水；空着的耕地不消耗。10 块田一天抽干一格水，单块十天。
 - 缺水（水源耗尽，或该田没被任何水源覆盖）：当次结算不推进成长并开始计时；`dryWitherDays` 天后枯死、耕地变回泥土。
 - **水量见底时水方块会被替换成空气**（用 flag 2 写入，不触发邻接更新，避免旁边的水立刻补回来）；玩家重新倒水即视为新水源、水量满格。
-- 每日结算会打 INFO 日志（维度一行 + 有作物的区块各一行：`chunk [x, z]: N crop(s), G grew, M mature, O off-season, D dry, W withered, F new, S stale, total progress P`，末尾再加一行合计），用于确认结算是否触发，以及「某株不涨」属于哪一类（`new` = 本次补档、`dry` = 没被水源覆盖、`off-season` = 非当季、`mature` = 已成熟）。
+- 每日结算会打 INFO 日志（维度一行 + 有作物的区块各一行：`chunk [x, z]: N crop(s), G grew, Y young, M mature, O off-season, D dry, W withered, F new, S stale, total progress P`，末尾再加一行合计），用于确认结算是否触发，以及「某株不涨」属于哪一类（`new` = 本次补档、`young` = 种下不满 `minGrowHours`、`dry` = 没被水源覆盖、`off-season` = 非当季、`mature` = 已成熟）。
 - 补水：拿水桶右键水源即回满（非创造换成空桶）。
 - 豁免是两个**互相独立**的开关，默认都关闭豁免（即一律消耗）：
   - `consumeNaturalWater`（默认 true）：河流、海洋等水构成的生物群系里的水照常被消耗；设为 false 后这些水永不减少（按原版 `#minecraft:is_river`、`#minecraft:is_ocean` 标签判定），鼓励在河边、岸边种植。
@@ -69,8 +71,8 @@
 | 类 | 职责 |
 |---|---|
 | `SeedSeasons` | 模组入口：注册配置、两个附件类型、客户端配置界面 |
-| `SeedSeasonsConfig` | 全部配置项（15 个）与读写；`ModConfigEvent` 触发重载 |
-| `SeedSeasonsEvents` | 游戏事件：指令注册、服务端 tick、区块加载/卸载、右键（补水/施肥提示） |
+| `SeedSeasonsConfig` | 全部配置项（16 个）与读写；`ModConfigEvent` 触发重载 |
+| `SeedSeasonsEvents` | 游戏事件：指令注册、服务端 tick、区块加载/卸载、方块放置/破坏（即时建档销档）、右键（施肥提示） |
 | `SeasonMapping` | 季节列表解析、并集合并进静谧四季、配置版本号、`filter` 公共入口 |
 | `GrowthDays` | 成熟天数列表解析、按作物/按方块查询、写入与移除 |
 | `CropLifecycle` | 生命周期核心：每日结算、登记、水耗、枯死、骨粉、客户端进度查询 |
@@ -92,7 +94,8 @@
 ### 3.3 数据流
 
 ```
-服务端：每天 6:00 → dailyTick → 遍历已加载区块 → 扫区块补档 → step() 每株一次（成长/水耗/枯死/催熟）
+服务端：放置/破坏方块 → 即时建档（记种植时刻与作物 id）/ 销档
+       每天 6:00 → dailyTick → 遍历已加载区块 → 扫区块补档 → step() 每株一次（成长/水耗/枯死/催熟）
        随机刻 → CropLifecycle.onRandomTick 提前建档 + 跳过原版成长
        状态存区块附件 CropStates（NBT 落盘）
                     ↓ AttachmentType.serializable(...).sync(CODEC)
@@ -128,6 +131,7 @@
 8. greedyString 参数的 Tab 补全，建议文本必须带上已输入的前缀，否则会替换掉前面已选的季节。
 9. 区块迭代不要用 `ChunkMap.getChunks()`（非 public）；用 `ChunkEvent.Load/Unload` 维护「已加载区块」集合，再用 `getChunkNow(x,z)` 取区块。
 10. **作物的发现不能依赖随机刻**：随机刻是按 3/4096 的概率抽格子的，加速时间后一株可能几十天抽不到——只靠随机刻建档会让「同一片田里有的长有的不长」。结算时按区块扫一遍补档（先用 `LevelChunkSection.maybeHas(predicate)` 过调色板，含作物的区块才逐格查），成本是每天每区块一次。
+11. 跟踪「玩家放置/破坏方块」时注意事件触发面：本版本 `BlockEvent.EntityPlaceEvent` 只在 `ItemStack.useOn → CommonHooks.onPlaceItemIntoWorld` 这条链上触发（发射器等自动放置不触发），且事件在方块**已放下之后**才触发——`getPlacedBlock()` 是新状态，`getState()` 是放置前的旧状态；`BlockEvent.BreakEvent` 由 `ServerPlayerGameMode.destroyBlock → CommonHooks.fireBlockBreak` 触发，覆盖玩家收获。所以结算扫描的兜底不能省。
 
 ### 4.3 构建约束
 
@@ -149,7 +153,8 @@ cd D:\Games\MOD\更好的四季
 验证状态（截至本次提交）：
 
 - **已实测**：指令写入配置、配置热重载生效、游戏能正常启动、Tab 补全与「并集累加」修复可用。
-- **未实测**：以天为单位的每日 6:00 结算、非当季枯死/换季催熟/过熟枯死、水源整套逻辑（10 块田上限、每日 1 点水耗、缺水枯死变泥、水桶补水）、Jade 真实进度显示、数据包并集对第三方适配作物生效。
+- **未实测**：以天为单位的每日 6:00 结算（含水被抽干、`dry` 枯死变泥、`young` 门槛、收获后补种不继承进度）、非当季枯死/换季催熟/过熟枯死、Jade 真实进度显示、数据包并集对第三方适配作物生效。
+- 日志自检：结算会打 `settlement at day N: ...` + 每区块一行分类计数（`grew/young/mature/off-season/dry/withered/new/stale`），一眼看出某株没涨的原因归属。
 - 运行时排查入口：启动日志里的 mixin 报错；`javap -p -classpath local-repo/sereneseasons/.../sereneseasons-1.21.1-10.1.0.3.jar sereneseasons.init.ModFertility` 可复核被 shadow 的字段名。
 
 ---
@@ -158,6 +163,8 @@ cd D:\Games\MOD\更好的四季
 
 - 只对上面列出的 5 类作物方块生效，其余（竹子、藤蔓、甘蔗、仙人掌等）保持原版。
 - 未加载区块不会推进成长；区块重新加载后从存档里的状态继续，不做补偿。
+- 非玩家途径出现的作物（发射器、指令、其它模组）没有种植时刻，只能在下次结算被扫描到时以「当时」记为种植时间，因此它们实际要多等一个 `minGrowHours` 才可能涨进度。
+- `minGrowHours` 只挡涨进度：种下当天的结算里，这些「没满时长」的作物照样会按「田里有作物」计一次耗水，也照样参与当季/枯死判定。
 - 耗水系统开启时，耕地不会被原版规则干涸成泥土（否则缺水地块的作物会在几分钟内被静默顶掉，看起来像"耕地反复湿润变泥"）；耕地变泥只发生在「缺水满 `dryWitherDays` 天、作物枯死」那一步。因此"哪 10 块田在供水"靠作物是否生长与水源水量体现，而不是靠土壤颜色。
 - Jade 集成按 15.10.6 的类名/签名编写，升级 Jade 后若方法变动，那份 mixin 会静默失效（`require = 0`），不会崩游戏。
 - 无限水的两个豁免开关互相独立：`consumeInfiniteWater=false` 会把天然湖泊一并豁免（湖泊与玩家水池在机制上无法区分），只想豁免河流/海洋应使用 `consumeNaturalWater=false`。

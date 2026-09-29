@@ -13,6 +13,8 @@ public final class CropState {
     private static final String LAST_SEASON = "season";
     private static final String LAST_AGE = "last_age";
     private static final String DRY_SINCE = "dry_since";
+    private static final String PLANTED_AT = "planted";
+    private static final String BLOCK_ID = "block";
     private static final String CONFIG_VERSION = "config_version";
 
     private double progress;
@@ -24,6 +26,8 @@ public final class CropState {
     private int lastSeason;
     private int lastAge;
     private long drySince;
+    private long plantedAt;
+    private String blockId = "";
     private int configVersion;
 
     public CropState(double progress, long lastUpdate, long totalTicks, long matureSince, long boneMealDay, int boneMealUses, int lastSeason) {
@@ -108,6 +112,22 @@ public final class CropState {
         this.drySince = drySince;
     }
 
+    public long plantedAt() {
+        return plantedAt;
+    }
+
+    public void setPlantedAt(long plantedAt) {
+        this.plantedAt = plantedAt;
+    }
+
+    public String blockId() {
+        return blockId;
+    }
+
+    public void setBlockId(String blockId) {
+        this.blockId = blockId;
+    }
+
     public int configVersion() {
         return configVersion;
     }
@@ -128,6 +148,7 @@ public final class CropState {
         this.lastAge = age;
         this.matureSince = matureSince;
         this.drySince = -1L;
+        this.plantedAt = lastUpdate;
     }
 
     public CompoundTag save() {
@@ -141,6 +162,8 @@ public final class CropState {
         tag.putInt(LAST_SEASON, lastSeason);
         tag.putInt(LAST_AGE, lastAge);
         tag.putLong(DRY_SINCE, drySince);
+        tag.putLong(PLANTED_AT, plantedAt);
+        tag.putString(BLOCK_ID, blockId);
         tag.putInt(CONFIG_VERSION, configVersion);
         return tag;
     }
@@ -156,6 +179,8 @@ public final class CropState {
                 tag.getInt(LAST_SEASON));
         state.setLastAge(tag.getInt(LAST_AGE));
         state.setDrySince(tag.getLong(DRY_SINCE));
+        state.setPlantedAt(tag.getLong(PLANTED_AT));
+        state.setBlockId(tag.getString(BLOCK_ID));
         state.setConfigVersion(tag.getInt(CONFIG_VERSION));
         return state;
     }

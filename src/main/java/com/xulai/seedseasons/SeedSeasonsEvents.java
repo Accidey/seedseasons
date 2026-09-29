@@ -28,6 +28,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
@@ -88,6 +89,20 @@ public final class SeedSeasonsEvents {
     public static void onChunkUnload(ChunkEvent.Unload event) {
         if (event.getChunk() instanceof LevelChunk chunk) {
             CropLifecycle.onChunkUnload(chunk);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onBlockPlaced(BlockEvent.EntityPlaceEvent event) {
+        if (event.getLevel() instanceof ServerLevel level) {
+            CropLifecycle.onPlaced(level, event.getPos(), event.getPlacedBlock());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onBlockBroken(BlockEvent.BreakEvent event) {
+        if (event.getLevel() instanceof ServerLevel level) {
+            CropLifecycle.onBroken(level, event.getPos());
         }
     }
 

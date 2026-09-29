@@ -52,6 +52,7 @@ public final class CropLifecycle {
     private static final class Settlement {
         int crops;
         int grown;
+        int young;
         int mature;
         int offSeason;
         int dry;
@@ -79,6 +80,34 @@ public final class CropLifecycle {
         if (chunks != null) {
             chunks.remove(chunk.getPos().toLong());
         }
+    }
+
+    public static void onPlaced(ServerLevel level, BlockPos pos, BlockState state) {
+        if (!SeedSeasonsConfig.enableCropLifecycle()) {
+            return;
+        }
+        IntegerProperty age = ageProperty(state);
+        if (age == null || !isManaged(state)) {
+            return;
+        }
+        recordAt(level, level.getChunkAt(pos), pos, state, age, maxAge(age), level.getRandom(), true);
+    }
+
+    public static void onBroken(ServerLevel level, BlockPos pos) {
+        if (!SeedSeasonsConfig.enableCropLifecycle()) {
+            return;
+        }
+        LevelChunk chunk = level.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
+        if (chunk == null) {
+            return;
+        }
+        CropStates states = CropStates.of(chunk);
+        if (states.get(pos) == null) {
+            return;
+        }
+        states.remove(pos);
+        chunk.setUnsaved(true);
+        CropStates.sync(chunk);
     }
 
     public static boolean isManaged(BlockState state) {
@@ -158,13 +187,13 @@ public final class CropLifecycle {
             }
             merge(total, settlement);
             if (before > 0) {
-                SeedSeasons.LOGGER.info("  chunk [{}, {}]: {} crop(s), {} grew, {} mature, {} off-season, {} dry, {} withered, {} new, {} stale, total progress {}", chunkPos.x, chunkPos.z, settlement.crops, settlement.grown, settlement.mature, settlement.offSeason, settlement.dry, settlement.withered, settlement.fresh, settlement.stale, String.format(Locale.ROOT, "%.3f", settlement.total));
+                SeedSeasons.LOGGER.info("  chunk [{}, {}]: {} crop(s), {} grew, {} young, {} mature, {} off-season, {} dry, {} withered, {} new, {} stale, total progress {}", chunkPos.x, chunkPos.z, settlement.crops, settlement.grown, settlement.young, settlement.mature, settlement.offSeason, settlement.dry, settlement.withered, settlement.fresh, settlement.stale, String.format(Locale.ROOT, "%.3f", settlement.total));
                 chunk.setUnsaved(true);
                 CropStates.sync(chunk);
             }
         }
         if (total.crops > 0 || total.withered > 0) {
-            SeedSeasons.LOGGER.info("  settlement total: {} crop(s), {} grew, {} mature, {} off-season, {} dry, {} withered, {} new, {} stale, total progress {}", total.crops, total.grown, total.mature, total.offSeason, total.dry, total.withered, total.fresh, total.stale, String.format(Locale.ROOT, "%.3f", total.total));
+            SeedSeasons.LOGGER.info("  settlement total: {} crop(s), {} grew, {} young, {} mature, {} off-season, {} dry, {} withered, {} new, {} stale, total progress {}", total.crops, total.grown, total.young, total.mature, total.offSeason, total.dry, total.withered, total.fresh, total.stale, String.format(Locale.ROOT, "%.3f", total.total));
         }
         for (BlockPos pos : DRAINED) {
             WaterNetwork.drain(level, pos);
@@ -178,6 +207,7 @@ public final class CropLifecycle {
     private static void merge(Settlement total, Settlement part) {
         total.crops += part.crops;
         total.grown += part.grown;
+        total.young += part.young;
         total.mature += part.mature;
         total.offSeason += part.offSeason;
         total.dry += part.dry;
@@ -284,6 +314,12 @@ public final class CropLifecycle {
             return true;
         }
 
+        long minimum = (long) (SeedSeasonsConfig.minGrowHours() * 1000.0D);
+        if (minimum > 0L && record.plantedAt() > 0L && now - record.plantedAt() < minimum) {
+            settlement.young++;
+            return true;
+        }
+
         settlement.grown++;
         record.setProgress(Math.min(1.0D, record.progress() + 1.0D / Math.max(1.0D, record.totalTicks() / TICKS_PER_DAY)));
         record.setLastUpdate(now);
@@ -374,25 +410,30 @@ public final class CropLifecycle {
         long now = level.getDayTime();
         int current = state.getValue(age);
         int version = SeasonMapping.configVersion();
+        String blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
         CropStates states = CropStates.of(chunk);
         CropState record = states.get(pos);
+        boolean replaced = record != null && (current != record.lastAge() || (!record.blockId().isEmpty() && !record.blockId().equals(blockId)));
         if (record == null) {
-            record = new CropState((double) current / max, now, rollTotalTicks(BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString(), random), current >= max ? now : -1L, -1L, 0, seasonOrdinal(level));
+            record = new CropState((double) current / max, now, rollTotalTicks(blockId, random), current >= max ? now : -1L, -1L, 0, seasonOrdinal(level));
             record.setLastAge(current);
+            record.setPlantedAt(now);
+            record.setBlockId(blockId);
             record.setConfigVersion(version);
             states.put(pos, record);
             chunk.setUnsaved(true);
             if (sync) {
                 CropStates.sync(chunk);
             }
-        } else if (current != record.lastAge()) {
-            record.reset((double) current / max, now, rollTotalTicks(BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString(), random), current, current >= max ? now : -1L);
+        } else if (replaced) {
+            record.reset((double) current / max, now, rollTotalTicks(blockId, random), current, current >= max ? now : -1L);
+            record.setBlockId(blockId);
             record.setConfigVersion(version);
             if (sync) {
                 CropStates.sync(chunk);
             }
         } else if (record.configVersion() != version) {
-            record.retime(rollTotalTicks(BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString(), random), version);
+            record.retime(rollTotalTicks(blockId, random), version);
             if (sync) {
                 CropStates.sync(chunk);
             }
