@@ -110,6 +110,7 @@ public final class CropLifecycle {
         if (tracked == null || tracked.isEmpty()) {
             return;
         }
+        SeedSeasons.LOGGER.info("seedseasons daily crop settlement at day {}: {} tracked chunk(s) in {}", level.getDayTime() / 24000L, tracked.size(), level.dimension().location());
         RandomSource random = level.getRandom();
         for (long packed : new ArrayList<>(tracked)) {
             ChunkPos chunkPos = new ChunkPos(packed);

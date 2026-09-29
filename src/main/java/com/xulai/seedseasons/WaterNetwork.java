@@ -14,6 +14,7 @@ import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.material.FluidState;
@@ -101,8 +102,16 @@ public final class WaterNetwork {
         if (source == null || amount <= 0.0D) {
             return;
         }
-        source.setLevel(Math.max(0.0D, source.level() - amount));
-        level.getChunkAt(waterPos).setUnsaved(true);
+        double remaining = source.level() - amount;
+        LevelChunk chunk = level.getChunkAt(waterPos);
+        if (remaining > 0.0D) {
+            source.setLevel(remaining);
+            chunk.setUnsaved(true);
+            return;
+        }
+        WaterStates.of(chunk).remove(waterPos);
+        chunk.setUnsaved(true);
+        level.setBlock(waterPos, Blocks.AIR.defaultBlockState(), 2);
     }
 
     public static boolean refill(ServerLevel level, BlockPos waterPos) {
