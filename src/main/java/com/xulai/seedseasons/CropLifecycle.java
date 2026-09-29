@@ -32,6 +32,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.LevelChunkSection;
 
 import sereneseasons.api.season.Season;
 import sereneseasons.api.season.SeasonHelper;
@@ -44,9 +45,21 @@ public final class CropLifecycle {
     private static final double NEAR_MATURE_PROGRESS = 0.75D;
 
     private static final Map<ResourceKey<Level>, Long> LAST_DAYS = new HashMap<>();
-    private static final Map<ResourceKey<Level>, Set<Long>> CROP_CHUNKS = new HashMap<>();
+    private static final Map<ResourceKey<Level>, Set<Long>> LOADED_CHUNKS = new HashMap<>();
 
     private static final Set<BlockPos> DRAINED = new HashSet<>();
+
+    private static final class Settlement {
+        int crops;
+        int grown;
+        int mature;
+        int offSeason;
+        int dry;
+        int withered;
+        int fresh;
+        int stale;
+        double total;
+    }
 
     private CropLifecycle() {
     }
@@ -55,23 +68,17 @@ public final class CropLifecycle {
         if (!(chunk.getLevel() instanceof ServerLevel)) {
             return;
         }
-        if (!CropStates.of(chunk).sources().isEmpty()) {
-            track(chunk);
-        }
+        LOADED_CHUNKS.computeIfAbsent(chunk.getLevel().dimension(), key -> new HashSet<>()).add(chunk.getPos().toLong());
     }
 
     public static void onChunkUnload(LevelChunk chunk) {
         if (!(chunk.getLevel() instanceof ServerLevel)) {
             return;
         }
-        Set<Long> chunks = CROP_CHUNKS.get(chunk.getLevel().dimension());
+        Set<Long> chunks = LOADED_CHUNKS.get(chunk.getLevel().dimension());
         if (chunks != null) {
             chunks.remove(chunk.getPos().toLong());
         }
-    }
-
-    private static void track(LevelChunk chunk) {
-        CROP_CHUNKS.computeIfAbsent(chunk.getLevel().dimension(), key -> new HashSet<>()).add(chunk.getPos().toLong());
     }
 
     public static boolean isManaged(BlockState state) {
@@ -92,7 +99,7 @@ public final class CropLifecycle {
             return false;
         }
         LevelChunk chunk = level.getChunkAt(pos);
-        recordAt(level, chunk, pos, state, age, maxAge(age), BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString(), random);
+        recordAt(level, chunk, pos, state, age, maxAge(age), random, true);
         return true;
     }
 
@@ -109,26 +116,25 @@ public final class CropLifecycle {
     }
 
     private static void sweep(ServerLevel level) {
-        Set<Long> tracked = CROP_CHUNKS.get(level.dimension());
-        if (tracked == null || tracked.isEmpty()) {
+        Set<Long> loaded = LOADED_CHUNKS.get(level.dimension());
+        if (loaded == null || loaded.isEmpty()) {
             return;
         }
-        SeedSeasons.LOGGER.info("seedseasons daily crop settlement at day {}: {} tracked chunk(s) in {}", level.getDayTime() / 24000L, tracked.size(), level.dimension().location());
+        SeedSeasons.LOGGER.info("seedseasons settlement at day {}: {} loaded chunk(s) in {}", level.getDayTime() / 24000L, loaded.size(), level.dimension().location());
         RandomSource random = level.getRandom();
-        for (long packed : new ArrayList<>(tracked)) {
+        Settlement total = new Settlement();
+        for (long packed : new ArrayList<>(loaded)) {
             ChunkPos chunkPos = new ChunkPos(packed);
             LevelChunk chunk = level.getChunkSource().getChunkNow(chunkPos.x, chunkPos.z);
             if (chunk == null) {
                 continue;
             }
             CropStates states = CropStates.of(chunk);
-            if (states.sources().isEmpty()) {
-                continue;
-            }
-            int before = states.sources().size();
+            Settlement settlement = new Settlement();
+            discover(level, chunk, states, random, settlement);
             List<BlockPos> stale = new ArrayList<>();
             List<BlockPos> removed = new ArrayList<>();
-            boolean changed = false;
+            int before = states.sources().size();
             for (Map.Entry<BlockPos, CropState> entry : states.sources().entrySet()) {
                 BlockPos pos = entry.getKey();
                 BlockState state = chunk.getBlockState(pos);
@@ -137,9 +143,7 @@ public final class CropLifecycle {
                     stale.add(pos);
                     continue;
                 }
-                if (step(level, pos, state, age, entry.getValue(), random, removed)) {
-                    changed = true;
-                }
+                step(level, pos, state, age, entry.getValue(), random, removed, settlement);
             }
             for (BlockPos pos : stale) {
                 states.remove(pos);
@@ -147,15 +151,20 @@ public final class CropLifecycle {
             for (BlockPos pos : removed) {
                 states.remove(pos);
             }
-            double total = 0.0D;
+            settlement.stale = stale.size();
+            settlement.crops = states.sources().size();
             for (CropState state : states.sources().values()) {
-                total += state.progress();
+                settlement.total += state.progress();
             }
-            SeedSeasons.LOGGER.info("  chunk [{}, {}]: {} crop(s) left, {} withered this settlement, {} stale record(s), total progress {}", chunkPos.x, chunkPos.z, states.sources().size(), before - states.sources().size(), stale.size(), String.format(Locale.ROOT, "%.3f", total));
-            if (changed || !stale.isEmpty() || !removed.isEmpty()) {
+            merge(total, settlement);
+            if (before > 0) {
+                SeedSeasons.LOGGER.info("  chunk [{}, {}]: {} crop(s), {} grew, {} mature, {} off-season, {} dry, {} withered, {} new, {} stale, total progress {}", chunkPos.x, chunkPos.z, settlement.crops, settlement.grown, settlement.mature, settlement.offSeason, settlement.dry, settlement.withered, settlement.fresh, settlement.stale, String.format(Locale.ROOT, "%.3f", settlement.total));
                 chunk.setUnsaved(true);
                 CropStates.sync(chunk);
             }
+        }
+        if (total.crops > 0 || total.withered > 0) {
+            SeedSeasons.LOGGER.info("  settlement total: {} crop(s), {} grew, {} mature, {} off-season, {} dry, {} withered, {} new, {} stale, total progress {}", total.crops, total.grown, total.mature, total.offSeason, total.dry, total.withered, total.fresh, total.stale, String.format(Locale.ROOT, "%.3f", total.total));
         }
         for (BlockPos pos : DRAINED) {
             WaterNetwork.drain(level, pos);
@@ -166,7 +175,51 @@ public final class CropLifecycle {
         DRAINED.clear();
     }
 
-    private static boolean step(ServerLevel level, BlockPos pos, BlockState state, IntegerProperty age, CropState record, RandomSource random, List<BlockPos> removed) {
+    private static void merge(Settlement total, Settlement part) {
+        total.crops += part.crops;
+        total.grown += part.grown;
+        total.mature += part.mature;
+        total.offSeason += part.offSeason;
+        total.dry += part.dry;
+        total.withered += part.withered;
+        total.fresh += part.fresh;
+        total.stale += part.stale;
+        total.total += part.total;
+    }
+
+    private static void discover(ServerLevel level, LevelChunk chunk, CropStates states, RandomSource random, Settlement settlement) {
+        LevelChunkSection[] sections = chunk.getSections();
+        int minX = chunk.getPos().getMinBlockX();
+        int minZ = chunk.getPos().getMinBlockZ();
+        for (int index = 0; index < sections.length; index++) {
+            LevelChunkSection section = sections[index];
+            if (section.hasOnlyAir() || !section.maybeHas(CropLifecycle::isManaged)) {
+                continue;
+            }
+            int minY = level.getSectionYFromSectionIndex(index) << 4;
+            for (int y = 0; y < 16; y++) {
+                for (int z = 0; z < 16; z++) {
+                    for (int x = 0; x < 16; x++) {
+                        BlockState state = section.getBlockState(x, y, z);
+                        if (!isManaged(state)) {
+                            continue;
+                        }
+                        IntegerProperty age = ageProperty(state);
+                        if (age == null) {
+                            continue;
+                        }
+                        BlockPos pos = new BlockPos(minX + x, minY + y, minZ + z);
+                        if (states.get(pos) == null) {
+                            settlement.fresh++;
+                        }
+                        recordAt(level, chunk, pos, state, age, maxAge(age), random, false);
+                    }
+                }
+            }
+        }
+    }
+
+    private static boolean step(ServerLevel level, BlockPos pos, BlockState state, IntegerProperty age, CropState record, RandomSource random, List<BlockPos> removed, Settlement settlement) {
         long now = level.getDayTime();
         int max = maxAge(age);
         int current = state.getValue(age);
@@ -175,10 +228,12 @@ public final class CropLifecycle {
         if (current >= max) {
             long overMature = (long) (SeedSeasonsConfig.overMatureDays() * TICKS_PER_DAY);
             if (record.matureSince() > 0L && overMature > 0L && now - record.matureSince() > overMature) {
+                settlement.withered++;
                 removed.add(pos);
                 level.destroyBlock(pos, false);
                 return true;
             }
+            settlement.mature++;
             return false;
         }
 
@@ -186,9 +241,11 @@ public final class CropLifecycle {
         if (SeedSeasonsConfig.enableCropWater() && level.getBlockState(farmlandPos).getBlock() instanceof FarmBlock) {
             BlockPos sourcePos = WaterNetwork.servingSource(level, farmlandPos);
             if (sourcePos == null) {
+                settlement.dry++;
                 if (record.drySince() <= 0L) {
                     record.setDrySince(now);
                 } else if (SeedSeasonsConfig.dryWitherDays() > 0.0D && now - record.drySince() >= SeedSeasonsConfig.dryWitherDays() * TICKS_PER_DAY) {
+                    settlement.withered++;
                     removed.add(pos);
                     level.destroyBlock(pos, false);
                     level.setBlock(farmlandPos, Blocks.DIRT.defaultBlockState(), 3);
@@ -207,6 +264,7 @@ public final class CropLifecycle {
         if (record.lastSeason() != season) {
             record.setLastSeason(season);
             if (!fertile && record.progress() >= NEAR_MATURE_PROGRESS && random.nextFloat() < SeedSeasonsConfig.nearMatureChance()) {
+                settlement.grown++;
                 level.setBlock(pos, state.setValue(age, max), 3);
                 record.setProgress(1.0D);
                 record.setMatureSince(now);
@@ -216,14 +274,17 @@ public final class CropLifecycle {
         }
 
         if (!fertile && random.nextFloat() < SeedSeasonsConfig.witherChance()) {
+            settlement.withered++;
             removed.add(pos);
             level.destroyBlock(pos, false);
             return true;
         }
         if (!fertile) {
+            settlement.offSeason++;
             return true;
         }
 
+        settlement.grown++;
         record.setProgress(Math.min(1.0D, record.progress() + 1.0D / Math.max(1.0D, record.totalTicks() / TICKS_PER_DAY)));
         record.setLastUpdate(now);
         int target = Math.min(max, (int) (record.progress() * max));
@@ -258,8 +319,7 @@ public final class CropLifecycle {
         long now = serverLevel.getDayTime();
         LevelChunk chunk = serverLevel.getChunkAt(pos);
         CropStates states = CropStates.of(chunk);
-        String blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
-        CropState record = recordAt(serverLevel, chunk, pos, state, age, max, blockId, serverLevel.getRandom());
+        CropState record = recordAt(serverLevel, chunk, pos, state, age, max, serverLevel.getRandom(), true);
 
         long day = now / 24000L;
         if (record.boneMealDay() != day) {
@@ -310,27 +370,32 @@ public final class CropLifecycle {
         return state == null ? -1.0D : state.progress();
     }
 
-    private static CropState recordAt(ServerLevel level, LevelChunk chunk, BlockPos pos, BlockState state, IntegerProperty age, int max, String blockId, RandomSource random) {
+    private static CropState recordAt(ServerLevel level, LevelChunk chunk, BlockPos pos, BlockState state, IntegerProperty age, int max, RandomSource random, boolean sync) {
         long now = level.getDayTime();
         int current = state.getValue(age);
         int version = SeasonMapping.configVersion();
         CropStates states = CropStates.of(chunk);
         CropState record = states.get(pos);
         if (record == null) {
-            record = new CropState((double) current / max, now, rollTotalTicks(blockId, random), current >= max ? now : -1L, -1L, 0, seasonOrdinal(level));
+            record = new CropState((double) current / max, now, rollTotalTicks(BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString(), random), current >= max ? now : -1L, -1L, 0, seasonOrdinal(level));
             record.setLastAge(current);
             record.setConfigVersion(version);
             states.put(pos, record);
             chunk.setUnsaved(true);
-            CropStates.sync(chunk);
-            track(chunk);
+            if (sync) {
+                CropStates.sync(chunk);
+            }
         } else if (current != record.lastAge()) {
-            record.reset((double) current / max, now, rollTotalTicks(blockId, random), current, current >= max ? now : -1L);
+            record.reset((double) current / max, now, rollTotalTicks(BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString(), random), current, current >= max ? now : -1L);
             record.setConfigVersion(version);
-            CropStates.sync(chunk);
+            if (sync) {
+                CropStates.sync(chunk);
+            }
         } else if (record.configVersion() != version) {
-            record.retime(rollTotalTicks(blockId, random), version);
-            CropStates.sync(chunk);
+            record.retime(rollTotalTicks(BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString(), random), version);
+            if (sync) {
+                CropStates.sync(chunk);
+            }
         }
         return record;
     }

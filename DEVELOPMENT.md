@@ -31,7 +31,7 @@
 
 ### 2.2 作物生命周期（`enableCropLifecycle`）
 
-- **结算时机**：每天 `dayTime` 跨过 0（= 早上 6:00）时，对**已加载区块**里的所有作物统一结算一次，每株进度 `+1/成熟天数`。原版随机刻不再推进成长（随机刻只负责登记新作物、识别收获/换株，并跳过原版成长）。
+- **结算时机**：每天 `dayTime` 跨过 0（= 早上 6:00）时，对**已加载区块**里的所有作物统一结算一次，每株进度 `+1/成熟天数`。结算前先扫一遍区块、给还没建档的作物补档（**不依赖随机刻**：随机刻只提前建档并跳过原版成长，抽不到也不影响当天结算）。
 - **成熟天数**：`growthDays` 按作物配置（默认值按季节推算：一个季节 = 3 子季 × 8 天 = 24 天 → 单季作物 12 天两熟、跨 2 季及以上 24 天一熟）；未列出的用 `defaultGrowthDays`（默认 24）。每株种下时按 `growthDayVariance`（默认 ±1 天）roll 出各自总时长，所以同批作物不会同日成熟。改配置后已种下的作物会在下次登记时按新配置重算时长（保留进度）。
 - **进度是 0~1 的连续值**，方块年龄 = `floor(进度 × 最大年龄)`。
 - **非当季**：每天结算时若不合时令，按 `witherChance` 枯死（直接消失，同四季的「摧毁」）。
@@ -46,7 +46,7 @@
 - 每块**种了作物**的耕地每天扣 1 点水；空着的耕地不消耗。10 块田一天抽干一格水，单块十天。
 - 缺水（水源耗尽，或该田没被任何水源覆盖）：当次结算不推进成长并开始计时；`dryWitherDays` 天后枯死、耕地变回泥土。
 - **水量见底时水方块会被替换成空气**（用 flag 2 写入，不触发邻接更新，避免旁边的水立刻补回来）；玩家重新倒水即视为新水源、水量满格。
-- 每日结算会打 INFO 日志（每个维度一行 + 每个区块一行：`chunk [x, z]: N crop(s) left, M withered this settlement, K stale record(s)`），用于确认结算是否触发、作物是否在死。
+- 每日结算会打 INFO 日志（维度一行 + 有作物的区块各一行：`chunk [x, z]: N crop(s), G grew, M mature, O off-season, D dry, W withered, F new, S stale, total progress P`，末尾再加一行合计），用于确认结算是否触发，以及「某株不涨」属于哪一类（`new` = 本次补档、`dry` = 没被水源覆盖、`off-season` = 非当季、`mature` = 已成熟）。
 - 补水：拿水桶右键水源即回满（非创造换成空桶）。
 - 豁免是两个**互相独立**的开关，默认都关闭豁免（即一律消耗）：
   - `consumeNaturalWater`（默认 true）：河流、海洋等水构成的生物群系里的水照常被消耗；设为 false 后这些水永不减少（按原版 `#minecraft:is_river`、`#minecraft:is_ocean` 标签判定），鼓励在河边、岸边种植。
@@ -92,8 +92,8 @@
 ### 3.3 数据流
 
 ```
-服务端：随机刻 → CropLifecycle.onRandomTick 只登记
-       每天 6:00 → dailyTick → 遍历被跟踪的区块 → step() 每株一次（成长/水耗/枯死/催熟）
+服务端：每天 6:00 → dailyTick → 遍历已加载区块 → 扫区块补档 → step() 每株一次（成长/水耗/枯死/催熟）
+       随机刻 → CropLifecycle.onRandomTick 提前建档 + 跳过原版成长
        状态存区块附件 CropStates（NBT 落盘）
                     ↓ AttachmentType.serializable(...).sync(CODEC)
 客户端：同一附件（进区块自动补发） → Jade mixin 读取 → 显示真实百分比
@@ -126,13 +126,15 @@
 6. `CropState.lastAge` 用于区分「该生长」与「换了一株/收获重置」——少了它，收获后补种同一格会继承旧进度直接成熟。
 7. 改成长/成熟相关配置后，用 `SeasonMapping.configVersion()` 让已种下的作物在下次登记时重算时长（保留进度）。
 8. greedyString 参数的 Tab 补全，建议文本必须带上已输入的前缀，否则会替换掉前面已选的季节。
-9. 区块迭代不要用 `ChunkMap.getChunks()`（非 public）；只跟踪有数据的区块，用 `getChunkNow(x,z)` 取已加载区块。
+9. 区块迭代不要用 `ChunkMap.getChunks()`（非 public）；用 `ChunkEvent.Load/Unload` 维护「已加载区块」集合，再用 `getChunkNow(x,z)` 取区块。
+10. **作物的发现不能依赖随机刻**：随机刻是按 3/4096 的概率抽格子的，加速时间后一株可能几十天抽不到——只靠随机刻建档会让「同一片田里有的长有的不长」。结算时按区块扫一遍补档（先用 `LevelChunkSection.maybeHas(predicate)` 过调色板，含作物的区块才逐格查），成本是每天每区块一次。
 
 ### 4.3 构建约束
 
 - 第三方 jar 放 `local-repo/`（自建 Maven 布局 + 最小 pom），build.gradle 里加 `maven { url = uri("${projectDir}/local-repo") }`。
 - `ProcessResources` 必须设 `filteringCharset = 'UTF-8'`，否则 mods.toml 的中文会被平台默认 GBK 吃掉末尾字符。
 - `neo_version` 用本地已有缓存（21.1.249）以免下载。
+- 不跑 gradle 也能做一次零构建的类型自检：`javac -proc:none -d <临时目录> -cp "<classpath>" $(find src/main/java -name "*.java")`。classpath = `build/neoForm/neoFormJoined*/steps/recompile/outputs.jar` + 缓存里的 `neoforge-<ver>-universal.jar`、`loader-<fmlver>.jar`（含 `net.neoforged.fml.common.*`）、`mixin-0.8.5.jar`、`bus-*.jar`、`brigadier-*.jar`、`slf4j-api`、`logging`、`datafixerupper`、`netty-buffer/common` + `local-repo/` 的静谧四季/GlitchCore/Jade。`client/` 包用到的 `net.neoforged.api.distmarker.Dist` 不在这些 jar 里，自检时排掉 `client` 包或临时放一份桩类即可。
 - 若构建报 `Timeout waiting to lock Configuration Cache`，说明有被中断的守护进程占锁：`gradlew --stop` 或加 `--no-configuration-cache`。
 
 ---
@@ -159,4 +161,4 @@ cd D:\Games\MOD\更好的四季
 - 耗水系统开启时，耕地不会被原版规则干涸成泥土（否则缺水地块的作物会在几分钟内被静默顶掉，看起来像"耕地反复湿润变泥"）；耕地变泥只发生在「缺水满 `dryWitherDays` 天、作物枯死」那一步。因此"哪 10 块田在供水"靠作物是否生长与水源水量体现，而不是靠土壤颜色。
 - Jade 集成按 15.10.6 的类名/签名编写，升级 Jade 后若方法变动，那份 mixin 会静默失效（`require = 0`），不会崩游戏。
 - 无限水的两个豁免开关互相独立：`consumeInfiniteWater=false` 会把天然湖泊一并豁免（湖泊与玩家水池在机制上无法区分），只想豁免河流/海洋应使用 `consumeNaturalWater=false`。
-- 性能上的既有取舍：随机刻回调先做 `instanceof` 判定再查方块状态属性；水源「服务哪几块耕地」的结果缓存 100 真实 tick；每日结算只遍历有作物的区块（登记时入表、区块卸载出表），不用 `ChunkMap.getChunks()`。
+- 性能上的既有取舍：随机刻回调先做 `instanceof` 判定再查方块状态属性；水源「服务哪几块耕地」的结果缓存 100 真实 tick；每日结算遍历已加载区块（加载/卸载事件维护），每区块先用 `LevelChunkSection.maybeHas` 过一遍调色板、只有含作物的区块才逐格扫描，不用 `ChunkMap.getChunks()`。
