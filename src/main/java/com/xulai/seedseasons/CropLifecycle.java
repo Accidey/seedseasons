@@ -81,8 +81,11 @@ public final class CropLifecycle {
     }
 
     public static boolean onRandomTick(ServerLevel level, BlockPos pos, BlockState state, RandomSource random) {
+        if (!isManaged(state) || !SeedSeasonsConfig.enableCropLifecycle()) {
+            return false;
+        }
         IntegerProperty age = ageProperty(state);
-        if (age == null || !isManaged(state) || !SeedSeasonsConfig.enableCropLifecycle()) {
+        if (age == null) {
             return false;
         }
         LevelChunk chunk = level.getChunkAt(pos);
@@ -176,7 +179,9 @@ public final class CropLifecycle {
                 }
                 return true;
             }
-            WaterNetwork.consume(level, sourcePos, 1.0D);
+            if (!WaterNetwork.isInfinite(level, sourcePos)) {
+                WaterNetwork.consume(level, sourcePos, 1.0D);
+            }
             record.setDrySince(-1L);
         }
 

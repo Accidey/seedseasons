@@ -25,6 +25,7 @@ public final class SeedSeasonsConfig {
     private static final ModConfigSpec.DoubleValue BONE_MEAL_PROGRESS;
     private static final ModConfigSpec.BooleanValue ENABLE_CROP_WATER;
     private static final ModConfigSpec.IntValue WATER_PER_SOURCE;
+    private static final ModConfigSpec.BooleanValue CONSUME_NATURAL_WATER;
     private static final ModConfigSpec.DoubleValue DRY_WITHER_DAYS;
 
     private static volatile ModConfig modConfig;
@@ -195,6 +196,18 @@ public final class SeedSeasonsConfig {
                         " Only still water source blocks count, flowing water does not.")
                 .defineInRange("waterPerSource", 10, 1, 1000);
 
+        CONSUME_NATURAL_WATER = builder
+                .comment(
+                        "",
+                        " 河流、海洋等水构成的生物群系里的水，是否也照常被作物消耗。",
+                        " 默认 true：河水海水一样要省着用，抽干了就得补水。",
+                        " 设为 false：这些水永远不会减少（按原版 #minecraft:is_river、#minecraft:is_ocean 标签判定），鼓励在河边、岸边种植。",
+                        "",
+                        " Whether crops also drain water inside water biomes such as rivers and oceans.",
+                        " Defaults to true, so river and sea water has to be managed and refilled like any other source.",
+                        " Set it to false to make that water never run out, judged by the vanilla #minecraft:is_river and #minecraft:is_ocean tags, which rewards farming along rivers and coasts.")
+                .define("consumeNaturalWater", true);
+
         DRY_WITHER_DAYS = builder
                 .comment(
                         "",
@@ -257,6 +270,10 @@ public final class SeedSeasonsConfig {
 
     public static int waterPerSource() {
         return WATER_PER_SOURCE.get();
+    }
+
+    public static boolean consumeNaturalWater() {
+        return CONSUME_NATURAL_WATER.get();
     }
 
     public static double dryWitherDays() {

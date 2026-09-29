@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.Set;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.material.FluidState;
@@ -17,7 +20,7 @@ import net.minecraft.world.level.material.FluidState;
 public final class WaterNetwork {
 
     private static final int RADIUS = 4;
-    private static final long CACHE_TICKS = 20L;
+    private static final long CACHE_TICKS = 100L;
 
     private WaterNetwork() {
     }
@@ -31,6 +34,14 @@ public final class WaterNetwork {
             return Boolean.FALSE;
         }
         return sourceAt(serverLevel, sourcePos) != null;
+    }
+
+    public static boolean isInfinite(ServerLevel level, BlockPos waterPos) {
+        if (SeedSeasonsConfig.consumeNaturalWater()) {
+            return false;
+        }
+        Holder<Biome> biome = level.getBiome(waterPos);
+        return biome.is(BiomeTags.IS_RIVER) || biome.is(BiomeTags.IS_OCEAN);
     }
 
     public static BlockPos servingSource(ServerLevel level, BlockPos farmlandPos) {
