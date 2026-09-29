@@ -28,14 +28,10 @@ public final class WaterNetwork {
     }
 
     public static Boolean hydration(LevelReader level, BlockPos farmlandPos) {
-        if (!(level instanceof ServerLevel serverLevel) || !SeedSeasonsConfig.enableCropWater()) {
+        if (!(level instanceof ServerLevel) || !SeedSeasonsConfig.enableCropWater()) {
             return null;
         }
-        BlockPos sourcePos = servingSource(serverLevel, farmlandPos);
-        if (sourcePos == null) {
-            return Boolean.FALSE;
-        }
-        return sourceAt(serverLevel, sourcePos) != null;
+        return Boolean.TRUE;
     }
 
     public static boolean isInfinite(ServerLevel level, BlockPos waterPos) {
