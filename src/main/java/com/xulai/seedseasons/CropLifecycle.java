@@ -220,6 +220,9 @@ public final class CropLifecycle {
             level.destroyBlock(pos, false);
             return true;
         }
+        if (!fertile) {
+            return true;
+        }
 
         record.setProgress(Math.min(1.0D, record.progress() + 1.0D / Math.max(1.0D, record.totalTicks() / TICKS_PER_DAY)));
         record.setLastUpdate(now);
