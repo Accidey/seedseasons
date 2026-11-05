@@ -1,0 +1,32 @@
+{
+  "name": "以天为单位的成长",
+  "icon": "minecraft:wheat",
+  "category": "seedseasons:crop_lifecycle",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "启用作物生命周期后，作物不再依靠原版的随机刻成长。$(br2)取而代之，每株作物每个 $(bold)MC 天$() 推进一次，在 $(info)早上 6:00$() 之后的每日结算时统一进行。$(br2)每过一天，作物获得 $(thing)1 / 成熟天数$() 的进度。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "这意味着什么",
+      "text": "一株配置为 3 天成熟的作物，会在种下后的第三次结算时完全长成。$(br2)所有 $(bold)已加载区块$() 的作物会同时成长，所以即使你不在田边，远处的田也照样生长。$(br2)未加载的区块不会推进；重新加载后从存档状态继续。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:wheat",
+      "title": "成熟天数",
+      "text": "天数显示在种子的提示上：$(info)成熟需要 X 天$()。$(br2)每株植物会在该数值附近随机浮动一点，所以同一批作物不会全部在同一天成熟。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:crop_lifecycle/growth_days",
+        "seedseasons:crop_lifecycle/bone_meal",
+        "seedseasons:crop_lifecycle/withering"
+      ]
+    }
+  ]
+}

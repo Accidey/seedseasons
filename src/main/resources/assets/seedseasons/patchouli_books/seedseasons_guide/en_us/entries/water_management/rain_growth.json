@@ -1,0 +1,24 @@
+{
+  "name": "Rain Growth",
+  "icon": "minecraft:water_bucket",
+  "category": "seedseasons:water_management",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Crops can grow on rain alone!$(br2)Once the current rain has lasted at least $(thing)minRainHours$() (default 12 in-game hours), exposed crops - not under a roof or tree canopy - count as watered.$(br2)They grow normally and their thirst timer resets."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Details",
+      "text": "A vanilla storm lasts about 12-24 in-game hours, so with the default 12 the second half of a rain feeds your crops.$(br2)Snow does not count as rain, and places with a roof or leaves block the rain.$(br2)Only dimensions with skylight (the overworld) participate."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:water_management/welcome",
+        "seedseasons:water_management/thirst"
+      ]
+    }
+  ]
+}

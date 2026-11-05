@@ -1,0 +1,30 @@
+{
+  "name": "Bone Meal",
+  "icon": "minecraft:bone_meal",
+  "category": "seedseasons:crop_lifecycle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Bone meal still works, but it is $(bold)not instant$().$(br2)When you fertilize a crop, the use is $(info)queued$() and applied at the next daily 6:00 settlement, all at once.$(br2)Each crop accepts at most $(thing)boneMealPerDay$() uses per MC day (default 1)."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Over-fertilizing",
+      "text": "Using bone meal beyond the daily limit makes the crop $(warn)wither instantly$(), and the bone meal is consumed.$(br2)If boneMealPerDay is set to 0, crops do not accept bone meal at all - using it does nothing to them."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:bone_meal",
+      "title": "Fertilizing tips",
+      "text": "Each accepted use adds $(thing)boneMealProgress$() (default 10%) and at least one full growth stage, so the effect is always visible.$(br2)Bone meal works even on freshly planted crops, ignoring the minimum planting time."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:crop_lifecycle/welcome",
+        "seedseasons:crop_lifecycle/withering"
+      ]
+    }
+  ]
+}

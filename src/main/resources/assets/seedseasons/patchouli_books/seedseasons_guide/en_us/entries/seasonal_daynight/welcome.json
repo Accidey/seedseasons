@@ -1,0 +1,30 @@
+{
+  "name": "Seasonal Day & Night",
+  "icon": "minecraft:clock",
+  "category": "seedseasons:seasonal_daynight",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "This feature keeps the overworld day length $(bold)constant$() while changing how much of it is daylight, depending on the season.$(br2)It requires BetterDays to drive the time speed; this mod overrides the per-tick progression based on the current season and time of day."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Defaults",
+      "text": "$(li)1 MC day = $(thing)mcDayLengthMinutes$() real minutes (default 60, vanilla is 20).$(li)Daytime share: spring 50%, summer 65%, autumn 50%, winter 35%.$(br2)So in winter you get about 21 minutes of daylight per real hour; in summer about 39 minutes."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:clock",
+      "title": "Changing it",
+      "text": "All values are configurable in $(thing)config/seedseasons-common.toml$():$(li)mcDayLengthMinutes - the whole day length$(li)springDayPercent / summerDayPercent / autumnDayPercent / winterDayPercent - the daylight share per season$(br2)Night automatically gets the remaining percentage."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:getting_started/configuring"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "水如何运作",
+  "icon": "minecraft:water_bucket",
+  "category": "seedseasons:water_management",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "启用水源消耗后，耕地不再永远保持湿润。$(br2)耕地上的作物会 $(bold)喝掉$() 附近水源的水。每次 6:00 结算时，水会从服务着已种植田地的水源中被抽走。$(br2)只有 $(info)静止的水源方块$() 算数，流动的水不算。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "服务配额",
+      "text": "一格水可以滋润 $(thing)waterPerSource$()（默认 10）块耕地，优先选择最近的耕地。$(br2)相邻的水源会合并成一个 $(bold)水塘$() 并共享配额。$(br2)如果田里没有作物，就不会消耗水。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:water_bucket",
+      "title": "补水",
+      "text": "原版无限水已被 $(warn)禁用$()：被抽干的水源不会自行恢复。$(br2)倒一桶新水可以恢复水源。重新倒上的水是全新的水源，会重新计算它服务的田地。$(br2)雨水也能救活你的作物——见「降雨免旱」。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:water_management/thirst",
+        "seedseasons:water_management/rain_growth"
+      ]
+    }
+  ]
+}

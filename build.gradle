@@ -31,6 +31,10 @@ repositories {
         name = 'LocalRepo'
         url = uri("${projectDir}/local-repo")
     }
+    maven {
+        name = 'BlameJared'
+        url = 'https://maven.blamejared.com'
+    }
 }
 
 base {
@@ -113,6 +117,9 @@ dependencies {
     localRuntime "glitchcore:glitchcore-${minecraft_version}:${glitchcore_version}"
 
     compileOnly "jade:jade-${minecraft_version}:${jade_version}"
+
+    compileOnly "vazkii.patchouli:Patchouli:${patchouli_version}"
+    runtimeOnly "vazkii.patchouli:Patchouli:${patchouli_version}"
 
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

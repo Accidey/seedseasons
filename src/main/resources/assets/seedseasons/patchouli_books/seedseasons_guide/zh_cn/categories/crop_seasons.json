@@ -1,0 +1,6 @@
+{
+  "name": "作物季节",
+  "description": "哪些作物在哪些季节生长，以及如何修改。",
+  "icon": "minecraft:wheat",
+  "sortnum": 1
+}

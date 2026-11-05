@@ -1,0 +1,24 @@
+{
+  "name": "Growth Days",
+  "icon": "minecraft:clock",
+  "category": "seedseasons:crop_lifecycle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "By default, days-to-mature is $(bold)derived automatically$() from the Serene Seasons config:$(li)one season = 3 sub-seasons x sub-season length$(li)crops spanning $(bold)2 or more seasons$() (including year-round) mature once per season$(li)crops limited to $(bold)one season$() mature twice per season$(br2)You can override this per crop with $(thing)/seedseasons growth <days>$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Derivation example",
+      "text": "With the default sub-season length of 8 days, one season is 24 days.$(br2)A year-round crop takes 24 days to mature. A single-season crop takes 12 days.$(br2)If you change the sub-season length in Serene Seasons, unlisted crops follow automatically; listed ones need manual adjustment."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:crop_seasons/commands",
+        "seedseasons:crop_lifecycle/welcome"
+      ]
+    }
+  ]
+}

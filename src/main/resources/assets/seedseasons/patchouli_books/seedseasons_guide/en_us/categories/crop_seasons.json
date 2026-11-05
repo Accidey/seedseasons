@@ -1,0 +1,6 @@
+{
+  "name": "Crop Seasons",
+  "description": "Which crops grow in which seasons, and how to change it.",
+  "icon": "minecraft:wheat",
+  "sortnum": 1
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Crop Lifecycle",
+  "description": "Day-based growth, withering, bone meal and maturity rules.",
+  "icon": "minecraft:bone_meal",
+  "sortnum": 2
+}

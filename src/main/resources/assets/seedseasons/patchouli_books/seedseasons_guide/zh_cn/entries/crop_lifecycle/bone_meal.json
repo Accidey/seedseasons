@@ -1,0 +1,30 @@
+{
+  "name": "骨粉",
+  "icon": "minecraft:bone_meal",
+  "category": "seedseasons:crop_lifecycle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "骨粉仍然有效，但它 $(bold)不是立即生效$()。$(br2)当你施肥时，这次使用会被 $(info)记入待结算$()，并在下一次每日 6:00 结算时一次性叠加生效。$(br2)每株作物每个 MC 天最多接受 $(thing)boneMealPerDay$() 次（默认 1 次）。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "施肥过量",
+      "text": "超过每日上限继续使用骨粉，会让作物 $(warn)立即枯死$()，骨粉照常消耗。$(br2)如果 boneMealPerDay 设为 0，作物完全不接受骨粉——使用没有任何效果。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:bone_meal",
+      "title": "施肥小贴士",
+      "text": "每次被接受的施肥增加 $(thing)boneMealProgress$()（默认 10%）进度，并且至少推进一个完整生长阶段，所以效果总是看得见。$(br2)骨粉对刚种下的作物也有效，不受最短种植时长限制。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:crop_lifecycle/welcome",
+        "seedseasons:crop_lifecycle/withering"
+      ]
+    }
+  ]
+}

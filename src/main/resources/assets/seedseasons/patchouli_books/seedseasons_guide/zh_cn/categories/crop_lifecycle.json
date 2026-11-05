@@ -1,0 +1,6 @@
+{
+  "name": "作物生命周期",
+  "description": "以天为单位的成长、枯死、骨粉与成熟规则。",
+  "icon": "minecraft:bone_meal",
+  "sortnum": 2
+}

@@ -1,0 +1,24 @@
+{
+  "name": "干旱与枯死",
+  "icon": "minecraft:dead_bush",
+  "category": "seedseasons:water_management",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "当作物失去水（水源耗尽，或这块田没有被任何水源服务）时，它会 $(bold)停止生长$() 并开始 $(info)干旱计时$()。$(br2)连续 $(thing)dryWitherDays$()（默认 1）个 MC 天没有水后，作物会 $(warn)枯死消失$()，耕地变回泥土。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "恢复供水",
+      "text": "重新给田地供水——无论是倒一桶水还是下雨——都会 $(bold)重置干旱计时$()。$(br2)注意：浇水 $(warn)不能$() 拯救过熟的作物。过熟和干旱是两套独立的死亡计时。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:water_management/welcome",
+        "seedseasons:crop_lifecycle/withering"
+      ]
+    }
+  ]
+}

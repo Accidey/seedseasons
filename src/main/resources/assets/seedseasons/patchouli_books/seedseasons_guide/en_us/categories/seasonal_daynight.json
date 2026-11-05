@@ -1,0 +1,6 @@
+{
+  "name": "Seasonal Day & Night",
+  "description": "Day length stays the same, but daylight ratio changes with the seasons.",
+  "icon": "minecraft:clock",
+  "sortnum": 4
+}

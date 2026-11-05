@@ -1,0 +1,24 @@
+{
+  "name": "Thirst & Withering",
+  "icon": "minecraft:dead_bush",
+  "category": "seedseasons:water_management",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "When a crop loses water (the source ran out, or the field is not served by any source), it $(bold)stops growing$() and starts a $(info)thirst timer$().$(br2)After $(thing)dryWitherDays$() (default 1) MC days without water, the crop $(warn)withers away$() and the farmland reverts to dirt."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Restoring water",
+      "text": "Watering the field again - by pouring a source or by rain - $(bold)resets the thirst timer$().$(br2)Note: watering does $(warn)not$() save an over-mature crop. Over-maturity and thirst are separate death timers."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:water_management/welcome",
+        "seedseasons:crop_lifecycle/withering"
+      ]
+    }
+  ]
+}

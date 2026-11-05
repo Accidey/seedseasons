@@ -1,0 +1,24 @@
+{
+  "name": "Special Crops",
+  "icon": "minecraft:pumpkin",
+  "category": "seedseasons:crop_lifecycle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Most crops follow the day-based lifecycle. A few behave specially:$(li)$(item)Melon & pumpkin stems$() do not wither when over-mature. Instead, at each 6:00 settlement they try to place a fruit on an adjacent empty dirt/grass block.$(li)$(item)Cocoa beans$() grow on jungle logs and do not need water at all."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Managed crop types",
+      "text": "The lifecycle covers:$(li)crops (wheat, carrots...)$(li)stems (melon, pumpkin)$(li)nether wart$(li)cocoa$(li)sweet berry bushes$(br2)Bamboo, vines and other growing plants keep their vanilla behavior."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:crop_lifecycle/welcome",
+        "seedseasons:crop_lifecycle/withering"
+      ]
+    }
+  ]
+}

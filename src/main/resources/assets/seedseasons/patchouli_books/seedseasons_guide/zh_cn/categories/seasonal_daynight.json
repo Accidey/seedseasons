@@ -1,0 +1,6 @@
+{
+  "name": "季节昼夜",
+  "description": "一天的总长不变，但白天/夜晚的比例随季节变化。",
+  "icon": "minecraft:clock",
+  "sortnum": 4
+}

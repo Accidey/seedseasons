@@ -1,0 +1,24 @@
+{
+  "name": "Commands",
+  "icon": "minecraft:command_block",
+  "category": "seedseasons:crop_seasons",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "You can edit the crop-season config in-game without touching files.$(br2)Hold the $(item)seed or crop$() you want to change in your main hand and run:$(li)$(thing)/seedseasons add spring summer$() - adds those seasons to the held item$(li)$(thing)/seedseasons remove$() - removes the held item's entry$(br2)Running $(thing)add$() repeatedly $(bold)accumulates$() seasons for the same crop."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Growth days commands",
+      "text": "You can also set how many MC days a crop takes to mature:$(li)$(thing)/seedseasons growth 3$() - the held crop matures in 3 days$(li)$(thing)/seedseasons growth remove$() - revert to the automatic value$(br2)These commands write straight into $(thing)config/seedseasons-common.toml$() and take effect live."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:crop_lifecycle/growth_days",
+        "seedseasons:getting_started/configuring"
+      ]
+    }
+  ]
+}

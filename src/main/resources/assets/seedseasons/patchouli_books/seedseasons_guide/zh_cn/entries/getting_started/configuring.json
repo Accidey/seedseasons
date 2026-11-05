@@ -1,0 +1,25 @@
+{
+  "name": "配置",
+  "icon": "minecraft:comparator",
+  "category": "seedseasons:getting_started",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "所有选项都在 $(thing)config/seedseasons-common.toml$() 中。$(br2)你也可以在游戏里修改：打开模组菜单，选择 $(thing)更好的四季$()，点击 $(bold)配置$()。$(br2)大多数设置会在你保存文件或应用配置界面时 $(info)即时生效$()，无需重启。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:command_block",
+      "title": "游戏内指令",
+      "text": "本模组添加了 $(bold)/seedseasons$() 指令（OP 2 级）。把要修改的物品拿在主手，然后使用：$(li)$(thing)/seedseasons add <季节...>$()$(li)$(thing)/seedseasons remove$()$(li)$(thing)/seedseasons growth <天数>$()$(li)$(thing)/seedseasons growth remove$()$(br2)详见「作物季节」章节。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:crop_seasons/welcome",
+        "seedseasons:crop_seasons/commands"
+      ]
+    }
+  ]
+}

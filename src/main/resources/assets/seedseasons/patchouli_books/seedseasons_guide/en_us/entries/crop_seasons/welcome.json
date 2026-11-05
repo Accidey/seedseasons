@@ -1,0 +1,31 @@
+{
+  "name": "How Seasons Work",
+  "icon": "minecraft:oak_sapling",
+  "category": "seedseasons:crop_seasons",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Serene Seasons divides the year into four seasons: $(item)Spring$(), $(item)Summer$(), $(item)Autumn$() and $(item)Winter$().$(br2)Every crop has a set of seasons it can grow in. When the current season is not in that set, the crop is $(warn)out of season$(): it stops growing, and may wither."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Season sources",
+      "text": "A crop's allowed seasons come from $(bold)two sources merged together$():$(li)the $(info)Serene Seasons datapack tags$() (plus other mods' adapters)$(li)this mod's $(thing)seedSeasons$() config list$(br2)This means crops already tagged by the datapack keep working even if you delete their config entry. The config only $(bold)adds$() to the datapack."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:writable_book",
+      "title": "Tooltips",
+      "text": "Crop items and seeds show a tooltip: $(info)Matures in X days$().$(br2)Seeds whose seasons were set through this mod's config also show their season words on the tooltip."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:crop_seasons/commands",
+        "seedseasons:crop_lifecycle/welcome"
+      ]
+    }
+  ]
+}

@@ -41,3 +41,7 @@ repo/
 
 ### Local agent scratch ###
 .workbuddy/
+tmp-typecheck/
+
+### Third-party reference sources (local only, not built, too large to commit) ###
+TouhouLittleMaid-26.1-1.21/

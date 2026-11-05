@@ -6,7 +6,9 @@
   "mixins": [
     "BoneMealItemMixin",
     "FarmBlockMixin",
+    "FlowingFluidMixin",
     "ModFertilityMixin",
+    "SeasonalDayNightMixin",
     "ServerLevelMixin"
   ],
   "injectors": {

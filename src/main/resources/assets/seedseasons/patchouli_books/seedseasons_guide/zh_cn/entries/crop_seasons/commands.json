@@ -1,0 +1,24 @@
+{
+  "name": "指令",
+  "icon": "minecraft:command_block",
+  "category": "seedseasons:crop_seasons",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "你可以在游戏内直接编辑作物季节配置，无需动文件。$(br2)把要修改的 $(item)种子或作物$() 拿在主手，然后运行：$(li)$(thing)/seedseasons add spring summer$() - 为主手物品添加这些季节$(li)$(thing)/seedseasons remove$() - 移除主手物品的条目$(br2)对同一作物重复运行 $(thing)add$() 会 $(bold)累加$() 季节。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "成熟天数指令",
+      "text": "你还可以设置某株作物需要多少 MC 天成熟：$(li)$(thing)/seedseasons growth 3$() - 主手作物 3 天成熟$(li)$(thing)/seedseasons growth remove$() - 恢复为自动推算值$(br2)这些指令会直接写入 $(thing)config/seedseasons-common.toml$() 并即时生效。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:crop_lifecycle/growth_days",
+        "seedseasons:getting_started/configuring"
+      ]
+    }
+  ]
+}

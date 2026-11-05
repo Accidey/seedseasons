@@ -1,0 +1,24 @@
+{
+  "name": "降雨免旱",
+  "icon": "minecraft:water_bucket",
+  "category": "seedseasons:water_management",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "作物可以只靠雨水生长！$(br2)当本次降雨至少持续了 $(thing)minRainHours$()（默认 12 游戏小时）后，露天作物——不在屋顶或树冠下——会被视为有水。$(br2)它们照常生长，干旱计时也会重置。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "细节",
+      "text": "原版一场雨大约持续 12-24 游戏小时，所以在默认值 12 下，一场雨的后半段就能喂养你的作物。$(br2)下雪不算降雨，有屋顶或树叶遮挡的地方也挡雨。$(br2)只有有天空光的维度（主世界）参与。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:water_management/welcome",
+        "seedseasons:water_management/thirst"
+      ]
+    }
+  ]
+}

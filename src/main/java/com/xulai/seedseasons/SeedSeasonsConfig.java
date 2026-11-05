@@ -25,17 +25,15 @@ public final class SeedSeasonsConfig {
     private static final ModConfigSpec.DoubleValue BONE_MEAL_PROGRESS;
     private static final ModConfigSpec.BooleanValue ENABLE_CROP_WATER;
     private static final ModConfigSpec.IntValue WATER_PER_SOURCE;
-    private static final ModConfigSpec.BooleanValue CONSUME_NATURAL_WATER;
-    private static final ModConfigSpec.BooleanValue CONSUME_INFINITE_WATER;
     private static final ModConfigSpec.DoubleValue DRY_WITHER_DAYS;
-    private static final ModConfigSpec.BooleanValue ENABLE_RAIN_WATER;
+    private static final ModConfigSpec.BooleanValue ENABLE_RAIN_GROWTH;
     private static final ModConfigSpec.DoubleValue MIN_RAIN_HOURS;
-    private static final ModConfigSpec.DoubleValue RAIN_CHECK_HOURS;
-    private static final ModConfigSpec.DoubleValue DRIZZLE_FILL_DAYS;
-    private static final ModConfigSpec.DoubleValue LIGHT_RAIN_FILL_DAYS;
-    private static final ModConfigSpec.DoubleValue MODERATE_RAIN_FILL_DAYS;
-    private static final ModConfigSpec.DoubleValue HEAVY_RAIN_FILL_DAYS;
-    private static final ModConfigSpec.DoubleValue TORRENTIAL_FILL_DAYS;
+    private static final ModConfigSpec.BooleanValue ENABLE_SEASONAL_DAY_NIGHT;
+    private static final ModConfigSpec.DoubleValue MC_DAY_LENGTH_MINUTES;
+    private static final ModConfigSpec.DoubleValue SPRING_DAY_PERCENT;
+    private static final ModConfigSpec.DoubleValue SUMMER_DAY_PERCENT;
+    private static final ModConfigSpec.DoubleValue AUTUMN_DAY_PERCENT;
+    private static final ModConfigSpec.DoubleValue WINTER_DAY_PERCENT;
 
     private static volatile ModConfig modConfig;
 
@@ -202,30 +200,6 @@ public final class SeedSeasonsConfig {
                         " Only still water source blocks count, flowing water does not.")
                 .defineInRange("waterPerSource", 10, 1, 1000);
 
-        CONSUME_NATURAL_WATER = builder
-                .comment(
-                        "",
-                        " 河流、海洋等水构成的生物群系里的水，是否也照常被作物消耗。",
-                        " 默认 true：河水海水一样要省着用，抽干了就得补水。",
-                        " 设为 false：这些水永远不会减少（按原版 #minecraft:is_river、#minecraft:is_ocean 标签判定），鼓励在河边、岸边种植。",
-                        "",
-                        " Whether crops also drain water inside water biomes such as rivers and oceans.",
-                        " Defaults to true, so river and sea water has to be managed and refilled like any other source.",
-                        " Set it to false to make that water never run out, judged by the vanilla #minecraft:is_river and #minecraft:is_ocean tags, which rewards farming along rivers and coasts.")
-                .define("consumeNaturalWater", true);
-
-        CONSUME_INFINITE_WATER = builder
-                .comment(
-                        "",
-                        " 原版意义上的「无限水」（周围有两格及以上水源、挖掉就会被原版补回来的水）是否也照常被作物消耗。",
-                        " 这一条和上面的生物群系判定互相独立：默认 true，玩家自建的无限水池、天然湖泊一样会被抽干。",
-                        " 设为 false：这类水不再减少（注意它同时也覆盖天然湖泊，因为它们和玩家水池在机制上无法区分）。",
-                        "",
-                        " Whether vanilla-style infinite water (a source that has two or more neighbouring sources and would be refilled by vanilla) is also drained by crops.",
-                        " This is independent of the biome check above: it defaults to true, so player-built infinite pools and natural lakes both run dry.",
-                        " Set it to false to keep that water from ever running out, which also covers lakes because they are mechanically indistinguishable from player pools.")
-                .define("consumeInfiniteWater", true);
-
         DRY_WITHER_DAYS = builder
                 .comment(
                         "",
@@ -236,83 +210,107 @@ public final class SeedSeasonsConfig {
                         " 0 means the crop only stops growing and never dies of thirst.")
                 .defineInRange("dryWitherDays", 1.0D, 0.0D, 1000.0D);
 
-        ENABLE_RAIN_WATER = builder
+        ENABLE_RAIN_GROWTH = builder
                 .comment(
                         "",
-                        " 是否启用雨天系统：雨强分为毛毛细雨、小雨、中雨、大雨、暴雨五档，随季节与时间随机变化并在聊天框提示；",
-                        " 雨天露天耕地免耗水，雨下满 minRainHours 后露天作物无需水方块也能生长，低洼地表还会逐渐积水成水源。",
+                        " 是否启用降雨免旱：下满 minRainHours 小时后，露天作物无需水方块也能生长、不会干旱。",
+                        " 只依赖原版降雨本身，不含雨强分级、档位变化或积水等额外机制。",
                         "",
-                        " Whether the rain system is enabled: rain intensity has five grades (drizzle, light, moderate, heavy, torrential) that drift with the season and are announced in chat;",
-                        " exposed farmland stops consuming water while it rains, crops grow without water blocks once it has rained for minRainHours, and low ground gradually accumulates water.")
-                .define("enableRainWater", true);
+                        " Whether crops can grow on rain alone: after minRainHours of rain, exposed crops grow without a water block and never dry out.",
+                        " This relies on vanilla rain only, without rain grades, intensity drift or puddle mechanics.")
+                .define("enableRainGrowth", true);
 
         MIN_RAIN_HOURS = builder
                 .comment(
                         "",
                         " 作物靠雨水生长（不需要水方块）时，本次降雨要持续满这么多游戏内小时才生效，只对真的淋到雨的作物有效（不在屋檐树冠下、当地此刻下的是雨而不是雪）。",
-                        " 1 小时 = 1000 tick 的游戏时钟，会随 BetterDays 等模组的时间倍速一起变快变慢；原版一场雨长 12~24 游戏小时，所以默认 12 表示「下到一场雨的后半段才开始靠雨生长」。",
+                        " 1 小时 = 1000 tick 的游戏时钟；原版一场雨长 12~24 游戏小时，所以默认 12 表示「下到一场雨的后半段才开始靠雨生长」。",
                         " 设为 0 表示下雨即生效。",
                         "",
                         " How many in-game hours the current rain must have lasted before crops can grow on rain alone, without a water block; only crops that are actually getting wet count (not under a roof or leaves, and where the local precipitation is rain rather than snow).",
-                        " An hour here is 1000 ticks of the game clock, so it speeds up and slows down with mods like BetterDays; a vanilla storm lasts 12-24 of those hours, so the default 12 means crops feed off the second half of a rain.",
+                        " An hour here is 1000 ticks of the game clock; a vanilla storm lasts 12-24 of those hours, so the default 12 means crops feed off the second half of a rain.",
                         " 0 means it takes effect as soon as it rains.")
                 .defineInRange("minRainHours", 12.0D, 0.0D, 24.0D);
 
-        RAIN_CHECK_HOURS = builder
+        ENABLE_SEASONAL_DAY_NIGHT = builder
                 .comment(
                         "",
-                        " 每场雨开始、以及每次雨强变化后，当前档位都会先随机保持 1~5 游戏小时不变。",
-                        " 稳定期过后，每隔这么多游戏小时判定一次雨强要不要变化：约一半概率维持、四分之一升一档、四分之一降一档，不会跳档。",
+                        " 是否启用「季节昼夜时长」：让主世界一天的总长固定，但白天/夜晚的占比随季节变化。",
+                        " 需要 BetterDays 提供时间流速机制；本模组会按当前季节和时刻覆盖每 tick 的时间推进速度。",
+                        " 关闭后恢复 BetterDays 默认行为。",
                         "",
-                        " After each rain start and each intensity change, the current grade is locked for a random 1-5 in-game hours first.",
-                        " After that stable period, the intensity is re-rolled this often, in in-game hours: roughly half the time it stays, a quarter it steps up, a quarter it steps down, never jumping grades.")
-                .defineInRange("rainCheckHours", 1.0D, 0.0D, 100.0D);
+                        " Whether seasonal day/night length is enabled: the overworld keeps a fixed day length while the day/night ratio changes with the season.",
+                        " Requires BetterDays to drive the time speed; this mod overrides the per-tick time progression based on the current season and time of day.",
+                        " Disable to restore BetterDays' default behaviour.")
+                .define("enableSeasonalDayNight", true);
 
-        DRIZZLE_FILL_DAYS = builder
+        MC_DAY_LENGTH_MINUTES = builder
                 .comment(
                         "",
-                        " 下面五项是各雨强填满一个坑需要的连续降雨天数（进度雨停清零，坑必须在单场雨里填满才出水）。",
-                        " 天数按游戏时钟计（1 天 = 一个完整昼夜），而原版一场雨长 12000~24000 tick，即 0.5~1 天，所以这一组数值的上限就是 1 天，再大就永远积不满。",
-                        " 与 BetterDays 一起加载时，本模组会自动把它的 weatherEffect 设为 ALWAYS，让一场雨的长短也跟着游戏时钟，否则倍速越高这两套时钟越对不上。",
-                        " 毛毛细雨：最温柔也最慢，要连续淋满 1 天，只有碰上最长的那场雨才积得满。",
+                        " 主世界一天（从日出到下一次日出）等于多少现实分钟。",
+                        " 默认 60：游戏里过完一天正好约 1 个现实小时（原版是 20 分钟）。",
+                        " 改成 30 就是半小时一天，改成 120 就是两小时一天。",
                         "",
-                        " The next five entries are the continuous rainy days each grade needs to fill a hollow (progress resets when the rain stops, so a hollow must be filled within a single rain).",
-                        " These day counts follow the game clock (1 day = one full cycle), and a vanilla storm lasts 12000-24000 ticks, that is 0.5-1 day, which is why 1 day is the top of this scale.",
-                        " When BetterDays is present this mod sets its weatherEffect to ALWAYS so that storm length follows the game clock too; otherwise the two clocks drift apart with the time speed.",
-                        " Drizzle: the gentlest and slowest, a full day of it, so hollows only fill during the longest storms.")
-                .defineInRange("drizzleFillDays", 1.0D, 0.01D, 100.0D);
+                        " How many real-life minutes one full day in the overworld lasts.",
+                        " Default 60: one in-game day takes about one real hour (vanilla is 20 minutes).",
+                        " Set it to 30 for a half-hour day, or 120 for a two-hour day.")
+                .defineInRange("mcDayLengthMinutes", 60.0D, 1.0D, 10000.0D);
 
-        LIGHT_RAIN_FILL_DAYS = builder
+        SPRING_DAY_PERCENT = builder
                 .comment(
                         "",
-                        " 小雨填满一个坑需要的连续降雨天数（3/4 天）。",
+                        " 春季一天中「白天」占多少百分比（%），剩下的就是夜晚。",
+                        " 默认 50：一天里白天和夜晚各占一半。",
+                        " 例子：设成 30，则一天里白天只占 30%（配合默认的 1 天 = 60 现实分钟，白天约 18 分钟、夜晚约 42 分钟）。",
+                        " 取值范围 1 ~ 99，夜晚会自动补足剩下的百分比。",
                         "",
-                        " Continuous rainy days of light rain needed to fill a hollow (three quarters of a day).")
-                .defineInRange("lightRainFillDays", 0.75D, 0.01D, 100.0D);
+                        " What percentage of a spring day is 'daytime' (%). The rest is night.",
+                        " Default 50: day and night are equally long.",
+                        " Example: 30 means daytime only takes 30% of the day (with the default 1 day = 60 real minutes, that is about 18 minutes of day and 42 of night).",
+                        " Range is 1 ~ 99; night automatically gets the remaining percentage.")
+                .defineInRange("springDayPercent", 50.0D, 1.0D, 99.0D);
 
-        MODERATE_RAIN_FILL_DAYS = builder
+        SUMMER_DAY_PERCENT = builder
                 .comment(
                         "",
-                        " 中雨填满一个坑需要的连续降雨天数（半天，也就是最短的一场雨刚好积满）。",
+                        " 夏季一天中「白天」占多少百分比（%），剩下的就是夜晚。",
+                        " 默认 65：白天比夜晚长，符合夏天白昼长的直觉。",
+                        " 例子：设成 70，则一天里白天占 70%（配合默认的 1 天 = 60 现实分钟，白天约 42 分钟、夜晚约 18 分钟）。",
+                        " 取值范围 1 ~ 99，夜晚会自动补足剩下的百分比。",
                         "",
-                        " Continuous rainy days of moderate rain needed to fill a hollow (half a day, exactly the shortest rain there is).")
-                .defineInRange("moderateRainFillDays", 0.5D, 0.01D, 100.0D);
+                        " What percentage of a summer day is 'daytime' (%). The rest is night.",
+                        " Default 65: daytime is longer than night, matching the long summer days.",
+                        " Example: 70 means daytime takes 70% of the day (with the default 1 day = 60 real minutes, that is about 42 minutes of day and 18 of night).",
+                        " Range is 1 ~ 99; night automatically gets the remaining percentage.")
+                .defineInRange("summerDayPercent", 65.0D, 1.0D, 99.0D);
 
-        HEAVY_RAIN_FILL_DAYS = builder
+        AUTUMN_DAY_PERCENT = builder
                 .comment(
                         "",
-                        " 大雨填满一个坑需要的连续降雨天数（约三分之一场雨）。",
+                        " 秋季一天中「白天」占多少百分比（%），剩下的就是夜晚。",
+                        " 默认 50：一天里白天和夜晚各占一半。",
+                        " 例子：设成 40，则一天里白天只占 40%（配合默认的 1 天 = 60 现实分钟，白天约 24 分钟、夜晚约 36 分钟）。",
+                        " 取值范围 1 ~ 99，夜晚会自动补足剩下的百分比。",
                         "",
-                        " Continuous rainy days of heavy rain needed to fill a hollow (about a third of a storm).")
-                .defineInRange("heavyRainFillDays", 0.3D, 0.01D, 100.0D);
+                        " What percentage of an autumn day is 'daytime' (%). The rest is night.",
+                        " Default 50: day and night are equally long.",
+                        " Example: 40 means daytime takes 40% of the day (with the default 1 day = 60 real minutes, that is about 24 minutes of day and 36 of night).",
+                        " Range is 1 ~ 99; night automatically gets the remaining percentage.")
+                .defineInRange("autumnDayPercent", 50.0D, 1.0D, 99.0D);
 
-        TORRENTIAL_FILL_DAYS = builder
+        WINTER_DAY_PERCENT = builder
                 .comment(
                         "",
-                        " 暴雨填满一个坑需要的连续降雨天数：0.15 天即可，一场暴雨足以让洼地处处积水。",
+                        " 冬季一天中「白天」占多少百分比（%），剩下的就是夜晚。",
+                        " 默认 35：白天比夜晚短，符合冬天白昼短的直觉。",
+                        " 例子：设成 30，则一天里白天只占 30%（配合默认的 1 天 = 60 现实分钟，白天约 18 分钟、夜晚约 42 分钟）。",
+                        " 取值范围 1 ~ 99，夜晚会自动补足剩下的百分比。",
                         "",
-                        " Continuous rainy days of torrential rain needed to fill a hollow: 0.15 of a day, so one storm floods the low ground.")
-                .defineInRange("torrentialFillDays", 0.15D, 0.01D, 100.0D);
+                        " What percentage of a winter day is 'daytime' (%). The rest is night.",
+                        " Default 35: daytime is shorter than night, matching the short winter days.",
+                        " Example: 30 means daytime takes 30% of the day (with the default 1 day = 60 real minutes, that is about 18 minutes of day and 42 of night).",
+                        " Range is 1 ~ 99; night automatically gets the remaining percentage.")
+                .defineInRange("winterDayPercent", 35.0D, 1.0D, 99.0D);
 
         SPEC = builder.build();
     }
@@ -368,48 +366,40 @@ public final class SeedSeasonsConfig {
         return WATER_PER_SOURCE.get();
     }
 
-    public static boolean consumeNaturalWater() {
-        return CONSUME_NATURAL_WATER.get();
-    }
-
-    public static boolean consumeInfiniteWater() {
-        return CONSUME_INFINITE_WATER.get();
-    }
-
     public static double dryWitherDays() {
         return DRY_WITHER_DAYS.get();
     }
 
-    public static boolean enableRainWater() {
-        return ENABLE_RAIN_WATER.get();
+    public static boolean enableRainGrowth() {
+        return ENABLE_RAIN_GROWTH.get();
     }
 
     public static double minRainHours() {
         return MIN_RAIN_HOURS.get();
     }
 
-    public static double rainCheckHours() {
-        return RAIN_CHECK_HOURS.get();
+    public static boolean enableSeasonalDayNight() {
+        return ENABLE_SEASONAL_DAY_NIGHT.get();
     }
 
-    public static double drizzleFillDays() {
-        return DRIZZLE_FILL_DAYS.get();
+    public static double mcDayLengthMinutes() {
+        return MC_DAY_LENGTH_MINUTES.get();
     }
 
-    public static double lightRainFillDays() {
-        return LIGHT_RAIN_FILL_DAYS.get();
+    public static double springDayPercent() {
+        return SPRING_DAY_PERCENT.get();
     }
 
-    public static double moderateRainFillDays() {
-        return MODERATE_RAIN_FILL_DAYS.get();
+    public static double summerDayPercent() {
+        return SUMMER_DAY_PERCENT.get();
     }
 
-    public static double heavyRainFillDays() {
-        return HEAVY_RAIN_FILL_DAYS.get();
+    public static double autumnDayPercent() {
+        return AUTUMN_DAY_PERCENT.get();
     }
 
-    public static double torrentialFillDays() {
-        return TORRENTIAL_FILL_DAYS.get();
+    public static double winterDayPercent() {
+        return WINTER_DAY_PERCENT.get();
     }
 
     public static boolean saveSeasons(List<String> entries) {

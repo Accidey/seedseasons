@@ -1,0 +1,19 @@
+{
+  "name": "Dependencies",
+  "icon": "minecraft:chain",
+  "category": "seedseasons:getting_started",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "This mod requires:$(li)$(item)Serene Seasons$() for the season system itself$(li)$(item)BetterDays$() for the time-speed mechanics used by seasonal day & night$(br2)$(item)Jade$() is optional: if installed, crop progress and fertilizing state show up in Jade tooltips."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:seasonal_daynight/welcome",
+        "seedseasons:crop_lifecycle/welcome"
+      ]
+    }
+  ]
+}

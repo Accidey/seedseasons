@@ -1,0 +1,6 @@
+{
+  "name": "Water Management",
+  "description": "Crops drink water now. Keep your field wet or they will die.",
+  "icon": "minecraft:water_bucket",
+  "sortnum": 3
+}

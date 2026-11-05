@@ -30,7 +30,6 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
-import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import sereneseasons.init.ModFertility;
@@ -74,22 +73,16 @@ public final class SeedSeasonsEvents {
     }
 
     @SubscribeEvent
-    public static void onServerAboutToStart(ServerAboutToStartEvent event) {
-        RainSystem.syncWeatherClock();
-    }
-
-    @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
         SeasonMapping.operate();
         CropLifecycle.dailyTick(event.getServer());
-        RainSystem.serverTick(event.getServer());
+        RainWater.tick(event.getServer());
     }
 
     @SubscribeEvent
     public static void onChunkLoad(ChunkEvent.Load event) {
         if (event.getChunk() instanceof LevelChunk chunk) {
             CropLifecycle.onChunkLoad(chunk);
-            RainSystem.onChunkLoad(chunk);
         }
     }
 
@@ -97,7 +90,6 @@ public final class SeedSeasonsEvents {
     public static void onChunkUnload(ChunkEvent.Unload event) {
         if (event.getChunk() instanceof LevelChunk chunk) {
             CropLifecycle.onChunkUnload(chunk);
-            RainSystem.onChunkUnload(chunk);
         }
     }
 

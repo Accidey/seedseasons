@@ -1,0 +1,30 @@
+{
+  "name": "季节昼夜",
+  "icon": "minecraft:clock",
+  "category": "seedseasons:seasonal_daynight",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "这个功能让主世界一天的总长 $(bold)保持不变$()，同时根据季节改变其中白昼的比例。$(br2)它需要 BetterDays 驱动时间流速；本模组会根据当前季节和时刻覆盖每 tick 的时间推进速度。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "默认值",
+      "text": "$(li)1 个 MC 天 = $(thing)mcDayLengthMinutes$() 现实分钟（默认 60，原版是 20）。$(li)白天占比：春 50%、夏 65%、秋 50%、冬 35%。$(br2)所以在冬天，每个现实小时里你大约只有 21 分钟白昼；夏天则约 39 分钟。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:clock",
+      "title": "修改",
+      "text": "所有数值都可以在 $(thing)config/seedseasons-common.toml$() 中配置：$(li)mcDayLengthMinutes - 一整天长度$(li)springDayPercent / summerDayPercent / autumnDayPercent / winterDayPercent - 每个季节的白昼占比$(br2)夜晚自动占据剩余百分比。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:getting_started/configuring"
+      ]
+    }
+  ]
+}

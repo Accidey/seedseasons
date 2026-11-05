@@ -1,0 +1,6 @@
+{
+  "name": "水源管理",
+  "description": "作物现在会喝水了。保持你的田地湿润，否则它们会枯死。",
+  "icon": "minecraft:water_bucket",
+  "sortnum": 3
+}

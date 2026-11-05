@@ -1,0 +1,27 @@
+{
+  "name": "Welcome",
+  "icon": "minecraft:writable_book",
+  "category": "seedseasons:getting_started",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Welcome to $(thing)Xulai Seed Seasons$()!$(br2)This mod builds on top of Serene Seasons to give crops a full $(crop)season-based farming cycle$().$(br2)It adds four systems:$(li)$(l:seedseasons:crop_seasons/welcome)Crop seasons$(/l)$(li)$(l:seedseasons:crop_lifecycle/welcome)Day-based crop growth$(/l)$(li)$(l:seedseasons:water_management/welcome)Water consumption$(/l)$(li)$(l:seedseasons:seasonal_daynight/welcome)Seasonal day & night length$(/l)"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "How to read this guide",
+      "text": "Each chapter explains one system.$(br2)Use the $(bold)Index$() button on the landing page to search, or the $(bold)History$() button to go back to what you just read.$(br2)You can $(italic)shift-click$() items shown in this book to jump to their crafting page, and hover over $(item)highlighted items$() for their tooltips."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:crop_seasons/welcome",
+        "seedseasons:crop_lifecycle/welcome",
+        "seedseasons:water_management/welcome",
+        "seedseasons:seasonal_daynight/welcome"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "How Water Works",
+  "icon": "minecraft:water_bucket",
+  "category": "seedseasons:water_management",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "With water consumption enabled, farmland no longer stays wet forever.$(br2)Crops on farmland $(bold)drink water$() from nearby water sources. At each 6:00 settlement, water is drained from the sources that serve planted fields.$(br2)Only $(info)still water source blocks$() count. Flowing water does not."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Service quota",
+      "text": "One water source keeps $(thing)waterPerSource$() (default 10) farmland plots watered, choosing the nearest plots first.$(br2)Adjacent water sources merge into a $(bold)pond$() and share their quota.$(br2)If the field has no crop, no water is drained."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:water_bucket",
+      "title": "Replenishing",
+      "text": "Vanilla infinite water is $(warn)disabled$(): a drained source does not refill by itself.$(br2)Pour a new water bucket to restore a source. Re-poured water is a brand new source and re-computes which fields it serves.$(br2)Rain can also save your crops - see Rain Growth."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:water_management/thirst",
+        "seedseasons:water_management/rain_growth"
+      ]
+    }
+  ]
+}

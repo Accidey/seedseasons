@@ -9,6 +9,7 @@ import java.util.Set;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -46,8 +47,6 @@ public final class CropLifecycle {
 
     private static final Map<ResourceKey<Level>, Long> LAST_DAYS = new HashMap<>();
     private static final Map<ResourceKey<Level>, Set<Long>> LOADED_CHUNKS = new HashMap<>();
-
-    private static final Set<BlockPos> DRAINED = new HashSet<>();
 
     private CropLifecycle() {
     }
@@ -169,10 +168,7 @@ public final class CropLifecycle {
                 CropStates.sync(chunk);
             }
         }
-        for (BlockPos pos : DRAINED) {
-            WaterNetwork.drain(level, pos);
-        }
-        DRAINED.clear();
+        WaterNetwork.drainForDay(level);
     }
 
     private static void discover(ServerLevel level, LevelChunk chunk, CropStates states, RandomSource random) {
@@ -214,7 +210,7 @@ public final class CropLifecycle {
         if (SeedSeasonsConfig.enableCropWater() && level.getBlockState(farmlandPos).getBlock() instanceof FarmBlock) {
             BlockPos sourcePos = WaterNetwork.servingSource(level, farmlandPos);
             if (sourcePos == null) {
-                if (RainSystem.rainGrowth(level, pos)) {
+                if (RainWater.sufficient(level, pos)) {
                     record.setDrySince(now);
                 } else {
                     if (record.drySince() <= 0L) {
@@ -227,9 +223,7 @@ public final class CropLifecycle {
                     return true;
                 }
             } else {
-                if (!WaterNetwork.isInfinite(level, sourcePos) && !RainSystem.freeWatering(level, pos)) {
-                    DRAINED.add(sourcePos);
-                }
+                WaterNetwork.registerServedCrop(level, sourcePos, farmlandPos);
                 record.setDrySince(now);
             }
         }
@@ -256,13 +250,17 @@ public final class CropLifecycle {
         }
 
         if (current >= max) {
-            long overMature = (long) (SeedSeasonsConfig.overMatureDays() * TICKS_PER_DAY);
-            if (record.matureSince() > 0L && overMature > 0L && now - record.matureSince() >= overMature) {
-                removed.add(pos);
-                level.destroyBlock(pos, false);
-                return true;
+            if (state.getBlock() instanceof StemBlock) {
+                tryGrowFruit(level, pos, state);
+            } else {
+                long overMature = (long) (SeedSeasonsConfig.overMatureDays() * TICKS_PER_DAY);
+                if (record.matureSince() > 0L && overMature > 0L && now - record.matureSince() >= overMature) {
+                    removed.add(pos);
+                    level.destroyBlock(pos, false);
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
         boolean fertile = ModFertility.isCropFertile(blockId, level, pos);
@@ -308,6 +306,33 @@ public final class CropLifecycle {
             record.setMatureSince(now);
         }
         return true;
+    }
+
+    private static void tryGrowFruit(ServerLevel level, BlockPos pos, BlockState stemState) {
+        Block block = stemState.getBlock();
+        Block fruit;
+        if (block == Blocks.MELON_STEM) {
+            fruit = Blocks.MELON;
+        } else if (block == Blocks.PUMPKIN_STEM) {
+            fruit = Blocks.PUMPKIN;
+        } else {
+            return;
+        }
+        List<BlockPos> candidates = new ArrayList<>();
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            BlockPos neighbor = pos.relative(direction);
+            if (!level.getBlockState(neighbor).isAir()) {
+                continue;
+            }
+            Block below = level.getBlockState(neighbor.below()).getBlock();
+            if (below == Blocks.GRASS_BLOCK || below == Blocks.DIRT) {
+                candidates.add(neighbor);
+            }
+        }
+        if (!candidates.isEmpty()) {
+            BlockPos target = candidates.get(level.getRandom().nextInt(candidates.size()));
+            level.setBlock(target, fruit.defaultBlockState(), 3);
+        }
     }
 
     public static boolean onBoneMeal(Level level, BlockPos pos, ItemStack stack, Player player) {

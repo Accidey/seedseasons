@@ -1,0 +1,25 @@
+{
+  "name": "Configuring",
+  "icon": "minecraft:comparator",
+  "category": "seedseasons:getting_started",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "All options live in $(thing)config/seedseasons-common.toml$().$(br2)You can also edit them in-game: open the Mods menu, select $(thing)Xulai Seed Seasons$(), and click $(bold)Config$().$(br2)Most settings apply $(info)live$() when you save the file or apply the config screen - no restart needed."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:command_block",
+      "title": "In-game Commands",
+      "text": "The mod adds $(bold)/seedseasons$() commands (OP level 2). Hold the item you want to change in your main hand, then use:$(li)$(thing)/seedseasons add <seasons>$()$(li)$(thing)/seedseasons remove$()$(li)$(thing)/seedseasons growth <days>$()$(li)$(thing)/seedseasons growth remove$()$(br2)See the Crop Seasons chapter for details."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:crop_seasons/welcome",
+        "seedseasons:crop_seasons/commands"
+      ]
+    }
+  ]
+}

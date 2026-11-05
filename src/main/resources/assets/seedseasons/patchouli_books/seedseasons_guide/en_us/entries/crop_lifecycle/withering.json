@@ -1,0 +1,29 @@
+{
+  "name": "Withering Rules",
+  "icon": "minecraft:dead_bush",
+  "category": "seedseasons:crop_lifecycle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Crops can die in several ways. All checks happen at the daily 6:00 settlement.$(li)$(warn)Out of season$(): when growth is due and the crop is not fertile, it withers with a configurable chance (default 100%).$(li)$(warn)Over-mature$(): a mature crop left unharvested for overMatureDays days withers."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Season change rescue",
+      "text": "When the season changes and a crop is now out of season, but it is already $(bold)at least 75% grown$(), it has a chance (default 80%) to be $(info)forced ripe$() instead of withering.$(br2)So crops close to harvest usually survive a season change."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Minimum planting time",
+      "text": "A freshly planted crop must wait $(thing)minGrowHours$() (default 12 in-game hours) before it can advance at a settlement.$(br2)This stops you from planting at 5:59 AM and getting a free day at 6:00."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:crop_lifecycle/welcome",
+        "seedseasons:water_management/welcome"
+      ]
+    }
+  ]
+}

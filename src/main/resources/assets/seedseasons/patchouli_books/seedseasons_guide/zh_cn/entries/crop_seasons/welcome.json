@@ -1,0 +1,31 @@
+{
+  "name": "季节如何运作",
+  "icon": "minecraft:oak_sapling",
+  "category": "seedseasons:crop_seasons",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "静谧四季把一年分成四个季节：$(item)春$()、$(item)夏$()、$(item)秋$() 和 $(item)冬$()。$(br2)每株作物都有一组可以生长的季节。当前季节不在其中时，作物就是 $(warn)非当季$()：它会停止生长，并且可能枯死。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "季节来源",
+      "text": "作物允许生长的季节来自 $(bold)两个合并的来源$()：$(li)$(info)静谧四季的数据包标签$()（以及其他模组的适配数据包）$(li)本模组的 $(thing)seedSeasons$() 配置列表$(br2)这意味着数据包已经标记好的作物，即使你删掉它们的配置条目也照常生效。配置只是在数据包基础上 $(bold)补充$()。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:writable_book",
+      "title": "物品提示",
+      "text": "作物物品和种子上会显示提示：$(info)成熟需要 X 天$()。$(br2)通过本模组配置设置了季节的种子，还会在提示上显示它们的季节词。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:crop_seasons/commands",
+        "seedseasons:crop_lifecycle/welcome"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "Day-Based Growth",
+  "icon": "minecraft:wheat",
+  "category": "seedseasons:crop_lifecycle",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "With the crop lifecycle enabled, crops no longer grow by vanilla random ticks.$(br2)Instead, every crop advances $(bold)once per MC day$(), at the daily settlement right after $(info)6:00 AM$().$(br2)Each day, a crop gains $(thing)1 / (days to mature)$() of progress."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "What this means",
+      "text": "A crop configured to mature in 3 days will be fully grown on the third settlement after planting.$(br2)Growth happens for all $(bold)loaded chunks$() at once, so fields far away still grow while you are near them.$(br2)Unloaded chunks do not advance; they resume from their saved state when loaded again."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:wheat",
+      "title": "Maturation days",
+      "text": "The number of days is shown on the seed's tooltip: $(info)Matures in X days$().$(br2)Each plant rolls a small random offset around that number, so a batch of crops does not all ripen on the same day."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:crop_lifecycle/growth_days",
+        "seedseasons:crop_lifecycle/bone_meal",
+        "seedseasons:crop_lifecycle/withering"
+      ]
+    }
+  ]
+}

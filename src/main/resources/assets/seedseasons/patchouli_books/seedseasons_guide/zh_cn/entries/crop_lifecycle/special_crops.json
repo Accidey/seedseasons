@@ -1,0 +1,24 @@
+{
+  "name": "特殊作物",
+  "icon": "minecraft:pumpkin",
+  "category": "seedseasons:crop_lifecycle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "大多数作物遵循以天为单位的生命周期。少数作物有特殊行为：$(li)$(item)西瓜 & 南瓜藤$() 过熟不会枯死。相反，每次 6:00 结算时它们会尝试在相邻的空草方块/泥土上放置一个果实。$(li)$(item)可可豆$() 长在丛林原木侧面，完全不需要水。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "受管的作物类型",
+      "text": "生命周期覆盖：$(li)作物（小麦、胡萝卜……）$(li)茎（西瓜、南瓜）$(li)下界疣$(li)可可豆$(li)甜浆果丛$(br2)竹子、藤蔓等其他藤本植物保持原版行为。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:crop_lifecycle/welcome",
+        "seedseasons:crop_lifecycle/withering"
+      ]
+    }
+  ]
+}
