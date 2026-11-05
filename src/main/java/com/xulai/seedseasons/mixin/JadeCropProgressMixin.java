@@ -37,11 +37,19 @@ public abstract class JadeCropProgressMixin {
             component = IThemeHelper.get().success(Component.translatable("tooltip.jade.crop_mature"));
         }
         tooltip.add(Component.translatable("tooltip.jade.crop_growth", component));
+        if (CropLifecycle.thirstyAt(accessor.getLevel(), accessor.getPosition())) {
+            tooltip.add(Component.translatable("seedseasons.jade.thirsty").withStyle(ChatFormatting.RED));
+        }
         if (SeedSeasonsConfig.boneMealPerDay() > 0) {
             int pending = CropLifecycle.pendingBoneMealAt(accessor.getLevel(), accessor.getPosition());
             if (pending >= 0) {
                 tooltip.add(Component.translatable(pending > 0 ? "seedseasons.jade.fertilized" : "seedseasons.jade.not_fertilized")
                         .withStyle(pending > 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY));
+            }
+            int used = CropLifecycle.boneMealUsesToday(accessor.getLevel(), accessor.getPosition());
+            if (used > 0) {
+                tooltip.add(Component.translatable("seedseasons.jade.fertilize_quota", used, SeedSeasonsConfig.boneMealPerDay())
+                        .withStyle(ChatFormatting.GOLD));
             }
         }
         ci.cancel();

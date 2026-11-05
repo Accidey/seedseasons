@@ -9,14 +9,15 @@
 | 构建产物 | `build/libs/seedseasons-<mod_version>-<mc_version>-NeoForge.jar` |
 | 目标平台 | Minecraft 1.21.1 / NeoForge（`neo_version=21.1.249`，NeoGradle 7.1.38） |
 | 硬依赖 | SereneSeasons（静谧四季）10.1.0.3、GlitchCore 2.1.0.2、BetterDays |
-| 可选依赖 | Jade 15.10.6（仅客户端；未安装时功能不受影响） |
-| 仓库内其它目录 | `BetterDays-1.21.1/`、`SereneSeasons-1.21.1/`、`Jade-1.21-neoforge/` 为**参考源码**（不参与构建）；`local-repo/` 是构建用的本地 Maven 仓库 |
+| 可选依赖 | Jade 15.10.6（仅客户端；未安装时功能不受影响）、Patchouli 1.21.1-92（种植指南手册）、车万女仆 Touhou Little Maid 1.5.3-neoforge+mc1.21.1（女仆兼容，`compileOnly`；未安装时兼容层完全不加载） |
+| 仓库内其它目录 | `BetterDays-1.21.1/`、`SereneSeasons-1.21.1/`、`Jade-1.21-neoforge/` 为**参考源码**（不参与构建）；`TouhouLittleMaid-26.1-1.21/` 同样是参考源码，但因含 80MB 第三方素材已写进 `.gitignore`，**只留本地不入库**；`local-repo/` 是构建用的本地 Maven 仓库 |
 
 模组的作用：在静谧四季（SereneSeasons）基础上叠加玩法——
 ① 作物适种季节可由配置文件补充与数据包并集；
 ② 作物成长改为以 MC 天为单位、每天固定时刻统一结算的生命周期；
 ③ 种植需要消耗水源；
-④ 主世界一天总长固定（默认 1 MC 天 = 现实 1 小时），白天/夜晚占比随季节变化（需要 BetterDays 提供时间流速机制）。
+④ 主世界一天总长固定（默认 1 MC 天 = 现实 1 小时），白天/夜晚占比随季节变化（需要 BetterDays 提供时间流速机制）；
+⑤ 车万女仆的农场模式会顺手照看这套农田：补水、按额度施肥、反季不播种。
 
 ---
 
@@ -69,6 +70,7 @@
 - 作物物品 tooltip：显示「成熟需要 X 天」。
 - 骨粉 tooltip：显示「每株每天 N 次，次日 6 点结算生效，每次至少长一级」，并提示超量会枯死；`boneMealPerDay = 0` 时改为「不接受骨粉」。
 - Jade：作物进度显示为**真实进度百分比**，下方另起一行「施肥：已施肥 / 未施肥」（已施肥 = 有待结算层数，绿色；未施肥灰色；`boneMealPerDay = 0` 时不显示该行）（可选依赖）。
+- Jade 另两行（耗水/骨粉开启时）：断水且不在雨里的作物显示红色「缺水：待补水」（`CropLifecycle.thirstyAt`，判定与结算同源）；当天已施过肥的作物显示金色「今日已施肥 N/M」，让玩家知道额度已被女仆或自己用掉。
 
 ### 2.5 降雨免旱（`enableRainGrowth`）
 
@@ -91,6 +93,20 @@
 - **实现**：`mixin/SeasonalDayNightMixin` 用 `@ModifyArg` 注入 `ServerLevel.setDayTimePerTick` 内部对 `ServerLevelData.setDayTimePerTick(F)` 的调用（`index=0`），按当前季节 + 当前时刻替换流速。只主世界生效，其它维度原样放行。
 - **睡觉加速**：不干预 BetterDays 的睡觉逻辑（只在 BetterDays 调用 `setDayTimePerTick` 时替换数值；玩家睡觉时 BetterDays 走其它分支，本 mixin 不生效）。
 
+### 2.7 车万女仆兼容（`enableMaidCompat`）
+
+只在本模组一侧实现，女仆 mod 的代码一行不改；耦合面全部走它公开的扩展 API：`@LittleMaidExtension` 标注的 `ILittleMaid` 实现（`maid/SeedSeasonsMaidExtension`），用 `addExtraMaidBrain` 注入 WORK 行为、用 `registerSpecialCropHandler` 注册作物处理器。没装车万女仆时这些类永远不会被加载，配置项也不起作用。
+
+- **只在农场模式生效**：`MaidBrain.registerWorkGoals` 会无条件追加 extra brain 的 WORK 行为（对攻击、挤奶等所有模式都追加），所以每条路径都以 `maid.getTask().getUid() == touhou_little_maid:farm` 为门槛。不用同 uid 覆盖原版 `TaskNormalFarm`：`TaskManager.add` 往 `TASK_INDEX`（List）追加，模式按钮会出现两个「农场」。
+- **断水没有方块信号**：耗水开启时 `FarmBlock.isNearWater` 被覆盖成恒 true（`WaterNetwork.hydration`），耕地 MOISTURE 永远钉在 7，原版干涸信号不可用。女仆与 Jade 一律问 `WaterNetwork.needsWater(level, farmland)`（即 `servingSource == null`），与每日结算同一个判定源。
+- **补水**：只补「上面有本模组管辖作物（含已成熟的）且断水且不靠雨免旱」的耕地，空田不补。放水位置 = `WaterNetwork.refillSpot`：在耕地 ±4、同层的格子里找**能存住水的空位**（本格空气或可替换、下方实心、四邻不是空气——否则水会流走；`FlowingFluidMixin` 已禁掉原版补源，抽干的坑不会自己回填）。
+- **取水**：`WaterNetwork.canDrawFrom` 按**连通池余量**判定——池内源格数（BFS 到 64 格即视为余量充足）减 1 后仍 ≥ `ceil(被服务的有作物田数 / waterPerSource)` 才允许舀。于是河、湖、远离农田的水随便取，单格井和刚够用的水池不动。
+- **活动范围**：补水、取水、施肥全部限制在 `maid.getRestrictRadius()` 内（沿用 `MaidMoveToBlockTask.getHorizontalSearchRange`），女仆不会为了一桶水跑出工作区；附近没有可取的水源就原地待着，等玩家往她脚下扔水桶（她本来就会捡东西）。
+- **顺路优先 + 空闲自主**：`MaidPlotWorkTask`（优先级 6）读女仆当前的 `InitEntities.TARGET_POS`——农场任务带她走到哪格，她就在同一格按 补水 → 施肥 的顺序做事，不碰农场任务的记忆；`MaidIrrigationMoveTask`（优先级 7）继承 `MaidMoveToBlockTask` 的「`WALK_TARGET` 与 `TARGET_POS` 都必须为空」前提，因此只有农场没事可做时她才自己找目标，两者不会抢目标位打转。她自己设的目标做完（或做不到）后**必须自己清空** `TARGET_POS`/`WALK_TARGET`，否则农场移动任务永远不再搜索，直接卡死。
+- **施肥**：动作走 `BoneMealItem.applyBonemeal(stack, level, pos, null)`，正好被本模组的 `BoneMealItemMixin` 截住，与玩家共用同一份 `boneMealUses` 日额度；施前先问 `CropLifecycle.canFertilize`（管辖作物 && 未成熟 && 当季 && 额度未满），所以女仆永远不会触发「超限枯死」。但额度是共享的：她把当天次数用满后，玩家再右键骨粉照样枯死——惩罚不为谁破例，Jade 的「今日已施肥 N/M」就是让玩家看得见额度没了。
+- **反季不种**：`MaidSeasonalPlantHandler` 通过 `SpecialCropManager.addCrop(Blocks.FARMLAND, ...)` 注册，而全站只有 `TaskNormalFarm.canPlant` 用**基底方块**查这张表（收获、种植执行、瓜类/可可/甘蔗查的是作物方块或种子物品），所以接管面恰好只有「能不能种」这一条；命中「本模组管辖的作物且 `ModFertility.isCropFertile` 为假」返回 false，其余原样调用接口默认的 `canPlant`（那份默认实现与原版逐字相同）。`MaidFarmMoveTask.shouldMoveTo` 走同一条判定，于是她连寻路都不会过去。
+- **与耗水系统的时序配套**：6:00 结算抽干 → 缺水的作物记 `drySince` → 距它满 `dryWitherDays`（默认 1 天）的那次结算还没水就枯死、耕地变泥。女仆的工作就是在这一整天里把水补回去；`RainWater.sufficient` 为真的露天作物当次结算按有水处理，她也不去补（屋檐、树冠下淋不到雨的田照补）。
+
 ---
 
 ## 3. 实现架构
@@ -104,10 +120,15 @@
 | `SeedSeasonsEvents` | 游戏事件：指令注册、服务端 tick、区块加载/卸载、方块放置/破坏（即时建档销档）、右键（施肥提示） |
 | `SeasonMapping` | 季节列表解析、并集合并进静谧四季、配置版本号、季节掩码快照与实际季节时长读取、`filter` 公共入口 |
 | `GrowthDays` | 成熟天数列表解析、未列出作物按季节掩码与 SS 实际季节时长动态推算、写入与移除 |
-| `CropLifecycle` | 生命周期核心：每日结算、登记、水耗、枯死、骨粉、客户端进度查询 |
+| `CropLifecycle` | 生命周期核心：每日结算、登记、水耗、枯死、骨粉、客户端进度查询，以及女仆/Jade 用的 `thirstyAt`、`canFertilize`、`boneMealUsesToday` 查询 |
 | `CropState` / `CropStates` | 单株状态（进度、时长、干涸计时、待结算施肥层数等）/ 区块级容器 + 附件注册与同步 |
-| `WaterSource` / `WaterStates` / `WaterNetwork` | 供水配额缓存（含锚点）/ 容器 / 水塘共享服务判定、按需耗水折算（水塘分组 + 服务田数统计 + 抽水） |
+| `WaterSource` / `WaterStates` / `WaterNetwork` | 供水配额缓存（含锚点）/ 容器 / 水塘共享服务判定、按需耗水折算（水塘分组 + 服务田数统计 + 抽水）；对外查询 `needsWater`、`refillSpot`、`canHoldWater`、`canDrawFrom`——读取路径的参数收 `Level` 而不是 `ServerLevel`，好让客户端的 Jade 提示复用同一套判定 |
 | `RainWater` | 降雨免旱：按维度记录降雨开始时刻（`getDayTime()`），判定是否已连续下满 `minRainHours` 且该位置正在淋雨 |
+| `maid/SeedSeasonsMaidExtension` | `@LittleMaidExtension` 的 `ILittleMaid`：注册 extra brain 与 FARMLAND 作物处理器（没装女仆时这个类永远不会被加载） |
+| `maid/MaidIrrigationMoveTask` | 空闲自主寻路：在女仆活动半径内找「能存水的空位 / 可舀的水源 / 待施肥作物」，直接复用女仆的 `MaidMoveToBlockTask` 扫描、可达性与范围判定 |
+| `maid/MaidPlotWorkTask` | 到达目标格后执行：耕地 → 补水 + 施肥，空位 → 放水，水源 → 舀水；自己设的目标做完即清空 `TARGET_POS`/`WALK_TARGET` |
+| `maid/MaidSeasonalPlantHandler` | `ISpecialCropHandler`：反季的管辖作物不许种，其余原样交给接口默认实现 |
+| `maid/MaidBags`、`maid/MaidCompat` | 背包内水桶/铁桶/骨粉的取出与回写；「农场模式 + 兼容开关」门槛 |
 | `client/CropTooltips` | 作物与骨粉的物品 tooltip |
 | `client/SeedSeasonsClient` | 配置界面入口 |
 
@@ -174,6 +195,7 @@
 ### 4.3 构建约束
 
 - 第三方 jar 放 `local-repo/`（自建 Maven 布局 + 最小 pom），build.gradle 里加 `maven { url = uri("${projectDir}/local-repo") }`。
+- 车万女仆按同一布局放 `local-repo/touhou_little_maid/touhou_little_maid-1.21.1/1.5.3/`，只作 `compileOnly`；`neoforge.mods.toml` 里**不给它写 `[[dependencies]]`**——版本对不上最多是女仆行为不生效，不该让启动失败。
 - `ProcessResources` 必须设 `filteringCharset = 'UTF-8'`，否则 mods.toml 的中文会被平台默认 GBK 吃掉末尾字符。
 - `neo_version` 用本地已有缓存（21.1.249）以免下载。
 - 不跑 gradle 也能做一次零构建的类型自检：`javac -proc:none -encoding UTF-8 -d <临时目录> -cp "<classpath>" -sourcepath "<桩类目录>;src/main/java" $(find src/main/java -name "*.java")`。classpath = `build/neoForm/neoFormJoined*/steps/recompile/outputs.jar` + 缓存里的 `neoforge-<ver>-universal.jar`、`loader-<fmlver>.jar`（含 `net.neoforged.fml.common.*`）、`mixin-0.8.5.jar`、`bus-*.jar`、`brigadier-*.jar`、`slf4j-api`、`logging`、`datafixerupper`、`netty-buffer/common` + `local-repo/` 的静谧四季/GlitchCore/Jade（三个 jar 的 Maven 目录是 `local-repo/<mod>/<mod>-<mcver>/<version>/<file>.jar`，直接写 `local-repo/<mod>/<mod>/<ver>/...` 会静默找不到包）。`client/` 包用到的 `net.neoforged.api.distmarker.Dist`/`OnlyIn` 不在这些 jar 里，放两个桩类（`enum Dist { CLIENT, DEDICATED_SERVER; isClient(); }`）到 `-sourcepath` 里就能连 `client/` 一起编过。注意 loader 必须取 **4.0.x**（21.1.249 配套），缓存里的 10.x/11.x/12.x 是新 MC 的，`FMLEnvironment.dist` 字段签名对不上会误报找不到符号。
@@ -192,6 +214,14 @@ cd D:\Games\MOD\更好的四季
 
 - **已实测**：指令写入配置、配置热重载生效、游戏能正常启动、Tab 补全与「并集累加」修复可用。
 - **未实测**：以天为单位的每日 6:00 结算（含按需耗水折算与抽水、`dry` 枯死变泥、`young` 门槛、收获后补种不继承进度、骨粉次日叠加）、非当季枯死/换季催熟/过熟枯死、降雨免旱（`minRainHours` 计时与解除缺水）、Jade 真实进度与施肥提示、growthDays 动态推算、数据包并集对第三方适配作物生效、季节昼夜时长（`enableSeasonalDayNight` 对 BetterDays 流速的替换）。
+- **女仆兼容待实测清单**（本轮只做了全量 javac 类型自检，未跑客户端）：
+  ① 农场模式女仆在断水田旁会去放水，水格真的变成静止水源；
+  ② 只有空桶时她会先去「有余量的水源」舀满，再从那里回田边倒水；紧挨农田的大湖可以舀、单格井不行；
+  ③ 次日 6:00 结算重新吸到水、作物进度恢复推进；一整天不补水则按 `dryWitherDays` 枯死；
+  ④ 下雨天露天田不去补（屋檐下的田照补）；
+  ⑤ 施肥：每株每天只施 1 次，额度已满时不再施；玩家随后自己右键骨粉仍然枯死，且 Jade 显示「今日已施肥 1/1」；
+  ⑥ 反季时女仆不播种（背包里留着种子），当季照常；
+  ⑦ `enableMaidCompat=false` 后女仆完全回到原版农场模式表现，且不会卡死（TARGET_POS 被正常清空）。
 - 运行时排查入口：启动日志里的 mixin 报错；`javap -p -classpath local-repo/sereneseasons/.../sereneseasons-1.21.1-10.1.0.3.jar sereneseasons.init.ModFertility` 可复核被 shadow 的字段名。
 
 ---
@@ -211,3 +241,10 @@ cd D:\Games\MOD\更好的四季
 - 用 `/weather` 实测时的两个原版前提：**1.21.1 的 `/weather` 写死只作用于主世界**（`source.getServer().overworld()`，在别的维度敲它没效果）；`duration` 参数是天气计时器的 tick 数，按真实 tick 递减——`/weather rain 12000` 就是「下 12000 真实 tick」，换算成游戏小时会随时间倍速变化。
 - 降雨免旱的计时是内存态：雨停清零、服务器重启清零。降雨开始时刻按维度记录在 `RainWater` 的 Map 里，不落盘。
 - 性能上的既有取舍：随机刻回调先做 `instanceof` 判定再查方块状态属性；水源「服务哪几块耕地」的结果缓存 100 真实 tick；每日结算遍历已加载区块（加载/卸载事件维护），每区块先用 `LevelChunkSection.maybeHas` 过一遍调色板、只有含作物的区块才逐格扫描，不用 `ChunkMap.getChunks()`。
+- **女仆兼容的既有边界**：
+  - 客户端的「缺水：待补水」在正在淋雨时直接抑制（`RainWater` 的 `minRainHours` 计时只存在服务端内存，客户端读不到），所以刚开始下雨的那半小时里可能仍显示缺水。
+  - 女仆自己不会准备物资：水桶、铁桶、骨粉都要玩家放进她背包，或扔在地上让她捡（`MaidRequestItemEvent` 只有额外容器类模组才会响应），她也不会去箱子里拿。
+  - 补水是「一天一趟」的节奏：6:00 结算抽干之后她才会去找水，所以刚过 6:00 的那段时间田确实是干的，只要当天补上就不会枯死。
+  - 放水/舀水直接 `setBlock`（女仆没有 `UseOnContext` 通路，仿 `MaidMilkTask` 手改背包），声音用 `BUCKET_EMPTY` / `BUCKET_FILL`，没有玩家倒水的额外粒子；她可能正站在那个坑里，于是被一格水淹一下——一格深不会淹死（女仆自带换气行为）。
+  - `enableCropWater` 关 → 补水/取水整体失效（没水可耗也就无需补）；`enableCropLifecycle` 或 `boneMealPerDay = 0` → 施肥失效；反季不种只跟 `enableMaidCompat`。
+  - 接管 `FARMLAND` 的 `canPlant` 意味着**别的模组种在原版耕地上的作物也过我们这一层**，判定只针对 `CropLifecycle.isManaged` 的作物、其余原样委托接口默认实现。若别的模组也注册 `FARMLAND` 处理器，`SpecialCropManager` 是 Map、后注册者覆盖，模组间顺序不保证——真遇到就得改成显式分工。

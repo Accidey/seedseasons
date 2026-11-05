@@ -34,6 +34,7 @@ public final class SeedSeasonsConfig {
     private static final ModConfigSpec.DoubleValue SUMMER_DAY_PERCENT;
     private static final ModConfigSpec.DoubleValue AUTUMN_DAY_PERCENT;
     private static final ModConfigSpec.DoubleValue WINTER_DAY_PERCENT;
+    private static final ModConfigSpec.BooleanValue ENABLE_MAID_COMPAT;
 
     private static volatile ModConfig modConfig;
 
@@ -312,6 +313,18 @@ public final class SeedSeasonsConfig {
                         " Range is 1 ~ 99; night automatically gets the remaining percentage.")
                 .defineInRange("winterDayPercent", 35.0D, 1.0D, 99.0D);
 
+        ENABLE_MAID_COMPAT = builder
+                .comment(
+                        "",
+                        " 是否启用与车万女仆（Touhou Little Maid）的兼容：处于农场模式的女仆会顺手给缺水的耕地补水、按每天的骨粉额度施肥，并且不再在反季播种。",
+                        " 只改变女仆的行为，玩家、其他模组和每日结算的规则都不受影响；没有安装车万女仆时这条不起作用。",
+                        " 关闭后女仆回到原版农场模式的表现：只种只收，不管水也不施肥，反季照样种。",
+                        "",
+                        " Whether the Touhou Little Maid companion is enabled: a maid in farm mode waters thirsty farmland, fertilizes crops within the daily bone meal allowance, and stops planting out of season.",
+                        " Only maid behaviour changes - players, other mods and the daily settlement keep working exactly as before, and the option does nothing when Touhou Little Maid is not installed.",
+                        " Disable to leave maids on their plain farm mode: they plant and harvest only, ignore water, and plant out of season as well.")
+                .define("enableMaidCompat", true);
+
         SPEC = builder.build();
     }
 
@@ -400,6 +413,10 @@ public final class SeedSeasonsConfig {
 
     public static double winterDayPercent() {
         return WINTER_DAY_PERCENT.get();
+    }
+
+    public static boolean enableMaidCompat() {
+        return ENABLE_MAID_COMPAT.get();
     }
 
     public static boolean saveSeasons(List<String> entries) {

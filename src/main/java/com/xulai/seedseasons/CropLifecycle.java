@@ -385,20 +385,68 @@ public final class CropLifecycle {
         return true;
     }
 
-    public static double progressAt(Level level, BlockPos pos) {
-        if (!(level.getChunkAt(pos) instanceof LevelChunk chunk)) {
-            return -1.0D;
+    public static boolean canFertilize(ServerLevel level, BlockPos cropPos) {
+        if (!SeedSeasonsConfig.enableCropLifecycle() || SeedSeasonsConfig.boneMealPerDay() <= 0) {
+            return false;
         }
-        CropState state = CropStates.of(chunk).get(pos);
+        BlockState state = level.getBlockState(cropPos);
+        IntegerProperty age = ageProperty(state);
+        if (age == null || !isManaged(state) || state.getValue(age) >= maxAge(age)) {
+            return false;
+        }
+        String blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
+        if (!ModFertility.isCropFertile(blockId, level, cropPos)) {
+            return false;
+        }
+        CropState record = CropStates.of(level.getChunkAt(cropPos)).get(cropPos);
+        if (record == null) {
+            return true;
+        }
+        return record.boneMealDay() != level.getDayTime() / 24000L || record.boneMealUses() < SeedSeasonsConfig.boneMealPerDay();
+    }
+
+    public static boolean thirstyAt(Level level, BlockPos cropPos) {
+        if (!SeedSeasonsConfig.enableCropWater() || !WaterNetwork.loaded(level, cropPos)) {
+            return false;
+        }
+        BlockState crop = level.getBlockState(cropPos);
+        BlockPos farmlandPos = cropPos.below();
+        if (!isManaged(crop) || !(level.getBlockState(farmlandPos).getBlock() instanceof FarmBlock)) {
+            return false;
+        }
+        if (level instanceof ServerLevel serverLevel) {
+            if (RainWater.sufficient(serverLevel, cropPos)) {
+                return false;
+            }
+        } else if (level.isRainingAt(cropPos)) {
+            return false;
+        }
+        return WaterNetwork.needsWater(level, farmlandPos);
+    }
+
+    public static int boneMealUsesToday(Level level, BlockPos cropPos) {
+        CropState record = stateAt(level, cropPos);
+        if (record == null) {
+            return 0;
+        }
+        return record.boneMealDay() == level.getDayTime() / 24000L ? record.boneMealUses() : 0;
+    }
+
+    public static double progressAt(Level level, BlockPos pos) {
+        CropState state = stateAt(level, pos);
         return state == null ? -1.0D : state.progress();
     }
 
     public static int pendingBoneMealAt(Level level, BlockPos pos) {
-        if (!(level.getChunkAt(pos) instanceof LevelChunk chunk)) {
-            return -1;
-        }
-        CropState state = CropStates.of(chunk).get(pos);
+        CropState state = stateAt(level, pos);
         return state == null ? -1 : state.pendingBoneMeal();
+    }
+
+    private static CropState stateAt(Level level, BlockPos pos) {
+        if (!(level.getChunkAt(pos) instanceof LevelChunk chunk)) {
+            return null;
+        }
+        return CropStates.of(chunk).get(pos);
     }
 
     private static CropState recordAt(ServerLevel level, LevelChunk chunk, BlockPos pos, BlockState state, IntegerProperty age, int max, RandomSource random, boolean sync) {

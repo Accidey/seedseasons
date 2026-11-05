@@ -11,6 +11,8 @@
   "seedseasons.message.out_of_season_fertilizer": "Out of season, fertilizing %s is blocked by Serene Seasons (the bone meal is still used up)",
   "seedseasons.jade.fertilized": "Fertilizing: fertilized",
   "seedseasons.jade.not_fertilized": "Fertilizing: not fertilized",
+  "seedseasons.jade.thirsty": "Thirsty: waiting for water",
+  "seedseasons.jade.fertilize_quota": "Fertilized today %s/%s",
   "commands.seedseasons.added": "Added %s to the seed seasons list: %s",
   "commands.seedseasons.removed": "Removed %s from the seed seasons list",
   "commands.seedseasons.not_listed": "%s is not in the seed seasons list",

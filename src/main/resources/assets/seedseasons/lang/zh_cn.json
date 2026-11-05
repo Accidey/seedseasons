@@ -11,6 +11,8 @@
   "seedseasons.message.out_of_season_fertilizer": "非当季，%s 的施肥会被四季拦下（骨粉照样消耗）",
   "seedseasons.jade.fertilized": "施肥：已施肥",
   "seedseasons.jade.not_fertilized": "施肥：未施肥",
+  "seedseasons.jade.thirsty": "缺水：待补水",
+  "seedseasons.jade.fertilize_quota": "今日已施肥 %s/%s",
   "commands.seedseasons.added": "已把 %s 写入种子季节列表：%s",
   "commands.seedseasons.removed": "已把 %s 从种子季节列表移除",
   "commands.seedseasons.not_listed": "%s 不在种子季节列表里",
