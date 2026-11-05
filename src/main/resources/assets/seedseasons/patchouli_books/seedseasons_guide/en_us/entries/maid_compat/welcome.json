@@ -1,0 +1,25 @@
+{
+  "name": "What Maids Do",
+  "icon": "minecraft:wheat_seeds",
+  "category": "seedseasons:maid_compat",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "When $(item)Touhou Little Maid$() is installed, a maid in $(bold)farm mode$() does three extra jobs on top of planting and harvesting:$(li)she waters farmland that lost its supply$(li)she fertilizes crops within the daily bone meal allowance$(li)she no longer sows out-of-season seeds$(br2)She does $(bold)not$() change any rule that applies to you or other mods - she just does the chores."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Three Preconditions",
+      "text": "$(li)$(thing)enableMaidCompat$() stays true in the config (it is by default)$(li)the maid is switched to $(bold)farm$() mode - in attack, milking or any other mode she keeps out of the field entirely$(li)her backpack holds a $(item)water bucket$() or an $(item)empty bucket$(), plus $(item)bone meal$() when she is meant to fertilize$(br2)She never opens chests for supplies, but she does pick up whatever $(bold)you throw at her feet$()."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:maid_compat/irrigation",
+        "seedseasons:maid_compat/fertilizer",
+        "seedseasons:water_management/thirst"
+      ]
+    }
+  ]
+}

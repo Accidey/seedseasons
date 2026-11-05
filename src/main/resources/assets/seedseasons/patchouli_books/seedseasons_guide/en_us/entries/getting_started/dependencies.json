@@ -5,13 +5,14 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "This mod requires:$(li)$(item)Serene Seasons$() for the season system itself$(li)$(item)BetterDays$() for the time-speed mechanics used by seasonal day & night$(br2)$(item)Jade$() is optional: if installed, crop progress and fertilizing state show up in Jade tooltips."
+      "text": "This mod requires:$(li)$(item)Serene Seasons$() for the season system itself$(li)$(item)BetterDays$() for the time-speed mechanics used by seasonal day & night$(br2)$(item)Jade$() is optional: if installed, crop progress and fertilizing state show up in Jade tooltips.$(br2)$(item)Touhou Little Maid$() is optional too: with it installed, a maid in farm mode waters your plots, fertilizes within the daily allowance and stops sowing out of season - see the Maid Farm Work chapter."
     },
     {
       "type": "patchouli:relations",
       "title": "Related Chapters",
       "entries": [
         "seedseasons:seasonal_daynight/welcome",
+        "seedseasons:maid_compat/welcome",
         "seedseasons:crop_lifecycle/welcome"
       ]
     }

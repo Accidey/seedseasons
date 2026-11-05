@@ -1,0 +1,29 @@
+{
+  "name": "The Shared Allowance",
+  "icon": "minecraft:bone_meal",
+  "category": "seedseasons:maid_compat",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Each crop accepts at most $(thing)boneMealPerDay$() (1 by default) applications per MC day, and $(bold)that allowance is shared between you and her$() - once she has used each plant's daily one, the allowance really is gone.$(br2)She $(bold)checks before applying$(), so she can never over-feed a crop herself; she also leaves mature crops alone (they should be harvested, not pushed)."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "What You Have to Watch",
+      "text": "If you right-click bone meal again after her visit, that is $(warn)over the limit - the crop withers on the spot$(). The penalty makes no exception for her.$(br2)Can you see it coming? Jade adds a line $(bold)Fertilized today 1/1$() to the crop tooltip - that is her way of saying 'do not feed it again'.$(br2)Set $(thing)boneMealPerDay$() to 0 and crops refuse bone meal entirely, so she stops fertilizing too."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "When It Takes Effect",
+      "text": "Fertilizing is not instant:$(li)each accepted use queues a pending stage$(li)all queued stages stack at the next 6:00 settlement$(li)each layer advances at least one visible growth stage$(br2)So the next morning the whole field jumps a level at once - that is her work, not a bug."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:crop_lifecycle/bone_meal",
+        "seedseasons:maid_compat/welcome"
+      ]
+    }
+  ]
+}

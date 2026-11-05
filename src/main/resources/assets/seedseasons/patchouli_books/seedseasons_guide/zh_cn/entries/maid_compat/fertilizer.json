@@ -1,0 +1,29 @@
+{
+  "name": "施肥的额度",
+  "icon": "minecraft:bone_meal",
+  "category": "seedseasons:maid_compat",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "每株作物每个 MC 天最多只能吃 $(thing)boneMealPerDay$()（默认 1）次骨粉，$(bold)这份额度由你和女仆共用$()——她每天把每株的那一次用掉之后，额度就真的没了。$(br2)她 $(bold)先查后施$()，所以她自己永远不会把作物撑死；已成熟的作物她也不施（成熟的作物本来就该收，不是催）。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "你要留心的地方",
+      "text": "她施过之后你再右键一次骨粉，就是 $(warn)超限 → 作物当场枯死消失$()，惩罚规则不为她破例。$(br2)看不看得出来？看 Jade：作物提示里会多一行 $(bold)今日已施肥 1/1$()，那就是她在告诉你「别再喂了」。$(br2)把 $(thing)boneMealPerDay$() 设为 0，作物不接受骨粉，她也完全不施肥。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "什么时候才有效",
+      "text": "施肥不当场生效：$(li)每次有效施肥记下待结算的层数$(li)下一次 6:00 结算才一次性叠加$(li)每层至少推进一个可见生长阶段$(br2)所以第二天早上你会发现整片田齐刷刷长了一级——那是她的功劳，不是bug。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:crop_lifecycle/bone_meal",
+        "seedseasons:maid_compat/welcome"
+      ]
+    }
+  ]
+}

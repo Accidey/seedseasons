@@ -1,0 +1,25 @@
+{
+  "name": "女仆会做什么",
+  "icon": "minecraft:wheat_seeds",
+  "category": "seedseasons:maid_compat",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "如果同时装了 $(item)车万女仆$()，处于 $(bold)农场模式$() 的女仆除了原来的种地与收获，还会顺手做三件事：$(li)给断水的耕地补水$(li)在每天的骨粉额度内施肥$(li)非当季不再播种$(br2)她 $(bold)不会$() 改变玩家或其他模组的一切规则，只是替你把活干了。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "三个前提",
+      "text": "$(li)配置里的 $(thing)enableMaidCompat$() 保持为真（默认就是）$(li)女仆切到 $(bold)农场$() 模式——攻击、挤奶等其他模式她一概不去管田$(li)她的背包里要有 $(item)水桶（装水的）$() 或 $(item)空桶$()，以及要施肥时的 $(item)骨粉$()$(br2)她不会自己开箱取货，但会把 $(bold)你扔在她脚边的东西$() 捡起来。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:maid_compat/irrigation",
+        "seedseasons:maid_compat/fertilizer",
+        "seedseasons:water_management/thirst"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "No Off-Season Sowing",
+  "icon": "minecraft:clock",
+  "category": "seedseasons:maid_compat",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A vanilla farm-mode maid $(bold)ignores the seasons$(): she happily plants wheat in the middle of winter. Out-of-season crops in this mod wither at settlement with $(thing)witherChance$() (1.0 = always), so every seed she plants - and every bone meal she feeds it - is burned for nothing.$(br2)With the companion on, she $(bold)stops sowing out of season$(): the seeds stay in her backpack until the season fits, and she will not fertilize an out-of-season crop either."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "How Far This Reaches",
+      "text": "The check only covers crops $(bold)this mod manages$() (crops, stems, nether wart, cocoa, sweet berry bush and their subclasses); other mods' crops planted on vanilla farmland keep their original rules.$(br2)It reads the same source your tooltips do: Serene Seasons' fertility, including whatever you added in $(thing)seedSeasons$() (merged as a union with datapack tags).$(br2)Want her old behaviour back? Turn $(thing)enableMaidCompat$() off - she immediately returns to planting blind to the season."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:crop_seasons/welcome",
+        "seedseasons:crop_lifecycle/withering",
+        "seedseasons:maid_compat/welcome"
+      ]
+    }
+  ]
+}

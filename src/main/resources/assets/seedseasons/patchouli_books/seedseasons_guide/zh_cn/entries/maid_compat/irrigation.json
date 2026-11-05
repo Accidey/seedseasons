@@ -1,0 +1,36 @@
+{
+  "name": "补水与舀水",
+  "icon": "minecraft:bucket",
+  "category": "seedseasons:maid_compat",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "什么时候才补",
+      "text": "只有 $(bold)上面种着作物、又真的断了供水$() 的耕地才会去补，$(warn)空田她不补$()（空田本来就不耗水）。$(br2)雨下满 $(thing)minRainHours$() 之后，露天作物靠雨水就算有水，这种田她也不跑；屋檐、树冠下淋不到雨的田照补。$(br2)耕地不会因为断水而显示变干，所以别指望看土壤颜色判断——看 Jade 提示的「缺水：待补水」。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "水倒在哪里",
+      "text": "她在缺水的耕地四周 4 格内找一个 $(bold)存得住水的空位$()：本格是空气或可替换、下方是实心方块、四个方向都不会让水漫出去。$(br2)通常那就是原来被抽掉的坑——每天 6:00 结算会按水塘余量抽走几格水，剩下的水仍然养着全部田，所以她补的就是那几格。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "桶里没水了怎么办",
+      "text": "倒完水手里只剩空桶，她会自动改成去找水源：$(li)$(bold)可以舀$()：河流、湖泊、远离农田的水池——舀走一格不会让任何田断水的池子$(li)$(warn)不许舀$()：单格井、以及刚好够养这片田的小水池$(br2)附近没有合格水源时她就待着不动，等你扔一桶水给她。$(br2)取水和补水都限制在她的 $(thing)活动半径$() 内，她不会为了一桶水跑丢。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "一天一趟就够",
+      "text": "抽发生在每天 6:00 的结算，所以她 $(bold)那天早上之前$() 补上就行；跨过 6:00 那一刻田确实是干的，这是机制而不是她偷懒。$(br2)缺水满 $(thing)dryWitherDays$()（默认 1 天）还没补回来，作物才枯死、耕地变泥。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:water_management/welcome",
+        "seedseasons:water_management/thirst",
+        "seedseasons:water_management/rain_growth"
+      ]
+    }
+  ]
+}

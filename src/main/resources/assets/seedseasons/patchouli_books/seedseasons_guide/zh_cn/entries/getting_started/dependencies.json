@@ -5,13 +5,14 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "本模组需要：$(li)$(item)静谧四季$() 提供季节系统本身$(li)$(item)BetterDays$() 提供季节昼夜所使用的时光流速机制$(br2)$(item)Jade$() 为可选：如果安装，作物进度和施肥状态会显示在 Jade 提示中。"
+      "text": "本模组需要：$(li)$(item)静谧四季$() 提供季节系统本身$(li)$(item)BetterDays$() 提供季节昼夜所使用的时光流速机制$(br2)$(item)Jade$() 为可选：如果安装，作物进度和施肥状态会显示在 Jade 提示中。$(br2)$(item)车万女仆$() 同样可选：安装后，处于农场模式的女仆会替你补水、按额度施肥、并且不再反季播种——详见「女仆农活」章节。"
     },
     {
       "type": "patchouli:relations",
       "title": "相关章节",
       "entries": [
         "seedseasons:seasonal_daynight/welcome",
+        "seedseasons:maid_compat/welcome",
         "seedseasons:crop_lifecycle/welcome"
       ]
     }

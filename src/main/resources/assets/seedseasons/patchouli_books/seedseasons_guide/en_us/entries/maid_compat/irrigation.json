@@ -1,0 +1,36 @@
+{
+  "name": "Watering and Scooping",
+  "icon": "minecraft:bucket",
+  "category": "seedseasons:maid_compat",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "When She Waters",
+      "text": "Only farmland that $(bold)has a crop on it and really lost its water supply$() gets watered; $(warn)empty plots are left alone$() (they consume nothing anyway).$(br2)Once the rain has lasted $(thing)minRainHours$(), exposed crops count as watered by the rain itself, so she skips them - but plots under a roof or tree canopy still need her.$(br2)Farmland never looks dry when the water is gone, so do not judge by soil colour: read the $(bold)Thirsty: waiting for water$() line in Jade."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Where the Water Goes",
+      "text": "She looks within 4 blocks of the thirsty plot for a spot that $(bold)can hold a source$(): air or replaceable here, solid underneath, and no open side for the water to escape through.$(br2)Usually that is the very hole the settlement drained - each 6:00 takes a few cells out of the pond while the remaining water still feeds every plot, so she is refilling exactly those."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "When the Bucket Runs Dry",
+      "text": "After pouring, her bucket is empty and she switches to finding a source:$(li)$(bold)fair to scoop$(): rivers, lakes, ponds away from the fields - any pool where losing one cell leaves no plot dry$(li)$(warn)off limits$(): a single-cell well, or a pool that is exactly big enough for this field$(br2)With no suitable source nearby she simply waits for you to toss her a water bucket.$(br2)Both jobs stay inside her $(thing)work radius$(); she never wanders off the map for one bucket."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "One Round a Day Is Enough",
+      "text": "The drain happens at the 6:00 settlement, so refilling $(bold)any time before the next one$() is fine; the field genuinely is dry right after 6:00 - that is the mechanic, not laziness.$(br2)Only after $(thing)dryWitherDays$() (1 day by default) without water does the crop wither and the farmland turn back to dirt."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:water_management/welcome",
+        "seedseasons:water_management/thirst",
+        "seedseasons:water_management/rain_growth"
+      ]
+    }
+  ]
+}

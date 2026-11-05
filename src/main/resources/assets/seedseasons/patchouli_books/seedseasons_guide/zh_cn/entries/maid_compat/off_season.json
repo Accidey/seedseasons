@@ -1,0 +1,25 @@
+{
+  "name": "反季不播种",
+  "icon": "minecraft:clock",
+  "category": "seedseasons:maid_compat",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "原版农场模式的女仆 $(bold)不看季节$()：冬天照样把小麦种下去。而本模组里非当季的作物在结算时按 $(thing)witherChance$()（默认 1.0 = 必定）枯死消失，所以她种一批、烧一批，种子和骨粉全白扔。$(br2)开启兼容后，她 $(bold)不再在非当季播种$()：种子留在背包里，等季节对了再种；她也不会给反季作物施肥。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "影响面有多大",
+      "text": "这条判定只作用于 $(bold)本模组管辖的作物$()（作物、茎、下界疣、可可、甜浆果丛及其子类）；其他模组种在原版耕地上的作物走原来的规则，不受干涉。$(br2)判定源和你看到的是同一个：静谧四季的季节适生性（含你在 $(thing)seedSeasons$() 里补充、与数据包取并集的部分）。$(br2)想让她回到原版表现，把 $(thing)enableMaidCompat$() 关掉即可——她立刻恢复「不看季节乱种」。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:crop_seasons/welcome",
+        "seedseasons:crop_lifecycle/withering",
+        "seedseasons:maid_compat/welcome"
+      ]
+    }
+  ]
+}
