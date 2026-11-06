@@ -83,6 +83,7 @@ public final class SeedSeasonsEvents {
     public static void onChunkLoad(ChunkEvent.Load event) {
         if (event.getChunk() instanceof LevelChunk chunk) {
             CropLifecycle.onChunkLoad(chunk);
+            CauldronRain.onChunkLoad(chunk);
         }
     }
 

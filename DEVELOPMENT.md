@@ -17,7 +17,8 @@
 ② 作物成长改为以 MC 天为单位、每天固定时刻统一结算的生命周期；
 ③ 种植需要消耗水源；
 ④ 主世界一天总长固定（默认 1 MC 天 = 现实 1 小时），白天/夜晚占比随季节变化（需要 BetterDays 提供时间流速机制）；
-⑤ 车万女仆的农场模式会顺手照看这套农田：补水、按额度施肥、反季不播种。
+⑤ 车万女仆的农场模式会顺手照看这套农田：补水、按额度施肥、反季不播种；
+⑥ 露天的炼药锅在雨天会积水，速度按游戏小时配置（默认 6~12 小时积满一锅）。
 
 ---
 
@@ -107,6 +108,17 @@
 - **反季不种**：`MaidSeasonalPlantHandler` 通过 `SpecialCropManager.addCrop(Blocks.FARMLAND, ...)` 注册，而全站只有 `TaskNormalFarm.canPlant` 用**基底方块**查这张表（收获、种植执行、瓜类/可可/甘蔗查的是作物方块或种子物品），所以接管面恰好只有「能不能种」这一条；命中「本模组管辖的作物且 `ModFertility.isCropFertile` 为假」返回 false，其余原样调用接口默认的 `canPlant`（那份默认实现与原版逐字相同）。`MaidFarmMoveTask.shouldMoveTo` 走同一条判定，于是她连寻路都不会过去。
 - **与耗水系统的时序配套**：6:00 结算抽干 → 缺水的作物记 `drySince` → 距它满 `dryWitherDays`（默认 1 天）的那次结算还没水就枯死、耕地变泥。女仆的工作就是在这一整天里把水补回去；`RainWater.sufficient` 为真的露天作物当次结算按有水处理，她也不去补（屋檐、树冠下淋不到雨的田照补）。
 
+### 2.8 炼药锅接雨（`enableCauldronRainFill` / `cauldronFillHours`）
+
+原版机制存在但几乎用不上：`ServerLevel.tickChunk` 每 tick 每区块只有 `randomTickSpeed(3) × 1/48` 的机会做一次降水采样，`getBlockRandomPos(chunkX, 0, chunkZ, 15)` 只给区块内**一个随机列**，`tickPrecipitation` 再把它吸附到 `MOTION_BLOCKING` 高度、处理它**下面那格**；命中后 `CauldronBlock.shouldHandlePrecipitation` 还只有 `nextFloat() < 0.05`。单个锅每推进一层 ≈ `1/(0.0625 × 1/256 × 0.05) ≈ 8.2 万 tick`，三口锅装满要 3 个多小时连续降雨——所以本模组把它改成确定的定时驱动。
+
+- **驱动方式是定时刻（scheduled tick）而不是随机刻**：`mixin/AbstractCauldronBlockMixin` 挂在 `AbstractCauldronBlock` 的 `onPlace`（新放的锅接上链条）与 `tick`（每次定时到达时结算）上，真正的判定与推进都在 `CauldronRain`。随机刻（`randomTick`）不适合做「6~12 小时」这种可保证的时长，因为它本身是概率抽格。
+- **时长一律按游戏时钟**：每层期望 `cauldronFillHours / 3` 个游戏小时（1 游戏小时 = 1000 dayTime tick），每锅每层再在 `0.67~1.33` 之间随机，所以默认 9 小时对应 **6~12 游戏小时装满**，一整排锅也不会同刻齐满。排定时时才换算成真实 tick：`真实tick = 游戏tick / level.getDayTimePerTick()`——这个值是 BetterDays 与本模组 `SeasonalDayNightMixin` 实际写入的流速，所以季节昼夜、倍速、`/time` 快慢都会自动跟着，不需要另写一套配置。
+- **记账与防重复**：`READY_AT`（按维度 → `pos.asLong()` → 最早可推进的游戏时刻）是唯一真相。定时到达时先看账：没到点就只重排；到点且 `level.isRainingAt(pos.above())` 才推进一层（空锅 → `WATER_CAULDRON` 1 层 → 2 → 3 封顶），并把下一次的时点写成 `now + step`；到点但没在下雨，就按 1 游戏小时轮询。`LevelChunkTicks.schedule` 本身按 **(type, pos) 去重**（重复排程被静默丢弃），所以「钟乳石滴水已经在给这口锅排定时」的情况不会让接水变快——滴水定时早到也只是走一次「没到点，重排」。
+- **老存档的锅**：`onPlace` 不会在区块加载时触发，所以 `ChunkEvent.Load → CauldronRain.onChunkLoad` 用 `LevelChunkSection.maybeHas` 过调色板，只展开含炼药锅的 section 逐个补上链条（沿用作物补档那套做法，绝不在 tick 里强载区块）。
+- **与其它系统的边界**：锅里的水不是水源方块，`WaterNetwork` 一律不认（不供水、不进水塘配额、不算可舀水源）；女仆既不从锅里舀也不往锅里倒；`isRainingAt` 被静谧四季接管，因此**下雪不算降水**，雪原/冬天的锅走原版细雪逻辑，本模组不插手；屋檐与树冠下不积水。
+- 关掉 `enableCauldronRainFill` 会清掉该维度的记账并停止重排，链条自然断掉；再打开需要重新放锅或重进区块（区块加载会重新接上）。
+
 ---
 
 ## 3. 实现架构
@@ -124,6 +136,7 @@
 | `CropState` / `CropStates` | 单株状态（进度、时长、干涸计时、待结算施肥层数等）/ 区块级容器 + 附件注册与同步 |
 | `WaterSource` / `WaterStates` / `WaterNetwork` | 供水配额缓存（含锚点）/ 容器 / 水塘共享服务判定、按需耗水折算（水塘分组 + 服务田数统计 + 抽水）；对外查询 `needsWater`、`refillSpot`、`canHoldWater`、`canDrawFrom`——读取路径的参数收 `Level` 而不是 `ServerLevel`，好让客户端的 Jade 提示复用同一套判定 |
 | `RainWater` | 降雨免旱：按维度记录降雨开始时刻（`getDayTime()`），判定是否已连续下满 `minRainHours` 且该位置正在淋雨 |
+| `CauldronRain` | 炼药锅接雨：`READY_AT` 按维度记「最早可推进的游戏时刻」，定时到达时先看账再看是否在下雨，推进一层（空锅→1→2→3），并把游戏时长换算成真实 tick 重排下一次定时；区块加载时扫调色板给老锅接上链条 |
 | `maid/SeedSeasonsMaidExtension` | `@LittleMaidExtension` 的 `ILittleMaid`：注册 extra brain 与 FARMLAND 作物处理器（没装女仆时这个类永远不会被加载） |
 | `maid/MaidIrrigationMoveTask` | 空闲自主寻路：在女仆活动半径内找「能存水的空位 / 可舀的水源 / 待施肥作物」，直接复用女仆的 `MaidMoveToBlockTask` 扫描、可达性与范围判定 |
 | `maid/MaidPlotWorkTask` | 到达目标格后执行：耕地 → 补水 + 施肥，空位 → 放水，水源 → 舀水；自己设的目标做完即清空 `TARGET_POS`/`WALK_TARGET` |
@@ -141,6 +154,7 @@
 | `BoneMealItemMixin` | 原版 `BoneMealItem` | `applyBonemeal` HEAD 可取消 | 骨粉汇聚点，且该方法自己负责扣物品，取消后需手动扣 |
 | `ServerLevelMixin` | 原版 `ServerLevel` | `tickChunk` 内 `BlockState.randomTick` 重定向 | 抢在 SS 的季节拦截之前接管作物；返回 true 表示已处理、跳过原版成长 |
 | `FlowingFluidMixin` | 原版 `FlowingFluid` | `canConvertToSource(FluidState, Level, BlockPos)` HEAD 恒返回 false | 禁用原版无限水自动补源，保证耗水系统抽干的水不会被补回 |
+| `AbstractCauldronBlockMixin` | 原版 `AbstractCauldronBlock` | `onPlace` 与 `tick` 的 TAIL 追加 | 炼药锅接雨：`onPlace` 给新放的锅接上定时链条，`tick`（定时到达）交给 `CauldronRain.advance` 判定并推进。目标类与两个方法名都已在 patched 源码里核对存在（`onPlace` 第 106 行、`tick` 第 88 行）；`require` 用默认 1，改名会直接报错而不是静默失效 |
 | `SeasonalDayNightMixin` | 原版 `ServerLevel` | `setDayTimePerTick` 内 `ServerLevelData.setDayTimePerTick(F)` 调用点 `@ModifyArg index=0` | 按当前季节+时刻替换时间流速，实现季节化昼夜时长；只主世界生效 |
 | `JadeCropProgressMixin` | Jade `CropProgressProvider` | `appendTooltip` HEAD 取消并自行输出 | 用真实进度替换原版「阶段/最大阶段」，文案与配色复刻 Jade 自身 |
 
@@ -214,6 +228,7 @@ cd D:\Games\MOD\更好的四季
 
 - **已实测**：指令写入配置、配置热重载生效、游戏能正常启动、Tab 补全与「并集累加」修复可用。
 - **未实测**：以天为单位的每日 6:00 结算（含按需耗水折算与抽水、`dry` 枯死变泥、`young` 门槛、收获后补种不继承进度、骨粉次日叠加）、非当季枯死/换季催熟/过熟枯死、降雨免旱（`minRainHours` 计时与解除缺水）、Jade 真实进度与施肥提示、growthDays 动态推算、数据包并集对第三方适配作物生效、季节昼夜时长（`enableSeasonalDayNight` 对 BetterDays 流速的替换）。
+- **未实测**：炼药锅接雨（`enableCauldronRainFill`/`cauldronFillHours`）——本轮只做静态类型自检与源码核对，需要确认：①空锅淋雨约 3 个游戏小时变 1 层水、约 6~12 小时到 3 层；②屋檐/树冠下、雪原（降水是雪）不积；③满 3 层后不再变；④用桶或玻璃瓶取走一层后仍按剩余时长继续接；⑤钟乳石滴水正下方的锅**不会**因为滴水定时而加速积水；⑥区块卸载重装后链条仍在（`onChunkLoad` 补链），重启服务器后按新的一层时长重新计时；⑦关掉开关后锅只按原版极慢速度积水。
 - **女仆兼容实测结果（2026-11-05 21:30 那轮，用户跑客户端 + 一次性分层探针回传日志）**：
   - **已核实**：扩展类被女仆反射加载（10 个女仆各注册一组行为）；模式门槛正确——农场模式的女仆 `compat=true`，钓鱼/空闲模式的女仆 `compat=false` 完全不动田；自主找到「能存水的空位」并判定缺水 → `pour placed=true`，目标格变成 `water[level=0]`；水桶倒完后自动切成找水源 → `draw water=true`，形成「舀→倒→再舀」闭环；施肥确实扣物品（骨粉 100000→99999、99995→99994）；空田（`above=air`）不补；反季拦截在同坐标上出现过 `blocked=true` 与 `blocked=false` 的翻转（随季节变）。
   - **仍未确认**：③ 次日 6:00 结算重新吸到水并恢复进度（那轮日志里没有 `settlement` 行，跨天没跑到）；④ 雨天停工；⑤ 「额度已满不再施」「玩家随后手施仍超限枯死」「Jade 显示 今日已施肥 1/1」；⑥ 单格井不许舀 vs 紧贴农田的大湖可以舀的对照；⑦ `enableMaidCompat=false` 后不卡死（`TARGET_POS` 清空的兜底路径）。
@@ -244,3 +259,9 @@ cd D:\Games\MOD\更好的四季
   - 放水/舀水直接 `setBlock`（女仆没有 `UseOnContext` 通路，仿 `MaidMilkTask` 手改背包），声音用 `BUCKET_EMPTY` / `BUCKET_FILL`，没有玩家倒水的额外粒子；她可能正站在那个坑里，于是被一格水淹一下——一格深不会淹死（女仆自带换气行为）。
   - `enableCropWater` 关 → 补水/取水整体失效（没水可耗也就无需补）；`enableCropLifecycle` 或 `boneMealPerDay = 0` → 施肥失效；反季不种只跟 `enableMaidCompat`。
   - 接管 `FARMLAND` 的 `canPlant` 意味着**别的模组种在原版耕地上的作物也过我们这一层**，判定只针对 `CropLifecycle.isManaged` 的作物、其余原样委托接口默认实现。若别的模组也注册 `FARMLAND` 处理器，`SpecialCropManager` 是 Map、后注册者覆盖，模组间顺序不保证——真遇到就得改成显式分工。
+- **炼药锅接雨的既有边界**：
+  - 推进与否只看 `READY_AT` 这本内存账，**重启服务器账就清零**：那时锅还在，但会重新等整整一层时长（最多约 `cauldronFillHours/3` 游戏小时），不会白送一层。
+  - 同一格同一方块的定时被 `LevelChunkTicks` 按 (type, pos) 去重，所以我们的排程可能被**别人已排好的更早定时**顶掉（例如钟乳石滴水）——结果只是"提前醒来看一眼、发现没到点、再排一次"，不会加速也不会停摆。反过来，我们把空锅变成水锅之后方块类型换了，旧的 `CAULDRON` 定时不再影响新链条。
+  - 满 3 层的锅仍然会每隔一层时长醒一次做一次 `isRainingAt` 判断然后什么都不做；代价是一次方块查询，可以接受，换来的是"玩家用桶取走水"之后不需要任何额外事件就能继续接。
+  - 只处理空锅与水锅：细雪锅（雪原降水）与熔岩锅完全交回原版，`isRainingAt` 被静谧四季接管后下雪本来就不算降雨。
+  - 锅水是"锅里的水"：`WaterNetwork.isWaterSource` 只认静止水源方块，所以接满的锅不供水、不进配额、也不能被女仆舀；要进灌溉系统仍得倒成方块水（锅 + 玻璃瓶是独立的取水路线，与耗水机制互不影响）。

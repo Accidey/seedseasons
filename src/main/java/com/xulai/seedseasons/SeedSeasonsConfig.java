@@ -28,6 +28,8 @@ public final class SeedSeasonsConfig {
     private static final ModConfigSpec.DoubleValue DRY_WITHER_DAYS;
     private static final ModConfigSpec.BooleanValue ENABLE_RAIN_GROWTH;
     private static final ModConfigSpec.DoubleValue MIN_RAIN_HOURS;
+    private static final ModConfigSpec.BooleanValue ENABLE_CAULDRON_RAIN_FILL;
+    private static final ModConfigSpec.DoubleValue CAULDRON_FILL_HOURS;
     private static final ModConfigSpec.BooleanValue ENABLE_SEASONAL_DAY_NIGHT;
     private static final ModConfigSpec.DoubleValue MC_DAY_LENGTH_MINUTES;
     private static final ModConfigSpec.DoubleValue SPRING_DAY_PERCENT;
@@ -233,6 +235,30 @@ public final class SeedSeasonsConfig {
                         " 0 means it takes effect as soon as it rains.")
                 .defineInRange("minRainHours", 12.0D, 0.0D, 24.0D);
 
+        ENABLE_CAULDRON_RAIN_FILL = builder
+                .comment(
+                        "",
+                        " 是否启用炼药锅接雨：露天的炼药锅在下雨（下雪不算）时自动积水，空锅 → 1 层 → 2 层 → 满 3 层。",
+                        " 关闭后回到原版行为：只有服务端的随机天气采样命中那格时才有 5% 概率加一层，慢到几乎察觉不到。",
+                        " 锅里的水不是水源方块：不给耕地供水、不参与水塘折算，女仆也不会从锅里舀水或往锅里倒。",
+                        "",
+                        " Whether open-air cauldrons collect rainwater: an exposed cauldron fills step by step while rain (not snow) is falling on it - empty, then 1, 2 and 3 layers.",
+                        " When disabled, vanilla behaviour remains: a layer is only added when the server's random weather sampling lands on that cell, with a 5% roll, which is far too slow to notice.",
+                        " Water inside a cauldron is not a water source block: it waters no farmland, joins no pond quota, and maids neither scoop from nor pour into it.")
+                .define("enableCauldronRainFill", true);
+
+        CAULDRON_FILL_HOURS = builder
+                .comment(
+                        "",
+                        " 一口空锅在连续淋雨下积满 3 层需要多少游戏小时。1 游戏小时 = 1000 tick 的游戏时钟，会随季节昼夜和时间倍速一起变快变慢。",
+                        " 默认 9：每层约 3 小时，每口锅的时长在 2~4 小时之间随机浮动，所以一整排锅不会同刻满，整体正好落在 6~12 游戏小时。",
+                        " 雨停不会倒扣已经接到的水，下一场雨从当前层数接着接。",
+                        "",
+                        " Game hours of steady rainfall an empty cauldron needs to reach 3 layers. One hour here is 1000 ticks of the game clock, so it speeds up and slows down with seasonal day length and time scale.",
+                        " Default 9: roughly 3 hours per layer, with each cauldron rolling between two thirds and one third more, so a row of cauldrons never fills in unison and the whole span lands in the 6-12 game hour range.",
+                        " Rain stopping never removes collected water; the next storm resumes from the current layer.")
+                .defineInRange("cauldronFillHours", 9.0D, 0.5D, 240.0D);
+
         ENABLE_SEASONAL_DAY_NIGHT = builder
                 .comment(
                         "",
@@ -389,6 +415,14 @@ public final class SeedSeasonsConfig {
 
     public static double minRainHours() {
         return MIN_RAIN_HOURS.get();
+    }
+
+    public static boolean enableCauldronRainFill() {
+        return ENABLE_CAULDRON_RAIN_FILL.get();
+    }
+
+    public static double cauldronFillHours() {
+        return CAULDRON_FILL_HOURS.get();
     }
 
     public static boolean enableSeasonalDayNight() {

@@ -1,0 +1,30 @@
+{
+  "name": "炼药锅接雨水",
+  "icon": "minecraft:cauldron",
+  "category": "seedseasons:water_management",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "露天摆一只炼药锅，$(bold)下雨时它会自己积水$()：空锅 → 1 层 → 2 层 → 满 3 层。$(br2)速度按 $(thing)cauldronFillHours$()（默认 9）个 $(thing)游戏小时$() 计，也就是大约 6~12 游戏小时装满一锅，每口锅各自随机，一整排锅不会同时满。$(br2)$(warn)注意是游戏小时$()，不是现实时间——季节昼夜与时间倍速都会一起影响它。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "什么情况下不接",
+      "text": "$(li)$(warn)屋檐、树冠下$()：雨淋不到的格子不接$(li)$(warn)下雪不算雨$()：雪原与冷天的冬天降的是雪，锅里积的是细雪而不是水$(li)锅已经满 3 层$(li)把 $(thing)enableCauldronRainFill$() 关掉后，只剩原版那套极慢的随机采样（慢到基本看不见）"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "锅里的水不等于水源方块",
+      "text": "锅里的水 $(bold)不参与本模组的灌溉系统$()：不给自己周围的耕地供水、不算进水塘配额，农场模式的女仆也不会从锅里舀水或往锅里倒。$(br2)它的价值在于 $(bold)不消耗任何水方块$() 的取水来源：用 $(item)玻璃瓶$() 或 $(item)桶$() 从锅里取走，耕地那边一格水都不会少。$(br2)雨停不会倒扣已经接到的水，下一场雨接着接。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:water_management/welcome",
+        "seedseasons:water_management/thirst",
+        "seedseasons:water_management/rain_growth"
+      ]
+    }
+  ]
+}

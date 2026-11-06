@@ -4,6 +4,7 @@
   "package": "com.xulai.seedseasons.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "AbstractCauldronBlockMixin",
     "BoneMealItemMixin",
     "FarmBlockMixin",
     "FlowingFluidMixin",

@@ -1,0 +1,30 @@
+{
+  "name": "Rainwater in Cauldrons",
+  "icon": "minecraft:cauldron",
+  "category": "seedseasons:water_management",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Leave a cauldron out in the open and $(bold)it fills itself while it rains$(): empty, then 1, 2 and 3 layers.$(br2)The pace is set by $(thing)cauldronFillHours$() (9 by default) $(thing)game hours$(), so a full pot takes roughly 6-12 game hours, and every cauldron rolls its own timing so a whole row never fills at once.$(br2)$(warn)These are game hours$(), not real ones - seasonal day length and time scale both move with them."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "When Nothing Collects",
+      "text": "$(li)$(warn)Under a roof or tree canopy$(): no rain reaching the cell, no water$(li)$(warn)snow is not rain$(): cold biomes and winter collect powder snow instead$(li)a cauldron already at 3 layers$(li)with $(thing)enableCauldronRainFill$() off only vanilla's random weather sampling remains - so slow it is practically invisible"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Cauldron Water Is Not a Source Block",
+      "text": "Water inside a cauldron $(bold)is not part of the irrigation system$(): it waters no farmland, joins no pond quota, and a farm-mode maid will neither scoop from it nor pour into it.$(br2)Its worth is as a supply that $(bold)costs you no water blocks$(): bottle it or bucket it out and not a single source block in your fields is touched.$(br2)Rain stopping never removes what has already been collected; the next storm resumes where it left off."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:water_management/welcome",
+        "seedseasons:water_management/thirst",
+        "seedseasons:water_management/rain_growth"
+      ]
+    }
+  ]
+}
