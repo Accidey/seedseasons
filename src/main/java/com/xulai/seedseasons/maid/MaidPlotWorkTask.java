@@ -6,7 +6,6 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.google.common.collect.ImmutableMap;
 import com.xulai.seedseasons.CropLifecycle;
-import com.xulai.seedseasons.RainWater;
 import com.xulai.seedseasons.SeedSeasonsConfig;
 import com.xulai.seedseasons.WaterNetwork;
 
@@ -40,7 +39,13 @@ public final class MaidPlotWorkTask extends Behavior<EntityMaid> {
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, EntityMaid maid) {
         BlockPos target = target(maid);
-        return MaidCompat.enabled(maid) && target != null && level.getGameTime() >= nextReadyAt && reached(maid, target);
+        if (target == null) {
+            return false;
+        }
+        if (!MaidCompat.enabled(maid)) {
+            return move.hasOwnClaim();
+        }
+        return level.getGameTime() >= nextReadyAt && reached(maid, target);
     }
 
     @Override
@@ -49,16 +54,24 @@ public final class MaidPlotWorkTask extends Behavior<EntityMaid> {
         if (target == null) {
             return;
         }
+        if (!MaidCompat.enabled(maid)) {
+            release(maid);
+            return;
+        }
         boolean own = move.isOwnTarget(target);
         if (work(level, maid, target)) {
             lastPos = target;
             nextReadyAt = gameTime + COOLDOWN_TICKS;
         }
         if (own) {
-            move.finishOwnTarget();
-            maid.getBrain().eraseMemory(InitEntities.TARGET_POS.get());
-            maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+            release(maid);
         }
+    }
+
+    private void release(EntityMaid maid) {
+        move.finishOwnTarget();
+        maid.getBrain().eraseMemory(InitEntities.TARGET_POS.get());
+        maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
     }
 
     private static boolean reached(EntityMaid maid, BlockPos pos) {
@@ -81,11 +94,7 @@ public final class MaidPlotWorkTask extends Behavior<EntityMaid> {
     }
 
     private boolean waterField(ServerLevel level, EntityMaid maid, BlockPos farmland) {
-        if (!SeedSeasonsConfig.enableCropWater() || !WaterNetwork.needsWater(level, farmland)) {
-            return false;
-        }
-        BlockPos cropPos = farmland.above();
-        if (!CropLifecycle.isManaged(level.getBlockState(cropPos)) || RainWater.sufficient(level, cropPos)) {
+        if (!CropLifecycle.thirstyAt(level, farmland.above())) {
             return false;
         }
         BlockPos spot = WaterNetwork.refillSpot(level, farmland);

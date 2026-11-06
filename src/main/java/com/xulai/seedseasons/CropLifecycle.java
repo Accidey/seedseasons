@@ -386,7 +386,7 @@ public final class CropLifecycle {
     }
 
     public static boolean canFertilize(ServerLevel level, BlockPos cropPos) {
-        if (!SeedSeasonsConfig.enableCropLifecycle() || SeedSeasonsConfig.boneMealPerDay() <= 0) {
+        if (!SeedSeasonsConfig.enableCropLifecycle() || SeedSeasonsConfig.boneMealPerDay() <= 0 || !WaterNetwork.loaded(level, cropPos)) {
             return false;
         }
         BlockState state = level.getBlockState(cropPos);

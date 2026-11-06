@@ -23,9 +23,19 @@ public final class CauldronRain {
     private static final double GAME_TICKS_PER_HOUR = 1000.0D;
     private static final double SPREAD_MIN = 0.67D;
     private static final double SPREAD_MAX = 1.33D;
-    private static final long DRY_POLL_GAME_TICKS = 1000L;
+    private static final long WAKE_GAME_TICKS = 300L;
 
-    private static final Map<ResourceKey<Level>, Map<Long, Long>> READY_AT = new HashMap<>();
+    private static final Map<ResourceKey<Level>, Map<Long, Pot>> POTS = new HashMap<>();
+
+    private static final class Pot {
+        private long readyTicks;
+        private long lastSeen;
+
+        private Pot(long readyTicks, long lastSeen) {
+            this.readyTicks = readyTicks;
+            this.lastSeen = lastSeen;
+        }
+    }
 
     private CauldronRain() {
     }
@@ -37,7 +47,7 @@ public final class CauldronRain {
         if (!(state.getBlock() instanceof AbstractCauldronBlock)) {
             return;
         }
-        readyAt(serverLevel, pos).putIfAbsent(pos.asLong(), serverLevel.getDayTime() + stepGameTicks(serverLevel));
+        pots(serverLevel).putIfAbsent(pos.asLong(), new Pot(stepGameTicks(serverLevel), serverLevel.getDayTime()));
         schedule(serverLevel, pos, state.getBlock());
     }
 
@@ -46,59 +56,60 @@ public final class CauldronRain {
             return;
         }
         if (!SeedSeasonsConfig.enableCauldronRainFill()) {
-            READY_AT.remove(level.dimension());
+            POTS.remove(level.dimension());
             return;
         }
-        Map<Long, Long> ready = readyAt(level, pos);
+        Map<Long, Pot> pots = pots(level);
         long now = level.getDayTime();
-        Long stamp = ready.get(pos.asLong());
-        if (stamp == null) {
-            ready.put(pos.asLong(), now + stepGameTicks(level));
-            schedule(level, pos, state.getBlock());
+        Pot pot = pots.get(pos.asLong());
+        if (pot == null) {
+            pots.put(pos.asLong(), new Pot(stepGameTicks(level), now));
+        } else {
+            accumulateRain(pot, now, level.isRainingAt(pos.above()));
+            drainCredit(level, pos, pot);
+        }
+        schedule(level, pos, level.getBlockState(pos).getBlock());
+    }
+
+    private static void drainCredit(ServerLevel level, BlockPos pos, Pot pot) {
+        if (pot.readyTicks > 0L) {
             return;
         }
-        if (now < stamp) {
-            schedule(level, pos, state.getBlock());
-            return;
-        }
-        if (!level.isRainingAt(pos.above())) {
-            schedule(level, pos, state.getBlock());
-            return;
-        }
-        long step = stepGameTicks(level);
-        ready.put(pos.asLong(), now + step);
-        fillOneStep(level, pos, state);
-        BlockState nowState = level.getBlockState(pos);
-        if (nowState.getBlock() instanceof AbstractCauldronBlock) {
-            schedule(level, pos, nowState.getBlock());
+        pot.readyTicks = stepGameTicks(level);
+        fillOneStep(level, pos, level.getBlockState(pos));
+    }
+
+    private static void accumulateRain(Pot pot, long now, boolean raining) {
+        long elapsed = Math.max(0L, now - pot.lastSeen);
+        pot.lastSeen = now;
+        if (raining) {
+            pot.readyTicks -= elapsed;
         }
     }
 
     private static void schedule(ServerLevel level, BlockPos pos, Block block) {
-        if (level.getBlockTicks().hasScheduledTick(pos, block)) {
+        if (!(block instanceof AbstractCauldronBlock) || level.getBlockTicks().hasScheduledTick(pos, block)) {
             return;
         }
-        Long stamp = READY_AT.get(level.dimension()).get(pos.asLong());
-        long wait = stamp == null ? stepGameTicks(level) : Math.max(0L, stamp - level.getDayTime());
-        if (stamp != null && wait == 0L && !level.isRainingAt(pos.above())) {
-            wait = DRY_POLL_GAME_TICKS;
-        }
+        Pot pot = pots(level).get(pos.asLong());
+        long wait = pot == null ? stepGameTicks(level) : Math.min(Math.max(pot.readyTicks, 1L), WAKE_GAME_TICKS);
         level.scheduleTick(pos, block, toRealTicks(level, wait));
     }
 
-    private static void fillOneStep(ServerLevel level, BlockPos pos, BlockState state) {
+    private static boolean fillOneStep(ServerLevel level, BlockPos pos, BlockState state) {
         if (state.getBlock() instanceof CauldronBlock) {
             replace(level, pos, Blocks.WATER_CAULDRON.defaultBlockState());
-            return;
+            return true;
         }
         if (!state.is(Blocks.WATER_CAULDRON)) {
-            return;
+            return false;
         }
         int fill = state.getValue(LayeredCauldronBlock.LEVEL);
         if (fill >= LayeredCauldronBlock.MAX_FILL_LEVEL) {
-            return;
+            return false;
         }
         replace(level, pos, state.cycle(LayeredCauldronBlock.LEVEL));
+        return true;
     }
 
     private static void replace(ServerLevel level, BlockPos pos, BlockState next) {
@@ -113,16 +124,13 @@ public final class CauldronRain {
     }
 
     private static int toRealTicks(ServerLevel level, long gameTicks) {
-        if (gameTicks <= 0L) {
-            return 1;
-        }
         float perTick = level.getDayTimePerTick();
         double speed = perTick > 0.0F ? perTick : 1.0D;
         return (int) Math.max(1L, Math.min((long) Integer.MAX_VALUE - 1L, Math.round(gameTicks / speed)));
     }
 
-    private static Map<Long, Long> readyAt(ServerLevel level, BlockPos pos) {
-        return READY_AT.computeIfAbsent(level.dimension(), key -> new HashMap<>());
+    private static Map<Long, Pot> pots(ServerLevel level) {
+        return POTS.computeIfAbsent(level.dimension(), key -> new HashMap<>());
     }
 
     public static void onChunkLoad(LevelChunk chunk) {

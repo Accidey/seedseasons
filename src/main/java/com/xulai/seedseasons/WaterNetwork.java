@@ -128,12 +128,12 @@ public final class WaterNetwork {
         return WaterStates.of(chunk).getOrCreate(waterPos);
     }
 
-    public static void registerServedCrop(Level level, BlockPos waterPos, BlockPos cropPos) {
+    public static void registerServedCrop(ServerLevel level, BlockPos waterPos, BlockPos cropPos) {
         SERVED_CROPS.computeIfAbsent(level.dimension(), key -> new HashMap<>())
                 .computeIfAbsent(waterPos.immutable(), key -> new HashSet<>()).add(cropPos.asLong());
     }
 
-    public static void drainForDay(Level level) {
+    public static void drainForDay(ServerLevel level) {
         Map<BlockPos, Set<Long>> served = SERVED_CROPS.get(level.dimension());
         if (served == null || served.isEmpty()) {
             return;
@@ -286,7 +286,7 @@ public final class WaterNetwork {
         return served;
     }
 
-    public static void drain(Level level, BlockPos waterPos) {
+    public static void drain(ServerLevel level, BlockPos waterPos) {
         LevelChunk chunk = level.getChunkSource().getChunkNow(waterPos.getX() >> 4, waterPos.getZ() >> 4);
         if (chunk != null) {
             WaterStates.of(chunk).remove(waterPos);
