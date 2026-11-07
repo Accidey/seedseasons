@@ -75,8 +75,11 @@ public final class CauldronRain {
         if (pot.readyTicks > 0L) {
             return;
         }
-        pot.readyTicks = stepGameTicks(level);
-        fillOneStep(level, pos, level.getBlockState(pos));
+        if (!fillOneStep(level, pos, level.getBlockState(pos))) {
+            pot.readyTicks = stepGameTicks(level);
+            return;
+        }
+        pot.readyTicks += stepGameTicks(level);
     }
 
     private static void accumulateRain(Pot pot, long now, boolean raining) {
@@ -92,8 +95,15 @@ public final class CauldronRain {
             return;
         }
         Pot pot = pots(level).get(pos.asLong());
-        long wait = pot == null ? stepGameTicks(level) : Math.min(Math.max(pot.readyTicks, 1L), WAKE_GAME_TICKS);
+        long wait = pot == null ? stepGameTicks(level) : paceTicks(pot.readyTicks);
         level.scheduleTick(pos, block, toRealTicks(level, wait));
+    }
+
+    private static long paceTicks(long readyTicks) {
+        if (readyTicks <= 0L || readyTicks > WAKE_GAME_TICKS) {
+            return WAKE_GAME_TICKS;
+        }
+        return readyTicks;
     }
 
     private static boolean fillOneStep(ServerLevel level, BlockPos pos, BlockState state) {

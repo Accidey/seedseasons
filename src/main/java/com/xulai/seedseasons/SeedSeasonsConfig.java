@@ -310,10 +310,10 @@ public final class SeedSeasonsConfig {
                         "Hours to fill a cauldron",
                         "一口空锅累计淋够多少游戏小时能积满 3 层；1 游戏小时 = 1000 tick 的游戏时钟，会随季节昼夜和时间倍速一起变快变慢。",
                         "默认 9：每层约 3 小时，每口锅的时长在 2~4 小时之间随机浮动，所以一整排锅不会同刻满。",
-                        "计时按累计有效淋雨量算：雨停只是暂停，不倒扣已经接到的水，下一场雨接着接；睡觉或 /time 跳过的时间里最多只补上一层。",
+                        "计时按累计有效淋雨量算：雨停只是暂停、不倒扣已经接到的水，下一场雨接着接；睡觉或 /time 跳过的一整天会一次性记作淋到的雨量（以落点那一刻是否在下雨为准），随后连续几次唤醒各推进一层。",
                         "Game hours of accumulated rainfall an empty cauldron needs to reach 3 layers; one hour here is 1000 ticks of the game clock, so it speeds up and slows down with seasonal day length and time scale.",
                         "Default 9: roughly 3 hours per layer, with each cauldron rolling between two thirds and one third more, so a row of cauldrons never fills in unison.",
-                        "The tally is cumulative: rain stopping only pauses it, collected water is never lost, and the next storm resumes; a skipped night by sleeping or /time advances at most one layer.",
+                        "The tally is cumulative: rain stopping only pauses it, collected water is never lost, and the next storm resumes; a day skipped by sleeping or /time is credited as rainfall in one go (judged by whether it is raining where you land), then each of the next few wake-ups advances one layer.",
                         "Default: 9.0 / 默认：9.0",
                         "Range: 0.5 ~ 240.0")
                 .defineInRange("cauldronFillHours", 9.0D, 0.5D, 240.0D);
