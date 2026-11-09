@@ -1,0 +1,33 @@
+{
+  "name": "看懂田里的信息",
+  "icon": "minecraft:spyglass",
+  "category": "seedseasons:getting_started",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "物品提示",
+      "text": "把鼠标停在种子或作物物品上：$(li)$(info)成熟需要 X 天$()——这株作物大约要过几个 MC 天。$(li)在配置里补过季节的种子，还会显示它的 $(info)季节词$()。$(li)骨粉上写着 $(info)每株每天几次、次日 6 点生效、每次至少长一级$()，以及超量会枯死的警告。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:wheat",
+      "title": "装了 Jade 之后",
+      "text": "看着作物，Jade 提示会告诉你：$(li)真实的 $(bold)成长进度百分比$()（不是原版的阶段数）$(li)$(info)施肥：已施肥 / 未施肥$()——有没有等着次日结算的那一次$(li)$(warn)缺水：待补水$()（红色）——断水了，赶紧补$(li)$(info)今日已施肥 1/1$()（金色）——今天的额度已被你或女仆用掉$(br2)Jade 是可选模组，没装也不会影响任何机制，只是少了这些提示。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "界面与动作栏",
+      "text": "$(l:seedseasons:agriculture/irrigator)灌溉机$() 右键打开的是一根 $(water)蓝白水位条$()：蓝色是已有的水，白色是空余，每条刻度代表 1 桶，鼠标悬停显示当前水量与总储水量；按 $(bold)E$() 或 $(bold)ESC$() 关闭。$(br2)施肥超量、非当季施肥被拦时，屏幕上方动作栏会弹出提示，告诉你发生了什么。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:crop_lifecycle/bone_meal",
+        "seedseasons:water_management/thirst",
+        "seedseasons:agriculture/irrigator",
+        "seedseasons:getting_started/troubleshooting"
+      ]
+    }
+  ]
+}

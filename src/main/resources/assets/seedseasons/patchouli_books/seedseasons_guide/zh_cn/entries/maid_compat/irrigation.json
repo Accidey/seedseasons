@@ -24,12 +24,19 @@
       "text": "抽发生在每天 6:00 的结算，所以她 $(bold)那天早上之前$() 补上就行；跨过 6:00 那一刻田确实是干的，这是机制而不是她偷懒。$(br2)缺水满 $(thing)dryWitherDays$()（默认 1 天）还没补回来，作物才枯死、耕地变泥。"
     },
     {
+      "type": "patchouli:text",
+      "title": "用了灌溉机之后",
+      "text": "$(l:seedseasons:agriculture/irrigator)灌溉机$() 供水范围内的耕地已经算有水，她 $(bold)不会再往这些田里倒水$()，省下桶和时间；机器断电或水箱见底、田真的断水时，她才照常接管。$(br2)装了 Jade 的话，「缺水：待补水」也能正确反映灌溉机覆盖的作物——三者用的是同一套断水判定，不会出现她说要补、提示却说有水。"
+    },
+    {
       "type": "patchouli:relations",
       "title": "相关章节",
       "entries": [
         "seedseasons:water_management/welcome",
         "seedseasons:water_management/thirst",
-        "seedseasons:water_management/rain_growth"
+        "seedseasons:water_management/rain_growth",
+        "seedseasons:agriculture/irrigator",
+        "seedseasons:water_management/water_choices"
       ]
     }
   ]

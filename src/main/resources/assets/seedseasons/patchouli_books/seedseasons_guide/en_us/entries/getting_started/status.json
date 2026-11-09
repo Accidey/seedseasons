@@ -1,0 +1,33 @@
+{
+  "name": "Reading Your Field",
+  "icon": "minecraft:spyglass",
+  "category": "seedseasons:getting_started",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Item Tooltips",
+      "text": "Hover over a seed or crop item:$(li)$(info)Matures in X days$() - roughly how many MC days this crop needs.$(li)Seeds given seasons in the config also show their $(info)season words$().$(li)Bone meal lists $(info)uses per crop per day, next 6 AM settlement, at least one stage$(), plus a warning that overuse withers crops."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:wheat",
+      "title": "With Jade Installed",
+      "text": "Looking at a crop, Jade shows:$(li)the real $(bold)growth percentage$() rather than vanilla stage numbers$(li)$(info)Fertilizing: fertilized / not fertilized$() - whether a use is queued for the next settlement$(li)$(warn)Thirsty: waiting for water$() in red - it has lost its water$(li)$(info)Fertilized today 1/1$() in gold - the daily allowance is spent by you or a maid$(br2)Jade is optional; without it nothing changes mechanically, you simply lose these hints."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Screens & Action Bar",
+      "text": "Right-clicking the $(l:seedseasons:agriculture/irrigator)Irrigator$() opens a $(water)blue-and-white gauge$(): blue is the water you have, white is the empty space, one notch per bucket, and hovering shows the current amount and total capacity. Press $(bold)E$() or $(bold)ESC$() to close.$(br2)Over-fertilizing or being blocked by the season also pops a short message in the action bar, so you always know what happened."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:crop_lifecycle/bone_meal",
+        "seedseasons:water_management/thirst",
+        "seedseasons:agriculture/irrigator",
+        "seedseasons:getting_started/troubleshooting"
+      ]
+    }
+  ]
+}

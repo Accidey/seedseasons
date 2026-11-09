@@ -20,10 +20,18 @@
       "text": "All values are configurable in $(thing)config/seedseasons-common.toml$():$(li)mcDayLengthMinutes - the whole day length$(li)springDayPercent / summerDayPercent / autumnDayPercent / winterDayPercent - the daylight share per season$(br2)Night automatically gets the remaining percentage."
     },
     {
+      "type": "patchouli:text",
+      "title": "Limits & Side Effects",
+      "text": "$(li)Only the $(bold)Overworld$() is affected; the Nether and the End are untouched.$(li)Turning $(thing)enableSeasonalDayNight$() off restores BetterDays' defaults, and its own sleep acceleration keeps working.$(li)Only the $(bold)time speed$() changes - not the sky light curve or the number of ticks in a day.$(br2)$(info)Side effect$(): everything measured in \"in-game hours\" - minimum growth hours, rain relief and cauldron filling - speeds up or slows down along with it."
+    },
+    {
       "type": "patchouli:relations",
       "title": "Related Chapters",
       "entries": [
-        "seedseasons:getting_started/configuring"
+        "seedseasons:getting_started/configuring",
+        "seedseasons:water_management/rain_growth",
+        "seedseasons:water_management/cauldrons",
+        "seedseasons:getting_started/config_reference"
       ]
     }
   ]

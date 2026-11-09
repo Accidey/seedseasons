@@ -18,7 +18,9 @@
       "entries": [
         "seedseasons:maid_compat/irrigation",
         "seedseasons:maid_compat/fertilizer",
-        "seedseasons:water_management/thirst"
+        "seedseasons:water_management/thirst",
+        "seedseasons:agriculture/irrigator",
+        "seedseasons:getting_started/troubleshooting"
       ]
     }
   ]

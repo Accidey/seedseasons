@@ -1,0 +1,46 @@
+{
+  "name": "配置速查",
+  "icon": "minecraft:comparator",
+  "category": "seedseasons:getting_started",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "季节与成熟天数",
+      "text": "$(li)$(thing)seedSeasons$()：逐作物补充适种季节（与数据包取并集）。$(li)$(thing)growthDays$()：逐作物指定成熟天数，留空则由季节长度自动推算。$(li)$(thing)growthDayVariance$()（默认 1）：每株成熟天数的随机浮动，同批作物不会齐熟。$(li)$(thing)minGrowHours$()（默认 12 游戏小时）：种下后要满多久才参与结算。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "成长与枯死",
+      "text": "$(li)$(thing)enableCropLifecycle$()（默认开）：关掉恢复原版随机刻成长。$(li)$(thing)witherChance$()（默认 1.0）：非当季枯死概率。$(li)$(thing)nearMatureChance$()（默认 0.8）：快成熟遇换季时直接催熟的概率。$(li)$(thing)overMatureDays$()（默认 1）：成熟后允许滞留几天，0 = 不因过熟枯死。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "骨粉",
+      "text": "$(li)$(thing)boneMealPerDay$()（默认 1）：每株每天可用几次，$(bold)你与女仆共用$()；0 = 完全不接受骨粉。$(li)$(thing)boneMealProgress$()（默认 0.1）：每次施肥推进的进度，且至少长一个可见阶段。$(br2)超量施肥会当场枯死；施肥一律在次日 6:00 结算时才生效。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "水源与降雨",
+      "text": "$(li)$(thing)enableCropWater$()（默认开）：关掉后水无限，作物不会缺水。$(li)$(thing)waterPerSource$()（默认 10）：一格水能服务几块耕地。$(li)$(thing)dryWitherDays$()（默认 1）：缺水几天后枯死，0 = 永不因缺水枯死。$(li)$(thing)enableRainGrowth$() / $(thing)minRainHours$()（默认 12 游戏小时）：降雨免旱开关与所需时长。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "炼药锅与昼夜",
+      "text": "$(li)$(thing)enableCauldronRainFill$() / $(thing)cauldronFillHours$()（默认 9 游戏小时）：露天炼药锅接雨与积满一锅的时长。$(li)$(thing)enableSeasonalDayNight$()（默认开）：关掉恢复 BetterDays 默认。$(li)$(thing)mcDayLengthMinutes$()（默认 60）：一整天等于多少现实分钟。$(li)$(thing)springDayPercent$() / $(thing)summerDayPercent$() / $(thing)autumnDayPercent$() / $(thing)winterDayPercent$()：四季白天占比（默认 50 / 65 / 50 / 35）。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "联动与机械",
+      "text": "$(li)$(thing)enableMaidCompat$()（默认开）：农场模式女仆补水、施肥、反季不种。$(li)$(thing)enableIrrigator$()（默认开）：灌溉机总开关，关掉后已放置的机器停止供水。$(li)$(thing)irrigatorFarmlands$()（默认 20）：一台机器同时服务几块耕地。$(li)$(thing)irrigatorDaysPerBucket$()（默认 2）：一桶水能顶几个 MC 天。$(br2)全部选项都可在 $(l:seedseasons:getting_started/configuring)模组配置界面$() 里改，保存即生效。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:getting_started/configuring",
+        "seedseasons:crop_seasons/commands",
+        "seedseasons:agriculture/irrigator"
+      ]
+    }
+  ]
+}

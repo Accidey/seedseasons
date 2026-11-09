@@ -1,0 +1,32 @@
+{
+  "name": "Troubleshooting",
+  "icon": "minecraft:redstone_torch",
+  "category": "seedseasons:getting_started",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Nothing Is Growing",
+      "text": "Check these in order:$(li)$(warn)Out of season$() - read the seed tooltip; wrong-season crops stop growing and may wither.$(li)$(warn)No water$() - Jade says \"Thirsty: waiting for water\", otherwise just look at the water.$(li)Recently planted: a crop must be $(thing)minGrowHours$() old (default 12 in-game hours) before its first settlement.$(li)$(info)Too far away$() - unloaded chunks do not settle; progress resumes from the save when you return.$(li)Bone meal only applies the next morning, and a year-round crop can simply need 24 days."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Crops Suddenly Vanished",
+      "text": "$(li)$(warn)Over-maturity$() - a mature crop left for a day withers; watering cannot save it.$(li)$(warn)Thirst$() - one full day without water and the crop disappears, $(bold)farmland turns back to dirt$(); that dirt is the telltale sign.$(li)$(warn)Too much bone meal$() - one use per crop per day, the extra one kills it.$(li)$(warn)Season change$() - out-of-season crops may wither, though nearly grown ones are often ripened instead.$(br2)Melon/pumpkin stems and cocoa are exceptions, see $(l:seedseasons:crop_lifecycle/special_crops)Special Crops$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Water Runs Out / Machine Idle",
+      "text": "Water: rivers, oceans and natural water are $(bold)consumed like any other$(); flowing water is not a source; drained cells never refill themselves, so pour a new bucket; one cell only serves 10 planted plots.$(br2)Irrigator: it needs a $(item)redstone signal$() and water in the tank - $(crop)green$() means working, $(warn)red$() means empty, $(bold)dark$() means unpowered.$(br2)Maid not working: make sure she is in $(item)farm mode$(), has buckets / bone meal in her backpack, and the target is inside her work radius."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:water_management/daily_draw",
+        "seedseasons:water_management/water_choices",
+        "seedseasons:agriculture/irrigator",
+        "seedseasons:maid_compat/welcome"
+      ]
+    }
+  ]
+}

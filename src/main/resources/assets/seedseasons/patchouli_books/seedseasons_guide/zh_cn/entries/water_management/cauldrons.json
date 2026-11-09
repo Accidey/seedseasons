@@ -23,7 +23,9 @@
       "entries": [
         "seedseasons:water_management/welcome",
         "seedseasons:water_management/thirst",
-        "seedseasons:water_management/rain_growth"
+        "seedseasons:water_management/rain_growth",
+        "seedseasons:water_management/water_choices",
+        "seedseasons:water_management/daily_draw"
       ]
     }
   ]

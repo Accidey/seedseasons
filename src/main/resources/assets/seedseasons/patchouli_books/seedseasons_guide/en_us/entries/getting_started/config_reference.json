@@ -1,0 +1,46 @@
+{
+  "name": "Config Reference",
+  "icon": "minecraft:comparator",
+  "category": "seedseasons:getting_started",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Seasons & Maturity",
+      "text": "$(li)$(thing)seedSeasons$(): extra growing seasons per crop, merged with the datapack tags.$(li)$(thing)growthDays$(): custom maturation days per crop; when empty they are derived from season length.$(li)$(thing)growthDayVariance$() (default 1): random spread so a batch does not ripen together.$(li)$(thing)minGrowHours$() (default 12 in-game hours): how long a crop must be planted before it can grow."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Growth & Withering",
+      "text": "$(li)$(thing)enableCropLifecycle$() (on by default): off restores vanilla random-tick growth.$(li)$(thing)witherChance$() (default 1.0): chance for an out-of-season crop to wither.$(li)$(thing)nearMatureChance$() (default 0.8): chance to ripen a nearly grown crop when the season turns.$(li)$(thing)overMatureDays$() (default 1): days a mature crop may wait, 0 disables over-maturity."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Bone Meal",
+      "text": "$(li)$(thing)boneMealPerDay$() (default 1): uses per crop per day, $(bold)shared with maids$(); 0 means crops reject bone meal.$(li)$(thing)boneMealProgress$() (default 0.1): progress per use, always at least one visible stage.$(br2)Exceeding the limit withers the crop on the spot, and all applications wait for the next 6 AM settlement."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Water & Rain",
+      "text": "$(li)$(thing)enableCropWater$() (on by default): off means unlimited water and no thirst.$(li)$(thing)waterPerSource$() (default 10): plots served by one water cell.$(li)$(thing)dryWitherDays$() (default 1): days without water before withering; 0 never withers.$(li)$(thing)enableRainGrowth$() / $(thing)minRainHours$() (default 12 in-game hours): rain relief and the hours of rain it needs."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Cauldrons & Day Length",
+      "text": "$(li)$(thing)enableCauldronRainFill$() / $(thing)cauldronFillHours$() (default 9 in-game hours): cauldron rain collection and the time to fill one.$(li)$(thing)enableSeasonalDayNight$() (on by default): off restores BetterDays' defaults.$(li)$(thing)mcDayLengthMinutes$() (default 60): real minutes per full day.$(li)$(thing)springDayPercent$() / $(thing)summerDayPercent$() / $(thing)autumnDayPercent$() / $(thing)winterDayPercent$(): daytime share of each season (default 50 / 65 / 50 / 35)."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Companions & Machines",
+      "text": "$(li)$(thing)enableMaidCompat$() (on by default): farm-mode maids water, fertilize and refuse out-of-season sowing.$(li)$(thing)enableIrrigator$() (on by default): master switch; placed irrigators stop watering when off.$(li)$(thing)irrigatorFarmlands$() (default 20): plots one machine serves at once.$(li)$(thing)irrigatorDaysPerBucket$() (default 2): MC days one bucket lasts.$(br2)All of these can be changed in the $(l:seedseasons:getting_started/configuring)mod config screen$() and apply as soon as you save."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:getting_started/configuring",
+        "seedseasons:crop_seasons/commands",
+        "seedseasons:agriculture/irrigator"
+      ]
+    }
+  ]
+}

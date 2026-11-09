@@ -1,0 +1,33 @@
+{
+  "name": "选一种供水方式",
+  "icon": "minecraft:water_bucket",
+  "category": "seedseasons:water_management",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "挖水塘：最基础",
+      "text": "在田边放静止的水源方块，一格照顾 $(thing)10$() 块种了作物的耕地，每天 6:00 按用量抽走几格。$(li)$(crop)适合$()：中小片田、前期、想按原版方式经营。$(li)$(warn)要操心的$()：每天得把抽走的水补回去，或让农场模式的女仆代劳。$(br2)水塘越大越稳：多几格水就有更多缓冲，不必卡着田数配水。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "seedseasons:irrigator",
+      "title": "灌溉机：自动化",
+      "text": "存 $(thing)100 桶水$()，接上红石就能给半径 8 格内最近的 $(thing)20 块$() 耕地供水，一桶水顶 2 个 MC 天。顶部可接管道自动补水，满箱能连续工作很久。$(li)$(crop)适合$()：大田、想用管道与红石做自动化。$(li)$(warn)要操心的$()：必须通电、箱里要有水；每台机器各自服务自己范围内最近的那些耕地，田太大就多放几台、错开位置。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "雨与炼药锅",
+      "text": "$(info)降雨免旱$()：一场雨连续下满 $(thing)12 游戏小时$() 后，露天作物不下水塘也能生长，等于定期免费浇一次；但下雪不算、屋檐树冠下不算，雨停就不作数。$(br2)$(info)炼药锅接雨$()：露天的锅会在雨中慢慢积满，用桶或玻璃瓶取用，是 $(bold)不消耗水方块$() 的取水来源；但锅里的水不算水源，不给田供水。$(br2)最省心的组合：水塘或灌溉机保底，雨天当额外补给，锅里存点应急水。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:water_management/daily_draw",
+        "seedseasons:water_management/rain_growth",
+        "seedseasons:water_management/cauldrons",
+        "seedseasons:agriculture/irrigator"
+      ]
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 {
   "name": "农业机械",
   "description": "让四季农田运转得更省力的机器。",
-  "icon": "seedseasons:irrigator"
+  "icon": "seedseasons:irrigator",
+  "sortnum": 6
 }

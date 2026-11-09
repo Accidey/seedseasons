@@ -1,0 +1,31 @@
+{
+  "name": "How Much Water Is Drawn",
+  "icon": "minecraft:bucket",
+  "category": "seedseasons:water_management",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "At each 6:00 AM settlement a pond gives up water based on $(bold)the number of plots that actually hold a crop$(): $(info)cells needed = planted plots divided by waterPerSource (default 10), rounded up$().$(br2)Example: 1 cell + 5 plots draws 1 cell; 4 cells + 18 plots draws 2 and leaves 2.$(br2)Empty plots cost nothing, while mature unharvested crops still count."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Connected Water Is One Pond",
+      "text": "Touching water sources merge into a single $(bold)pond$() that serves one shared set of plots: total quota = cells in the pond times $(thing)waterPerSource$(), with the nearest plots picked first and the rest going dry.$(br2)After some cells are drawn, the remaining water $(bold)automatically takes over all the plots again$() as long as its quota still covers them - you never get \"water present but field dry\".$(br2)Only $(item)still water source blocks$() count; flowing water does not."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "After It Runs Dry",
+      "text": "$(warn)Vanilla infinite water is disabled$(): drawn cells become air and never flow back, and $(bold)rivers, oceans and natural water are consumed too$() - no water is free.$(br2)Pouring a fresh bucket creates a brand new source that recomputes which plots it serves.$(br2)One more common misunderstanding: with water consumption on, farmland $(bold)does not dry out by vanilla rules$(), so soil colour tells you nothing - farmland only reverts to dirt at the moment a thirsty crop withers."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:water_management/welcome",
+        "seedseasons:water_management/thirst",
+        "seedseasons:water_management/water_choices",
+        "seedseasons:maid_compat/irrigation"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "每天抽走多少水",
+  "icon": "minecraft:bucket",
+  "category": "seedseasons:water_management",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "每天早上 6:00 结算时，水塘会按 $(bold)田里实际种着作物的耕地数$() 抽水：$(info)需要的格数 = 有作物的田数 ÷ waterPerSource（默认 10），向上取整$()。$(br2)例：1 格水 + 5 块田 → 抽走 1 格；4 格水 + 18 块田 → 抽走 2 格、留下 2 格。$(br2)空田不耗水，成熟没收的作物照样算在里头。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "相邻的水算一个水塘",
+      "text": "连在一起的水源会合为一个 $(bold)水塘$()，共同服务同一批田：总名额 = 塘内水格数 × $(thing)waterPerSource$()，按离水塘的远近挑田，排不进名额的耕地就拿不到水。$(br2)被抽掉几格后，只要 $(bold)剩下的名额还够$()，剩余的水会自动重新接管全部田，不会出现「水还在、田却干了」。$(br2)只有 $(item)静止的水源方块$() 算数，流动的水不算。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "抽干之后",
+      "text": "$(warn)原版无限水已被禁用$()：抽走的水变成空气，不会自己流回来；$(bold)河流、海洋、天然水也照常消耗$()，没有哪种水可以白用。$(br2)重新倒上一桶，就是一格全新的水源，会重新计算它服务哪几块田。$(br2)还有一点容易误会：耗水开启时耕地 $(bold)不会按原版规则慢慢变干$()，所以别看土壤颜色判断供水——耕地变泥只发生在缺水枯死那一刻。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:water_management/welcome",
+        "seedseasons:water_management/thirst",
+        "seedseasons:water_management/water_choices",
+        "seedseasons:maid_compat/irrigation"
+      ]
+    }
+  ]
+}

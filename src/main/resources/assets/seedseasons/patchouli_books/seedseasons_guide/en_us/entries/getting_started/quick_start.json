@@ -1,0 +1,32 @@
+{
+  "name": "Quick Start: Your First Field",
+  "icon": "minecraft:wheat_seeds",
+  "category": "seedseasons:getting_started",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Starting from scratch, follow this order:$(li)$(bold)Check the season$() - hold the seed and read its tooltip for the allowed seasons and \"Matures in X days\"; out-of-season crops wither at the settlement.$(li)$(bold)Prepare water first$() - place a $(item)still water source block$() by the field; one cell serves up to 10 planted plots.$(li)$(bold)Then sow$() - till, plant, and let time do the rest."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Daily Rhythm",
+      "text": "Crops no longer grow by random ticks. Once per MC day, at $(info)6:00 AM$(), everything is settled: water is drawn, queued bone meal is applied, growth advances, and finally withering or season-change ripening is decided.$(br2)The settlement drains a few water cells based on the number of planted plots - $(bold)refill them during the same day and nothing bad happens$(). By default a crop only withers after a full day without water, turning its farmland back to dirt."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Remember to Harvest",
+      "text": "Do not leave mature crops sitting: by default they wither after $(thing)1 day$().$(br2)Replanting in the same spot starts a brand new crop with no inherited progress; melon and pumpkin stems are the exception - they never over-mature and keep producing fruit nearby.$(br2)To do less by hand:$(li)Let a $(l:seedseasons:maid_compat/welcome)farm-mode maid$() water and fertilize for you$(li)Use an $(l:seedseasons:agriculture/irrigator)Irrigator$() - one tank lasts for many days"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:water_management/welcome",
+        "seedseasons:crop_lifecycle/welcome",
+        "seedseasons:water_management/water_choices",
+        "seedseasons:getting_started/status"
+      ]
+    }
+  ]
+}

@@ -17,7 +17,17 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(info)灌溉效果$()$(br)工作时，被灌溉的耕地上每隔几秒会洒落一阵雨滴，像一道喷灌雨幕。$(br)$(br)$(info)生态兼容$()：女仆能识别灌溉范围、不再徒手浇水；JADE 会正确显示作物的缺水状态。$(br)$(warn)注意$()：合成需要 4 个炼药锅、1 桶水、2 块玻璃与 2 个铁锭。"
+      "text": "$(info)灌溉效果$()$(br)工作时，被灌溉的耕地上每隔 5 秒会洒落一阵雨滴，像一道喷灌雨幕。$(br)$(br)$(info)生态兼容$()：女仆能识别灌溉范围、不再徒手浇水；JADE 会正确显示作物的缺水状态。$(br)$(warn)注意$()：合成需要 4 个炼药锅、1 桶水、2 块玻璃与 2 个铁锭。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "水位条界面",
+      "text": "空手或手持非桶物品右键，会打开一根 $(water)横向蓝白水位条$()：蓝色从左边起代表已有的水，白色是空余，$(bold)装满就全是蓝色$()；每条刻度对应 $(thing)1 桶水$()，每 10 桶一条深色主刻度。$(br2)把鼠标移到条上，会显示 $(info)当前水量与总储水量$()（桶数与具体数值）。按 $(bold)E$() 或 $(bold)ESC$() 退出界面——按 E 只是关闭，不会顺手打开背包。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "供电、管道与摆放",
+      "text": "$(li)$(item)红石$()：拉杆、红石块、脉冲都可以，断电立即停机（外壳变黑）。$(li)$(item)管道$()：只有 $(bold)顶面$() 能接流体管道注水或抽水，Create、热力等通用。$(li)$(item)状态灯$()：绿=工作中、红=通电但没水、黑=无信号待机。$(br2)田很大就多放几台、错开位置：$(bold)每台各自服务自己范围内最近的 20 块耕地$()，不会自动合并名额。$(br2)创造模式在 $(item)功能方块$() 页签里找它，或用 $(thing)/give @s seedseasons:irrigator$()。工作时被灌溉的耕地每 $(thing)5 秒$() 洒落一阵雨滴。"
     },
     {
       "type": "patchouli:crafting",
@@ -30,7 +40,10 @@
       "entries": [
         "seedseasons:maid_compat/irrigation",
         "seedseasons:water_management/welcome",
-        "seedseasons:water_management/thirst"
+        "seedseasons:water_management/thirst",
+        "seedseasons:getting_started/status",
+        "seedseasons:getting_started/troubleshooting",
+        "seedseasons:water_management/water_choices"
       ]
     }
   ]

@@ -1,7 +1,7 @@
 {
   "seedseasons.guide.name": "更好的四季·种植指南",
   "seedseasons.guide.subtitle": "季节化农耕手册",
-  "seedseasons.guide.landing": "欢迎！$(br2)这本书会教你 $(item)更好的四季$() 的全部机制：作物季节、以天为单位的成长、水源消耗、降雨免旱，以及随季节变化的昼夜长度。$(br2)从左侧的 $(bold)入门$() 章节开始阅读吧。",
+  "seedseasons.guide.landing": "欢迎！$(br2)这本书会讲 $(item)更好的四季$() 的全部机制：作物季节、以天为单位的成长、水源消耗与每日抽水、降雨免旱与炼药锅接雨、随季节变化的昼夜、灌溉机，以及女仆农活。$(br2)从 $(bold)快速上手$() 开始，卡住时翻 $(bold)常见问题$() 与 $(bold)配置速查$()。",
   "seedseasons.configuration.seedSeasons": "种子季节",
   "seedseasons.tooltip.growth_days": "成熟需要 %s 天",
   "seedseasons.tooltip.bone_meal": "作物施肥：每株每天 %s 次，次日 6 点结算生效，每次至少长一级（+%s%% 进度）",

@@ -17,7 +17,17 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(info)Irrigation Effect$()$(br)While working, served farmland receives a short burst of raindrops every few seconds, like a sprinkler shower. $(br)$(br)$(info)Ecosystem$(): maids recognize the irrigation range and stop watering by hand; JADE correctly reports crop thirst. $(br)$(warn)Note$(): crafting requires 4 cauldrons, 1 water bucket, 2 glass blocks and 2 iron ingots."
+      "text": "$(info)Irrigation Effect$()$(br)While working, served farmland receives a short burst of raindrops every 5 seconds, like a sprinkler shower. $(br)$(br)$(info)Ecosystem$(): maids recognize the irrigation range and stop watering by hand; JADE correctly reports crop thirst. $(br)$(warn)Note$(): crafting requires 4 cauldrons, 1 water bucket, 2 glass blocks and 2 iron ingots."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Water Gauge",
+      "text": "Right-click with an empty hand or any non-bucket item to open a $(water)horizontal blue-and-white gauge$(): blue from the left is the water you have, white is the empty space, and $(bold)a full tank is all blue$(). Each notch means $(thing)1 bucket$(), with a darker notch every 10.$(br2)Hover over the bar for the $(info)current amount and total capacity$(), both in buckets and exact numbers. Press $(bold)E$() or $(bold)ESC$() to leave - E simply closes the gauge without opening your inventory."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Power, Pipes & Placement",
+      "text": "$(li)$(item)Redstone$(): a lever, redstone block or clock all work; losing power stops it instantly (dark casing).$(li)$(item)Pipes$(): only the $(bold)top face$() accepts fluid pipes for filling or draining, compatible with Create, Thermal and others.$(li)$(item)Status light$(): green = working, red = powered but empty, dark = standby.$(br2)For a huge field, place several machines at staggered spots: $(bold)each one serves its own nearest 20 plots$(), quotas do not merge.$(br2)In creative, find it under $(item)Functional Blocks$(), or use $(thing)/give @s seedseasons:irrigator$(). While working, its plots get a burst of raindrops every $(thing)5 seconds$()."
     },
     {
       "type": "patchouli:crafting",
@@ -30,7 +40,10 @@
       "entries": [
         "seedseasons:maid_compat/irrigation",
         "seedseasons:water_management/welcome",
-        "seedseasons:water_management/thirst"
+        "seedseasons:water_management/thirst",
+        "seedseasons:getting_started/status",
+        "seedseasons:getting_started/troubleshooting",
+        "seedseasons:water_management/water_choices"
       ]
     }
   ]

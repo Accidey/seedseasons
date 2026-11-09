@@ -1,0 +1,32 @@
+{
+  "name": "常见问题",
+  "icon": "minecraft:redstone_torch",
+  "category": "seedseasons:getting_started",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "作物不长，或长得很慢",
+      "text": "按这个顺序排查：$(li)$(warn)非当季$()：看种子提示，不合时令就停止生长甚至枯死。$(li)$(warn)断水$()：装了 Jade 会显示「缺水：待补水」；没装就看水还在不在。$(li)刚种下：要满 $(thing)minGrowHours$()（默认 12 游戏小时）才参与第一次结算。$(li)$(info)离得太远$()：未加载的区块不会结算，回来后从存档进度继续。$(li)骨粉次日才生效；成熟天数本身可能就是 24 天（全年作物）。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "作物突然枯死",
+      "text": "$(li)$(warn)过熟$()：成熟后默认 1 天不收就枯死，补水也救不回。$(li)$(warn)缺水$()：默认连续缺水 1 天，作物消失、$(bold)耕地变回泥土$()——看到变泥就是这条。$(li)$(warn)骨粉超限$()：每天每株只有一次，多喂当场枯死。$(li)$(warn)换季$()：非当季按概率枯死；快成熟的作物有较高概率被直接催熟。$(br2)西瓜/南瓜藤与可可豆是例外，详见 $(l:seedseasons:crop_lifecycle/special_crops)特殊作物$()。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "水不够 / 机器没反应",
+      "text": "水：河海与天然水 $(bold)一样会被消耗$()；流动的水不算水源；被抽干的水不会自己回来，得重新倒一桶；一格水只服务 10 块有作物的耕地。$(br2)灌溉机：必须有 $(item)红石信号$() 且箱里有水，$(crop)亮绿$() 才是工作；$(warn)亮红$() 是缺水，$(bold)黑色$() 是没通电。$(br2)女仆不干活：确认它是 $(item)农场模式$()、背包里有水桶/骨粉、目标在活动半径内。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:water_management/daily_draw",
+        "seedseasons:water_management/water_choices",
+        "seedseasons:agriculture/irrigator",
+        "seedseasons:maid_compat/welcome"
+      ]
+    }
+  ]
+}

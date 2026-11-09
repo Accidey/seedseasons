@@ -17,14 +17,17 @@
       "type": "patchouli:spotlight",
       "item": "minecraft:water_bucket",
       "title": "Replenishing",
-      "text": "Vanilla infinite water is $(warn)disabled$(): a drained source does not refill by itself.$(br2)Pour a new water bucket to restore a source. Re-poured water is a brand new source and re-computes which fields it serves.$(br2)Rain can also save your crops - see Rain Growth."
+      "text": "Vanilla infinite water is $(warn)disabled$(): a drained source does not refill by itself.$(br2)Pour a new water bucket to restore a source. Re-poured water is a brand new source and re-computes which fields it serves.$(br2)Rain can also save your crops - see Rain Growth.$(br2)Rivers, oceans and natural water are $(bold)consumed just the same$() - no water is free. See \"How Much Water Is Drawn\" for the daily amount and refilling."
     },
     {
       "type": "patchouli:relations",
       "title": "Related Chapters",
       "entries": [
         "seedseasons:water_management/thirst",
-        "seedseasons:water_management/rain_growth"
+        "seedseasons:water_management/rain_growth",
+        "seedseasons:water_management/daily_draw",
+        "seedseasons:water_management/water_choices",
+        "seedseasons:agriculture/irrigator"
       ]
     }
   ]

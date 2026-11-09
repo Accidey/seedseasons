@@ -1,0 +1,33 @@
+{
+  "name": "Choosing a Water Source",
+  "icon": "minecraft:water_bucket",
+  "category": "seedseasons:water_management",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Ponds: The Basics",
+      "text": "Place still water source blocks by the field; one cell serves $(thing)10$() planted plots and the 6 AM settlement draws a few cells based on usage.$(li)$(crop)Good for$(): small to medium fields, early game, a vanilla-style farm.$(li)$(warn)Upkeep$(): refill the drawn cells every day, or let a farm-mode maid handle it.$(br2)A bigger pond is more forgiving - extra cells give you buffer instead of matching plot counts exactly."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "seedseasons:irrigator",
+      "title": "Irrigator: Automation",
+      "text": "Holds $(thing)100 buckets$() and, once powered by redstone, waters the nearest $(thing)20$() plots within a radius of 8; one bucket lasts 2 MC days. Pipes on top refill it automatically, and a full tank runs for a very long time.$(li)$(crop)Good for$(): large fields, pipe and redstone automation.$(li)$(warn)Upkeep$(): it needs power and water, and each machine serves its own nearest plots - for a huge field place several at staggered spots."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Rain & Cauldrons",
+      "text": "$(info)Rain relief$(): after $(thing)12 in-game hours$() of continuous rain, exposed crops grow with no water block at all - a free watering every so often. Snow does not count, roofs and leaves block it, and it ends when the rain stops.$(br2)$(info)Cauldron rain collection$(): an exposed cauldron slowly fills during rain and you can scoop from it with a bucket or bottle, a water supply that $(bold)costs no water blocks$(). Water inside a cauldron is not a source, though, and never waters farmland.$(br2)Easiest setup: a pond or irrigator as the baseline, rain as a bonus, and a cauldron of emergency water."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:water_management/daily_draw",
+        "seedseasons:water_management/rain_growth",
+        "seedseasons:water_management/cauldrons",
+        "seedseasons:agriculture/irrigator"
+      ]
+    }
+  ]
+}

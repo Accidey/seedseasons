@@ -17,14 +17,17 @@
       "type": "patchouli:spotlight",
       "item": "minecraft:water_bucket",
       "title": "补水",
-      "text": "原版无限水已被 $(warn)禁用$()：被抽干的水源不会自行恢复。$(br2)倒一桶新水可以恢复水源。重新倒上的水是全新的水源，会重新计算它服务的田地。$(br2)雨水也能救活你的作物——见「降雨免旱」。"
+      "text": "原版无限水已被 $(warn)禁用$()：被抽干的水源不会自行恢复。$(br2)倒一桶新水可以恢复水源。重新倒上的水是全新的水源，会重新计算它服务的田地。$(br2)雨水也能救活你的作物——见「降雨免旱」。$(br2)河流、海洋与天然水 $(bold)同样会被消耗$()，没有哪种水可以白用；每天具体抽几格、抽干后怎么补，见「每天抽走多少水」。"
     },
     {
       "type": "patchouli:relations",
       "title": "相关章节",
       "entries": [
         "seedseasons:water_management/thirst",
-        "seedseasons:water_management/rain_growth"
+        "seedseasons:water_management/rain_growth",
+        "seedseasons:water_management/daily_draw",
+        "seedseasons:water_management/water_choices",
+        "seedseasons:agriculture/irrigator"
       ]
     }
   ]

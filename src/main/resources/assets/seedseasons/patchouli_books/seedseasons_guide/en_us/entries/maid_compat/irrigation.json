@@ -24,12 +24,19 @@
       "text": "The drain happens at the 6:00 settlement, so refilling $(bold)any time before the next one$() is fine; the field genuinely is dry right after 6:00 - that is the mechanic, not laziness.$(br2)Only after $(thing)dryWitherDays$() (1 day by default) without water does the crop wither and the farmland turn back to dirt."
     },
     {
+      "type": "patchouli:text",
+      "title": "With an Irrigator",
+      "text": "Plots inside an $(l:seedseasons:agriculture/irrigator)Irrigator's$() range already count as watered, so she $(bold)will not pour water there$() and saves her buckets. If the machine loses power or runs dry and a plot really goes thirsty, she takes over as usual.$(br2)With Jade installed, \"Thirsty: waiting for water\" also agrees with the irrigator - all three use the same thirst check, so the hint and her behaviour never contradict each other."
+    },
+    {
       "type": "patchouli:relations",
       "title": "Related Chapters",
       "entries": [
         "seedseasons:water_management/welcome",
         "seedseasons:water_management/thirst",
-        "seedseasons:water_management/rain_growth"
+        "seedseasons:water_management/rain_growth",
+        "seedseasons:agriculture/irrigator",
+        "seedseasons:water_management/water_choices"
       ]
     }
   ]

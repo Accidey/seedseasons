@@ -18,7 +18,9 @@
       "title": "相关章节",
       "entries": [
         "seedseasons:crop_seasons/welcome",
-        "seedseasons:crop_seasons/commands"
+        "seedseasons:crop_seasons/commands",
+        "seedseasons:getting_started/config_reference",
+        "seedseasons:getting_started/quick_start"
       ]
     }
   ]

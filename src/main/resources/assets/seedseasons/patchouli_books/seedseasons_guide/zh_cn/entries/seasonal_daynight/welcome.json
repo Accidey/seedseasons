@@ -20,10 +20,18 @@
       "text": "所有数值都可以在 $(thing)config/seedseasons-common.toml$() 中配置：$(li)mcDayLengthMinutes - 一整天长度$(li)springDayPercent / summerDayPercent / autumnDayPercent / winterDayPercent - 每个季节的白昼占比$(br2)夜晚自动占据剩余百分比。"
     },
     {
+      "type": "patchouli:text",
+      "title": "边界与影响",
+      "text": "$(li)只作用于 $(bold)主世界$()，下界与末地维持原样。$(li)关掉 $(thing)enableSeasonalDayNight$() 后完全恢复 BetterDays 的默认行为；睡觉加速等它自己的逻辑不受影响。$(li)只改变时间 $(bold)推进速度$()，不改变天空亮度曲线，也不改一天里游戏刻的总数。$(br2)$(info)连带影响$()：本模组里所有按「游戏小时」计的规则——最短种植时长、降雨免旱、炼药锅接雨——都会随流速一起变快变慢。"
+    },
+    {
       "type": "patchouli:relations",
       "title": "相关章节",
       "entries": [
-        "seedseasons:getting_started/configuring"
+        "seedseasons:getting_started/configuring",
+        "seedseasons:water_management/rain_growth",
+        "seedseasons:water_management/cauldrons",
+        "seedseasons:getting_started/config_reference"
       ]
     }
   ]

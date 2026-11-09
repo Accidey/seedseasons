@@ -1,5 +1,6 @@
 {
   "name": "Agricultural Machines",
   "description": "Machines that keep your seasonal farm running with less work.",
-  "icon": "seedseasons:irrigator"
+  "icon": "seedseasons:irrigator",
+  "sortnum": 6
 }

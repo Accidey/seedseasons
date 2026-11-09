@@ -6,21 +6,26 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Welcome to $(thing)Xulai Seed Seasons$()!$(br2)This mod builds on top of Serene Seasons to give crops a full $(crop)season-based farming cycle$().$(br2)It adds four systems:$(li)$(l:seedseasons:crop_seasons/welcome)Crop seasons$(/l)$(li)$(l:seedseasons:crop_lifecycle/welcome)Day-based crop growth$(/l)$(li)$(l:seedseasons:water_management/welcome)Water consumption$(/l)$(li)$(l:seedseasons:seasonal_daynight/welcome)Seasonal day & night length$(/l)"
+      "text": "Welcome to $(thing)Xulai Seed Seasons$()!$(br2)This mod builds on top of Serene Seasons to give crops a full $(crop)season-based farming cycle$().$(br2)Four core systems:$(li)$(l:seedseasons:crop_seasons/welcome)Crop seasons$(/l)$(li)$(l:seedseasons:crop_lifecycle/welcome)Day-based crop growth$(/l)$(li)$(l:seedseasons:water_management/welcome)Water consumption$(/l)$(li)$(l:seedseasons:seasonal_daynight/welcome)Seasonal day & night length$(/l)"
     },
     {
       "type": "patchouli:text",
-      "title": "How to read this guide",
-      "text": "Each chapter explains one system.$(br2)Use the $(bold)Index$() button on the landing page to search, or the $(bold)History$() button to go back to what you just read.$(br2)You can $(italic)shift-click$() items shown in this book to jump to their crafting page, and hover over $(item)highlighted items$() for their tooltips."
+      "title": "More Chapters & This Book",
+      "text": "The $(l:seedseasons:agriculture/irrigator)Irrigator$() and $(l:seedseasons:maid_compat/welcome)farm maids$() can run the field for you, and $(l:seedseasons:water_management/cauldrons)cauldrons collect rainwater$().$(br2)Getting Started also has a $(l:seedseasons:getting_started/quick_start)Quick Start$(), a $(l:seedseasons:getting_started/config_reference)Config Reference$(), $(l:seedseasons:getting_started/status)Reading Your Field$() and $(l:seedseasons:getting_started/troubleshooting)Troubleshooting$() - check those four first when something seems wrong.$(br2)Use $(bold)Index$() on the landing page to search and $(bold)History$() to go back; $(italic)shift-click$() items in the book to jump to their crafting page."
     },
     {
       "type": "patchouli:relations",
       "title": "Related Chapters",
       "entries": [
+        "seedseasons:getting_started/quick_start",
+        "seedseasons:getting_started/config_reference",
+        "seedseasons:getting_started/status",
+        "seedseasons:getting_started/troubleshooting",
         "seedseasons:crop_seasons/welcome",
         "seedseasons:crop_lifecycle/welcome",
         "seedseasons:water_management/welcome",
-        "seedseasons:seasonal_daynight/welcome"
+        "seedseasons:agriculture/irrigator",
+        "seedseasons:maid_compat/welcome"
       ]
     }
   ]

@@ -5,7 +5,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "This mod requires:$(li)$(item)Serene Seasons$() for the season system itself$(li)$(item)BetterDays$() for the time-speed mechanics used by seasonal day & night$(br2)$(item)Jade$() is optional: if installed, crop progress and fertilizing state show up in Jade tooltips.$(br2)$(item)Touhou Little Maid$() is optional too: with it installed, a maid in farm mode waters your plots, fertilizes within the daily allowance and stops sowing out of season - see the Maid Farm Work chapter."
+      "text": "This mod requires:$(li)$(item)Serene Seasons$() for the season system itself$(li)$(item)BetterDays$() for the time-speed mechanics used by seasonal day & night$(br2)$(item)Jade$() is optional: if installed, crop progress and fertilizing state show up in Jade tooltips.$(br2)$(item)Touhou Little Maid$() is optional too: with it installed, a maid in farm mode waters your plots, fertilizes within the daily allowance and stops sowing out of season - see the Maid Farm Work chapter.$(br2)$(item)Patchouli$() is optional too: it renders this very guide. You receive a copy on your first join, and can always take one from the Tools & Utilities creative tab.$(br2)This book, $(item)Jade$() and $(item)maids$() are all conveniences - farming rules work the same without them."
     },
     {
       "type": "patchouli:relations",
@@ -13,7 +13,9 @@
       "entries": [
         "seedseasons:seasonal_daynight/welcome",
         "seedseasons:maid_compat/welcome",
-        "seedseasons:crop_lifecycle/welcome"
+        "seedseasons:crop_lifecycle/welcome",
+        "seedseasons:getting_started/status",
+        "seedseasons:agriculture/irrigator"
       ]
     }
   ]

@@ -1,7 +1,7 @@
 {
   "seedseasons.guide.name": "Xulai Seed Seasons Guide",
   "seedseasons.guide.subtitle": "Seasonal Farming Handbook",
-  "seedseasons.guide.landing": "Welcome!$(br2)This book teaches you everything about $(item)Xulai Seed Seasons$(): crop seasons, day-based growth, water consumption, rain growth, and seasonal day & night length.$(br2)Start with the $(bold)Getting Started$() chapter on the left.",
+  "seedseasons.guide.landing": "Welcome!$(br2)This book covers everything about $(item)Xulai Seed Seasons$(): crop seasons, day-based growth, water consumption and the daily draw, rain relief and cauldron collection, seasonal day & night, the Irrigator, and maid farm work.$(br2)Start with $(bold)Quick Start$(); when stuck, check $(bold)Troubleshooting$() and the $(bold)Config Reference$().",
   "seedseasons.configuration.seedSeasons": "Seed seasons",
   "seedseasons.tooltip.growth_days": "Matures in %s days",
   "seedseasons.tooltip.bone_meal": "Crop fertilizing: %s per crop per day, applies at the next 6 AM settlement, at least one stage each (+%s%% growth)",

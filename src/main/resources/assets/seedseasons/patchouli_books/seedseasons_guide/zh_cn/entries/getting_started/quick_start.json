@@ -1,0 +1,32 @@
+{
+  "name": "快速上手：第一块田",
+  "icon": "minecraft:wheat_seeds",
+  "category": "seedseasons:getting_started",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "第一次种地，按这个顺序来：$(li)$(bold)看季节$()：拿起种子，提示会告诉你能种的季节与「成熟需要 X 天」，非当季种下去会在结算时枯死。$(li)$(bold)先备水$()：田边放一格 $(item)静止的水源方块$()，一格最多照顾 10 块种了作物的耕地。$(li)$(bold)再播种$()：耕好地、种下去，剩下的交给时间。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "一天的节奏",
+      "text": "作物不再靠随机刻生长。每个 MC 天的 $(info)早上 6:00$() 统一结算一次：先看供水、再叠加当天用过的骨粉、然后推进成长，最后处理枯死与换季催熟。$(br2)结算会按田里的作物数量抽走几格水——$(bold)当天把水补回去就不会有事$()；默认连续缺水 1 天，作物才枯死、耕地变回泥土。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "别忘了收获",
+      "text": "成熟之后别放太久：默认 $(thing)1 天$() 不收就会过熟枯死。$(br2)收获后原地补种是全新的一株，不会继承上一株的进度；西瓜与南瓜藤例外，它们成熟后不会过熟，而是继续在旁边结瓜。$(br2)想少操心，可以：$(li)让 $(l:seedseasons:maid_compat/welcome)农场模式的女仆$() 替你补水和施肥$(li)换 $(l:seedseasons:agriculture/irrigator)灌溉机$()，一箱水管上很多天"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:water_management/welcome",
+        "seedseasons:crop_lifecycle/welcome",
+        "seedseasons:water_management/water_choices",
+        "seedseasons:getting_started/status"
+      ]
+    }
+  ]
+}
