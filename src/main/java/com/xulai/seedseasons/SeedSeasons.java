@@ -16,6 +16,9 @@ public class SeedSeasons {
         modContainer.registerConfig(ModConfig.Type.COMMON, SeedSeasonsConfig.SPEC);
         CropStates.ATTACHMENT_TYPES.register(modEventBus);
         WaterStates.ATTACHMENT_TYPES.register(modEventBus);
+        SeedSeasonsBlocks.BLOCKS.register(modEventBus);
+        SeedSeasonsBlocks.ITEMS.register(modEventBus);
+        SeedSeasonsBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         if (FMLEnvironment.dist.isClient()) {
             SeedSeasonsClient.register(modContainer);
         }

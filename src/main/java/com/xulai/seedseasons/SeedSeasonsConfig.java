@@ -37,6 +37,9 @@ public final class SeedSeasonsConfig {
     private static final ModConfigSpec.DoubleValue AUTUMN_DAY_PERCENT;
     private static final ModConfigSpec.DoubleValue WINTER_DAY_PERCENT;
     private static final ModConfigSpec.BooleanValue ENABLE_MAID_COMPAT;
+    private static final ModConfigSpec.BooleanValue ENABLE_IRRIGATOR;
+    private static final ModConfigSpec.DoubleValue IRRIGATOR_DAYS_PER_BUCKET;
+    private static final ModConfigSpec.IntValue IRRIGATOR_FARMLANDS;
 
     private static volatile ModConfig modConfig;
 
@@ -428,6 +431,50 @@ public final class SeedSeasonsConfig {
                         "Default: true / 默认：true")
                 .define("enableMaidCompat", true);
 
+        builder.comment(" ");
+
+        ENABLE_IRRIGATOR = builder
+                .comment(
+                        "是否启用灌溉机",
+                        "Enable the irrigator",
+                        "一个需要红石信号激活的储水方块：顶部可用管道模组自动注水抽水，也能手持水桶/空桶右键存取。",
+                        "有红石信号且有水时，它会给周围半径内的耕地供水（按距离取最近的若干块）。",
+                        "关闭后已放置的灌溉机停止供水，也不再有别的行为变化。",
+                        "Whether the irrigator is enabled: a water tank block activated by a redstone signal.",
+                        "Its top accepts fluid pipes for automatic filling and draining, and buckets work by right click too.",
+                        "When powered and holding water it hydrates nearby farmland, serving the nearest plots first.",
+                        "When disabled, placed irrigators stop watering and nothing else changes.",
+                        "Default: true / 默认：true")
+                .define("enableIrrigator", true);
+
+        builder.comment(" ");
+
+        IRRIGATOR_DAYS_PER_BUCKET = builder
+                .comment(
+                        "每桶水可用的天数",
+                        "Days per bucket of water",
+                        "灌溉机工作时（有红石信号且范围内有作物）每 MC 天消耗的水量 = 1 桶 ÷ 该值。",
+                        "默认 2：1 桶水能顶 2 个 MC 天，装满 100 桶能顶 200 天。",
+                        "范围内没有种作物的耕地时不耗水。",
+                        "While the irrigator is working (powered with crops in range) it burns one bucket divided by this value per MC day.",
+                        "Default 2: one bucket lasts two MC days, so a full 100-bucket tank runs 200 days.",
+                        "No water is used when there are no planted crops in range.",
+                        "Default: 2.0 / 默认：2.0",
+                        "Range: 0.1 ~ 100.0")
+                .defineInRange("irrigatorDaysPerBucket", 2.0D, 0.1D, 100.0D);
+
+        builder.comment(" ");
+
+        IRRIGATOR_FARMLANDS = builder
+                .comment(
+                        "一台灌溉机能灌溉的耕地数",
+                        "Farmland plots per irrigator",
+                        "一台灌溉机最多同时给多少块耕地供水；覆盖半径内的耕地按离机器的距离排序，只服务最近的这么多块，排不进的作物拿不到水。",
+                        "How many farmland plots one irrigator can water at the same time; plots within its radius are ranked by distance and only the nearest ones get water.",
+                        "Default: 20 / 默认：20",
+                        "Range: 1 ~ 400")
+                .defineInRange("irrigatorFarmlands", 20, 1, 400);
+
         SPEC = builder.build();
     }
 
@@ -528,6 +575,18 @@ public final class SeedSeasonsConfig {
 
     public static boolean enableMaidCompat() {
         return ENABLE_MAID_COMPAT.get();
+    }
+
+    public static boolean enableIrrigator() {
+        return ENABLE_IRRIGATOR.get();
+    }
+
+    public static double irrigatorDaysPerBucket() {
+        return IRRIGATOR_DAYS_PER_BUCKET.get();
+    }
+
+    public static int irrigatorFarmlands() {
+        return IRRIGATOR_FARMLANDS.get();
     }
 
     public static boolean saveSeasons(List<String> entries) {

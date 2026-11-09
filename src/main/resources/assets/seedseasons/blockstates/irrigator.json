@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "dry=false,powered=false": { "model": "seedseasons:block/irrigator_off" },
+    "dry=true,powered=false": { "model": "seedseasons:block/irrigator_off" },
+    "dry=false,powered=true": { "model": "seedseasons:block/irrigator_on" },
+    "dry=true,powered=true": { "model": "seedseasons:block/irrigator_dry" }
+  }
+}

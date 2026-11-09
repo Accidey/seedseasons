@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "seedseasons:block/irrigator_top",
+    "bottom": "seedseasons:block/irrigator_bottom",
+    "side": "seedseasons:block/irrigator_side_dry"
+  }
+}

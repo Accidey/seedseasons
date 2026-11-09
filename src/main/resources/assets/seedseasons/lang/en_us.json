@@ -23,5 +23,8 @@
   "commands.seedseasons.no_season": "No valid season given, valid seasons are spring, summer, autumn and winter",
   "commands.seedseasons.no_block": "%s does not place a block, so only its tooltip will change",
   "commands.seedseasons.not_saved": "The config file is not ready, nothing was written",
-  "commands.seedseasons.player_only": "This command can only be used by a player"
+  "commands.seedseasons.player_only": "This command can only be used by a player",
+  "block.seedseasons.irrigator": "Irrigator",
+  "seedseasons.gui.water": "Water: %s mB (%s buckets)",
+  "seedseasons.gui.capacity": "Total capacity: %s mB (%s buckets)"
 }

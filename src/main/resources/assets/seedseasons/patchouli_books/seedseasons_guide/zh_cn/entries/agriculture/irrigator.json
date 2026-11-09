@@ -1,0 +1,37 @@
+{
+  "name": "灌溉机",
+  "icon": "seedseasons:irrigator",
+  "category": "seedseasons:agriculture",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(info)灌溉机是一台 $(water)自动供水$() 的农业机械——不用挖水塘，接上红石和管道，就能让周围耕地保持湿润。$()$(br)覆盖以自身为中心 $(water)半径 8 格$() 的区域，按距离为最近的 $(water)20 块$() 耕地供水，两项均可在配置文件中调整。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(info)储水与加注$()$(br)内部可存 $(water)100 桶水$()。$(br)$(item)手持水桶$() 右键：存入 1 桶。$(br)$(item)手持空桶$() 右键：取出 1 桶。$(br)$(item)手持其他物品$() 右键：打开水位条界面，蓝白条直观显示水量，每格刻度对应 1 桶。$(br)$(br)顶部可接管道自动注水或抽水（Create、热力等模组通用）。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(info)状态灯$()$(br)$(crop)亮绿$()：通电工作中。$(br)$(warn)亮红$()：通电但缺水。$(br)黑色：无红石信号，机器待机。$(br)$(br)$(info)耗水$()：每 $(water)1 桶水$() 可支撑 $(water)2 个 Minecraft 日$()（可配置）；范围内没有种作物时不耗水，断红石也会停止。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(info)灌溉效果$()$(br)工作时，被灌溉的耕地上每隔几秒会洒落一阵雨滴，像一道喷灌雨幕。$(br)$(br)$(info)生态兼容$()：女仆能识别灌溉范围、不再徒手浇水；JADE 会正确显示作物的缺水状态。$(br)$(warn)注意$()：合成需要 4 个炼药锅、1 桶水、2 块玻璃与 2 个铁锭。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "seedseasons:irrigator",
+      "title": "合成配方"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "相关章节",
+      "entries": [
+        "seedseasons:maid_compat/irrigation",
+        "seedseasons:water_management/welcome",
+        "seedseasons:water_management/thirst"
+      ]
+    }
+  ]
+}

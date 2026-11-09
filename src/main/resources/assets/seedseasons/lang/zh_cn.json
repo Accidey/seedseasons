@@ -23,5 +23,8 @@
   "commands.seedseasons.no_season": "没有识别到有效季节，可用：spring、summer、autumn、winter",
   "commands.seedseasons.no_block": "%s 不会种出方块，只会改变物品提示",
   "commands.seedseasons.not_saved": "配置文件尚未就绪，这次没有写入",
-  "commands.seedseasons.player_only": "该指令只能由玩家执行"
+  "commands.seedseasons.player_only": "该指令只能由玩家执行",
+  "block.seedseasons.irrigator": "灌溉机",
+  "seedseasons.gui.water": "水：%s mB（%s 桶）",
+  "seedseasons.gui.capacity": "总储水量：%s mB（%s 桶）"
 }

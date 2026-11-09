@@ -60,6 +60,41 @@ public final class WaterNetwork {
                 best = pos.immutable();
             }
         }
+        BlockPos irrigator = servingIrrigator(level, farmlandPos);
+        if (irrigator != null && (best == null || irrigator.distSqr(farmlandPos) < bestDistance)) {
+            best = irrigator;
+        }
+        return best;
+    }
+
+    /**
+     * 覆盖范围内（比原版水大一圈）找一台正在供水、且服务名额覆盖这块耕地的灌溉机。
+     */
+    private static BlockPos servingIrrigator(Level level, BlockPos farmlandPos) {
+        if (!SeedSeasonsConfig.enableIrrigator() || !(level instanceof ServerLevel serverLevel)) {
+            return null;
+        }
+        int radius = IrrigatorBlockEntity.RADIUS;
+        BlockPos best = null;
+        double bestDistance = Double.MAX_VALUE;
+        for (BlockPos pos : BlockPos.betweenClosed(
+                farmlandPos.offset(-radius, -1, -radius), farmlandPos.offset(radius, 1, radius))) {
+            if (pos.equals(farmlandPos) || !loaded(level, pos)
+                    || !(level.getBlockState(pos).getBlock() instanceof IrrigatorBlock)) {
+                continue;
+            }
+            if (!(level.getBlockEntity(pos) instanceof IrrigatorBlockEntity irrigator) || !irrigator.isWatering()) {
+                continue;
+            }
+            if (!irrigator.servesFarmland(serverLevel, farmlandPos)) {
+                continue;
+            }
+            double distance = pos.distSqr(farmlandPos);
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                best = pos.immutable();
+            }
+        }
         return best;
     }
 
@@ -139,6 +174,14 @@ public final class WaterNetwork {
             return;
         }
         SERVED_CROPS.remove(level.dimension());
+        // 灌溉机不走水塘折算：当天服务过作物就按天数扣水，其余条目被下面的水源检查自然过滤。
+        for (Map.Entry<BlockPos, Set<Long>> entry : served.entrySet()) {
+            BlockPos source = entry.getKey();
+            if (level.getBlockState(source).getBlock() instanceof IrrigatorBlock
+                    && level.getBlockEntity(source) instanceof IrrigatorBlockEntity irrigator) {
+                irrigator.consumeDailyWater();
+            }
+        }
         Map<BlockPos, Set<Long>> poolCrops = new HashMap<>();
         Map<BlockPos, Set<BlockPos>> poolSources = new HashMap<>();
         for (Map.Entry<BlockPos, Set<Long>> entry : served.entrySet()) {

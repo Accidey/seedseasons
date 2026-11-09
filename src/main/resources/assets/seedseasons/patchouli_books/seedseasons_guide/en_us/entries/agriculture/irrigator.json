@@ -1,0 +1,37 @@
+{
+  "name": "Irrigator",
+  "icon": "seedseasons:irrigator",
+  "category": "seedseasons:agriculture",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(info)The $(water)Irrigator$() is an agricultural machine that keeps surrounding farmland hydrated automatically - no pond digging required, just redstone and pipes. It covers a $(water)radius of 8 blocks$() around itself and serves the nearest $(water)20 farmland blocks$() by distance; both values are configurable. $()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(info)Water Storage$()$(br)Holds up to $(water)100 buckets$() of water. $(br)$(item)Water bucket$() right-click: store 1 bucket. $(br)$(item)Empty bucket$() right-click: draw 1 bucket. $(br)$(item)Any other item$() right-click: open the water gauge, a blue-and-white bar with one notch per bucket. $(br)$(br)Attach pipes on top to fill or drain automatically (works with Create, Thermal, and other fluid mods)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(info)Status Light$()$(br)$(crop)Green$(): powered and watering. $(br)$(warn)Red$(): powered but out of water. $(br)Dark: no redstone signal, standing by. $(br)$(br)$(info)Water Use$(): $(water)1 bucket$() lasts $(water)2 Minecraft days$() (configurable); it only consumes water when crops are actually served, and stops entirely without redstone."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(info)Irrigation Effect$()$(br)While working, served farmland receives a short burst of raindrops every few seconds, like a sprinkler shower. $(br)$(br)$(info)Ecosystem$(): maids recognize the irrigation range and stop watering by hand; JADE correctly reports crop thirst. $(br)$(warn)Note$(): crafting requires 4 cauldrons, 1 water bucket, 2 glass blocks and 2 iron ingots."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "seedseasons:irrigator",
+      "title": "Crafting"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related Chapters",
+      "entries": [
+        "seedseasons:maid_compat/irrigation",
+        "seedseasons:water_management/welcome",
+        "seedseasons:water_management/thirst"
+      ]
+    }
+  ]
+}
