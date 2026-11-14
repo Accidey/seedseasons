@@ -51,3 +51,7 @@ BetterDays-1.21.1/
 SereneSeasons-1.21.1/
 Jade-1.21-neoforge/
 local-repo/
+
+### CI workflow ###
+# Kept on disk for local use; publishing it requires a token with the workflow scope.
+.github/workflows/
