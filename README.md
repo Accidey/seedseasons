@@ -1,4 +1,4 @@
-# 🌱 Xulai Seed Seasons
+# 🌱 Seed Seasons
 
 **Farming that follows the calendar, and the water table.**
 
@@ -78,7 +78,7 @@ Every system has its own switch and numbers: growth days, wither chances, water 
 
 ---
 
-# 🌱 更好的四季
+# 🌱 四季物语
 
 **让农事跟着节气走，也守着水。**
 
