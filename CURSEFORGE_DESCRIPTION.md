@@ -1,13 +1,14 @@
-# 🌱 Xulai Seed Seasons
+# 🌱Seed Seasons
 
 **Farming that follows the calendar, and the water table.**
 
-Xulai Seed Seasons is a farming overhaul built on Serene Seasons. It replaces random-tick growth with a day-based lifecycle, gives farmland a real water supply that can genuinely run dry, and puts both under the rule of the seasons.
+Seed Seasons is a farming overhaul built on Serene Seasons. It replaces random-tick growth with a day-based lifecycle, gives farmland a real water supply that can genuinely run dry, and puts both under the rule of the seasons.
 
 ## ✨ At a Glance
 
 - 🌾 Crops mature over a set number of days, settled once per day
 - 🗓️ Out-of-season crops stop growing and may wither
+- 🌱 Bone meal is queued, one dose per crop per day
 - 💧 Farmland draws from still water sources that are actually consumed
 - 🌧️ Rain and cauldrons offer relief when the pond is empty
 - 🌗 Daylight hours follow the season
@@ -22,6 +23,8 @@ Each plant rolls a small random offset around its maturation time, so a field do
 
 Maturation time appears on the seed's tooltip. Unless set explicitly, it is derived from the season length configured in Serene Seasons.
 
+A newly planted crop waits twelve in-game hours before it joins its first settlement, so sowing just before dawn buys no free day.
+
 ## 🗓️ Seasons Decide Survival
 
 A crop's allowed seasons are merged from two sources: Serene Seasons datapack tags, and a configurable list that only adds to them. Nothing is taken from datapacks or from other mods' adapters.
@@ -29,6 +32,12 @@ A crop's allowed seasons are merged from two sources: Serene Seasons datapack ta
 Outside its season, a crop stops growing and, by default, withers at its next growth check. A crop already three-quarters grown when the season turns has an 80% chance to be forced ripe instead, so late harvests usually survive the change.
 
 Mature crops left standing wither after a day. Melon and pumpkin stems are exempt and keep bearing fruit on adjacent soil, while cocoa needs no water at all.
+
+## 🌱 Bone Meal, Queued
+
+Bone meal still works, but never instantly. Each use is queued and resolves at the next daily settlement, where every queued layer advances at least one visible growth stage.
+
+A crop accepts one application per day by default, and that allowance is shared with anyone else tending the field. Going over it withers the crop on the spot. Set the allowance to zero and crops refuse bone meal entirely.
 
 ## 💧 Water as a Resource
 
@@ -46,9 +55,11 @@ A cauldron left in the open fills itself while it rains, one layer at a time. It
 
 ## 🚿 The Irrigator
 
-A machine that keeps farmland supplied without a pond. It serves the nearest twenty plots within eight blocks, holds one hundred buckets and runs on redstone; pipes connect to its top face for automated filling and draining.
+A machine that keeps farmland supplied without a pond. It serves the nearest twenty plots within eight blocks, holds one hundred buckets and runs on redstone; pipes connect to its top face for automated filling and draining. Each machine serves its own plots, so a large field wants several, spread out.
 
-A status light reports its state at a glance: green while watering, red when powered but empty, dark when idle. One bucket lasts two Minecraft days, and only while crops are actually served. Right-click for a gauge showing exact contents.
+A status light reports its state at a glance: green while watering, red when powered but empty, dark when idle. One bucket lasts two Minecraft days, and only while crops are actually served. A water bucket fills it one bucket at a time, an empty bucket draws one out, and any other item opens a gauge with the exact contents.
+
+Crafting takes four cauldrons, a water bucket, two glass blocks and two iron ingots.
 
 ## 🌗 Seasonal Daylight
 
@@ -62,11 +73,13 @@ Jade adds crop progress, fertilizing state and thirst to the tooltip, using the 
 
 ## 📖 Guide and Commands
 
-A Patchouli handbook arrives on first join and covers every mechanic, the config reference and troubleshooting.
+A Patchouli handbook arrives on first join, and a copy can always be taken from the Tools & Utilities creative tab. It covers every mechanic, the config reference and troubleshooting.
 
-Seasons and maturation time can be edited without touching a file: hold a seed or crop and use the mod's commands to add or remove seasons, or to set the days. Changes are written to the config and take effect immediately.
+Seasons and maturation time can be edited without touching a file: hold a seed or crop and use the mod's commands, which require operator permission. Changes go straight into the config and apply immediately, with no restart. Crops already in the ground keep their current progress and continue at the new pace.
 
 ## ⚙️ Configuration
+
+Options live in config/seedseasons-common.toml and can also be edited in game, from the Mods menu. Most settings take effect the moment the file is saved or the config screen is applied, with no restart.
 
 Every system has its own switch and numbers: growth days, wither chances, water quota, thirst and over-maturity timers, rain threshold, cauldron pace, day length and daylight shares, irrigator range and capacity, maid behaviour. Disable the crop lifecycle and crops return to vanilla random ticks while Serene Seasons keeps its restrictions.
 
@@ -78,16 +91,17 @@ Every system has its own switch and numbers: growth days, wither chances, water 
 
 ---
 
-# 🌱 更好的四季
+# 🌱 四季物语
 
 **让农事跟着节气走，也守着水。**
 
-更好的四季是一款建立在静谧四季之上的农业改造模组。它以按天推进的生长取代随机刻，让耕地拥有会真正枯竭的水源，并把两者都交给季节支配。
+四季物语是一款建立在静谧四季之上的农业改造模组。它以按天推进的生长取代随机刻，让耕地拥有会真正枯竭的水源，并把两者都交给季节支配。
 
 ## ✨ 概览
 
 - 🌾 作物按设定的天数成熟，每天只结算一次
 - 🗓️ 非当季的作物停止生长，并可能枯死
+- 🌱 骨粉改为排队结算，每株每天一剂
 - 💧 耕地从静态水源取水，水源会被真正抽干
 - 🌧️ 池塘见底时，降雨与炼药锅提供补给
 - 🌗 白昼时长随季节变化
@@ -102,6 +116,8 @@ Every system has its own switch and numbers: growth days, wither chances, water 
 
 成熟天数显示在种子提示中；未单独设定时，按静谧四季所配置的季节长度推算。
 
+新播种的作物需等待十二个游戏小时才会参与首次结算，卡在清晨播种占不到便宜。
+
 ## 🗓️ 季节决定存亡
 
 作物的可种植季节由两处合并而来：静谧四季的数据包标签，以及一份只做补充的配置列表。数据包与其它模组的适配不会被覆盖或削减。
@@ -109,6 +125,12 @@ Every system has its own switch and numbers: growth days, wither chances, water 
 不在当季时，作物停止生长，并默认在下一次生长判定时枯死。若换季时作物已长到四分之三以上，则有 80% 的概率被直接催熟，临近收获的作物通常能熬过换季。
 
 成熟后久不采收的作物会在一天后枯死。西瓜与南瓜的茎例外，不会因过熟而死，会持续在旁边的土壤上结果；可可豆完全不需要水。
+
+## 🌱 骨粉排队结算
+
+骨粉仍然有效，但不再瞬间生效。每次使用都会排队，在次日结算时统一兑现，每层至少推进一个可见的生长阶段。
+
+每株作物每天默认只接受一次，这份配额与同在田间劳作的其它人共用。超量使用会让作物当场枯死。把配额设为 0，作物就完全不接受骨粉。
 
 ## 💧 水是资源
 
@@ -126,9 +148,11 @@ Every system has its own switch and numbers: growth days, wither chances, water 
 
 ## 🚿 灌溉机
 
-一台无需池塘即可维持农田供水的机械。它服务自身八格范围内最近的二十块耕地，可储水一百桶，由红石驱动，顶面可接管道自动注水与抽水。
+一台无需池塘即可维持农田供水的机械。它服务自身八格范围内最近的二十块耕地，可储水一百桶，由红石驱动，顶面可接管道自动注水与抽水。每台只服务自己那批耕地，大田需要错开摆放多台。
 
-状态灯一眼可辨：供水时为绿色，通电但无水为红色，待机为暗色。一桶水可用两个游戏日，且只在确实供水时消耗。空手右键可查看水位，读数精确到桶。
+状态灯一眼可辨：供水时为绿色，通电但无水为红色，待机为暗色。一桶水可用两个游戏日，且只在确实供水时消耗。手持水桶右键注入一桶，空桶右键取出一桶，其它物品右键则打开读数界面，精确到桶。
+
+合成需要四个炼药锅、一个水桶、两块玻璃和两个铁锭。
 
 ## 🌗 季节昼夜
 
@@ -142,11 +166,13 @@ Every system has its own switch and numbers: growth days, wither chances, water 
 
 ## 📖 手册与指令
 
-首次进入游戏会获得一本帕秋莉手册，涵盖全部机制、配置速查与常见问题。
+首次进入游戏会获得一本帕秋莉手册，创造模式的「工具与实用物品」页签中也可随时取用。手册涵盖全部机制、配置速查与常见问题。
 
-作物季节与成熟天数无需打开文件即可修改：手持种子或作物，用模组指令添加或移除季节，或设定天数。改动直接写入配置并立即生效。
+作物季节与成熟天数无需打开文件即可修改：手持种子或作物，用模组指令添加或移除季节，或设定天数，该指令需要管理员权限。改动直接写入配置并立即生效，不必重启游戏；已经种下的作物会保留当前进度，按新的天数继续生长。
 
 ## ⚙️ 配置
+
+选项位于 config/seedseasons-common.toml，也可以在游戏内的模组菜单里直接修改。大多数设置会在保存文件或应用配置界面时立即生效，无需重启。
 
 每个系统都有独立开关与数值：成熟天数、枯死概率、单水源配额、缺水与过熟时限、降雨阈值、炼药锅积水速度、一天长度与各季白昼比例、灌溉机范围与容量、女仆行为。关闭作物生命周期后，作物恢复原版随机刻生长，静谧四季的季节限制照常生效。
 
