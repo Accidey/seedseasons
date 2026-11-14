@@ -45,4 +45,9 @@ tmp-typecheck/
 tmp-textures/
 
 ### Third-party reference sources (local only, not built, too large to commit) ###
+# Kept on disk for local reference and offline builds; never committed or published.
 TouhouLittleMaid-26.1-1.21/
+BetterDays-1.21.1/
+SereneSeasons-1.21.1/
+Jade-1.21-neoforge/
+local-repo/
