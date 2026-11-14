@@ -1,8 +1,8 @@
-# 🌱 Seed Seasons
+# 🌱Seed Seasons
 
 **Farming that follows the calendar, and the water table.**
 
-Xulai Seed Seasons is a farming overhaul built on Serene Seasons. It replaces random-tick growth with a day-based lifecycle, gives farmland a real water supply that can genuinely run dry, and puts both under the rule of the seasons.
+Seed Seasons is a farming overhaul built on Serene Seasons. It replaces random-tick growth with a day-based lifecycle, gives farmland a real water supply that can genuinely run dry, and puts both under the rule of the seasons.
 
 ## ✨ At a Glance
 
@@ -82,7 +82,7 @@ Every system has its own switch and numbers: growth days, wither chances, water 
 
 **让农事跟着节气走，也守着水。**
 
-更好的四季是一款建立在静谧四季之上的农业改造模组。它以按天推进的生长取代随机刻，让耕地拥有会真正枯竭的水源，并把两者都交给季节支配。
+四季物语是一款建立在静谧四季之上的农业改造模组。它以按天推进的生长取代随机刻，让耕地拥有会真正枯竭的水源，并把两者都交给季节支配。
 
 ## ✨ 概览
 
